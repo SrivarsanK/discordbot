@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+.DS_Store
+graphify-out/
+gsd-core/
+.agent/
+.agents/skills/
+skills-lock.json
