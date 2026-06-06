@@ -8,6 +8,7 @@ const { loadEmojiLibrary } = require("../utils/emojiLibrary");
 const { syncClientOwnerIds } = require("../utils/owners");
 const startDashboard = require("../dashboard/server");
 const config = require("../config.js");
+const { getDb } = require("../db/client");
 
 class MusicBot extends Client {
   constructor() {
@@ -49,7 +50,6 @@ class MusicBot extends Client {
     this.spamMap = new Map();
     this.cooldowns = new Collection();
 
-    const { getDb } = require("../db/client");
     this._connectPostgres().catch((err) => {
       this.logger.log(`[DB] Failed to start connection: ${err.stack || err}`, "error");
     });

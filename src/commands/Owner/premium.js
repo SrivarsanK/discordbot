@@ -18,7 +18,6 @@ const {
 const Premium = require("../../schema/premium");
 const { isBotOwner } = require("../../utils/owners");
 const { clearPremiumCache } = require("../../utils/premiumFeatures");
-const { repairPremiumIndexes } = require("../../utils/premiumIndexes");
 
 const TIERS = {
   basic: { label: "⭐ Basic",  color: "#f1c40f", perks: ["Custom Prefix", "No Ads", "Priority Support"] },
@@ -135,7 +134,6 @@ module.exports = {
         dashboard:       true,
       };
 
-      await repairPremiumIndexes(client.logger);
       const previous = await Premium.findOne({ id }).lean();
       const entry = await Premium.findOneAndUpdate(
         { id },

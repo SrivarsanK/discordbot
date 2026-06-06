@@ -34,6 +34,8 @@ module.exports = function loadPlayerManager(client) {
 
   const defaultSource = normalizeSource(client.config.node_source);
 
+  const nodes = (client.config.nodes || []).filter(node => node && node.url && node.url.trim() !== "");
+
   const manager = new Kazagumo(
     {
       plugins,
@@ -45,7 +47,7 @@ module.exports = function loadPlayerManager(client) {
       },
     },
     new Connectors.DiscordJS(client),
-    client.config.nodes,
+    nodes,
     client.config.node_options,
   );
 

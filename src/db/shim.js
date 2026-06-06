@@ -1,6 +1,6 @@
 /** @format */
 const { getDb } = require("./client");
-const { eq, and, or, sql } = require("drizzle-orm");
+const { eq, and, or, sql, lt, lte, gt, gte, ne, inArray, notInArray } = require("drizzle-orm");
 
 function getColumnKey(table, key) {
   const lowerKey = key.toLowerCase();
@@ -51,7 +51,10 @@ function buildDrizzleWhere(table, query) {
     const column = table[colName];
     if (!column) continue;
     
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
+    if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date) && !(value instanceof RegExp)) {
+      const colConditions = [];
+      let handled = false;
+
       if (value.$regex) {
         let pattern = value.$regex;
         if (pattern instanceof RegExp) {
@@ -60,9 +63,57 @@ function buildDrizzleWhere(table, query) {
         let sqlPattern = pattern.replace(/^\^|\$$/g, ''); 
         const isCaseInsensitive = value.$options === 'i' || (value.$regex instanceof RegExp && value.$regex.flags.includes('i'));
         if (isCaseInsensitive) {
-          conditions.push(sql`lower(${column}) = lower(${sqlPattern})`);
+          colConditions.push(sql`lower(${column}) = lower(${sqlPattern})`);
         } else {
-          conditions.push(sql`${column} = ${sqlPattern}`);
+          colConditions.push(sql`${column} = ${sqlPattern}`);
+        }
+        handled = true;
+      }
+
+      if (value.$lt !== undefined) {
+        colConditions.push(lt(column, value.$lt));
+        handled = true;
+      }
+      if (value.$lte !== undefined) {
+        colConditions.push(lte(column, value.$lte));
+        handled = true;
+      }
+      if (value.$gt !== undefined) {
+        colConditions.push(gt(column, value.$gt));
+        handled = true;
+      }
+      if (value.$gte !== undefined) {
+        colConditions.push(gte(column, value.$gte));
+        handled = true;
+      }
+      if (value.$ne !== undefined) {
+        colConditions.push(ne(column, value.$ne));
+        handled = true;
+      }
+      if (value.$in !== undefined && Array.isArray(value.$in)) {
+        if (value.$in.length > 0) {
+          colConditions.push(inArray(column, value.$in));
+        } else {
+          colConditions.push(sql`1=0`);
+        }
+        handled = true;
+      }
+      if (value.$nin !== undefined && Array.isArray(value.$nin)) {
+        if (value.$nin.length > 0) {
+          colConditions.push(notInArray(column, value.$nin));
+        } else {
+          colConditions.push(sql`1=1`);
+        }
+        handled = true;
+      }
+
+      if (handled) {
+        if (colConditions.length > 0) {
+          if (colConditions.length === 1) {
+            conditions.push(colConditions[0]);
+          } else {
+            conditions.push(and(...colConditions));
+          }
         }
         continue;
       }
@@ -185,7 +236,11 @@ class ShimModel {
     if (whereClause) {
       queryBuilder.where(whereClause);
     }
-    await queryBuilder;
+    const rows = await queryBuilder.returning();
+    return {
+      deletedCount: rows.length,
+      acknowledged: true
+    };
   }
 
   async deleteMany(query) {
@@ -195,7 +250,11 @@ class ShimModel {
     if (whereClause) {
       queryBuilder.where(whereClause);
     }
-    await queryBuilder;
+    const rows = await queryBuilder.returning();
+    return {
+      deletedCount: rows.length,
+      acknowledged: true
+    };
   }
   
   async findOneAndUpdate(query, update, options = {}) {
@@ -245,10 +304,16 @@ class ShimModel {
             values[col] = v;
           }
         }
-        await db.insert(this.table)
+        const rows = await db.insert(this.table)
           .values(values)
-          .onConflictDoUpdate({ target: this.table[pkCol], set: mappedData });
-        return;
+          .onConflictDoUpdate({ target: this.table[pkCol], set: mappedData })
+          .returning();
+        return {
+          modifiedCount: rows.length,
+          matchedCount: rows.length,
+          acknowledged: true,
+          upsertedCount: rows.length > 0 ? 1 : 0
+        };
       }
     }
     
@@ -256,7 +321,12 @@ class ShimModel {
     if (whereClause) {
       queryBuilder.where(whereClause);
     }
-    await queryBuilder;
+    const rows = await queryBuilder.returning();
+    return {
+      modifiedCount: rows.length,
+      matchedCount: rows.length,
+      acknowledged: true
+    };
   }
 
   async updateMany(query, update) {
