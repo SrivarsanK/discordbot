@@ -89,12 +89,12 @@ const config = {
 
   node_source: env("NODE_SOURCE"),
   node_options: {
-    moveOnDisconnect: envBool("NODE_MOVE_ON_DISCONNECT"),
-    resume: envBool("NODE_RESUME"),
-    resumeTimeout: envNumber("NODE_RESUME_TIMEOUT"),
-    reconnectTries: envNumber("NODE_RECONNECT_TRIES"),
-    restTimeout: envNumber("NODE_REST_TIMEOUT"),
-    userAgent: env("LAVALINK_USER_AGENT"),
+    moveOnDisconnect: envBool("NODE_MOVE_ON_DISCONNECT", "false"),
+    resume: envBool("NODE_RESUME", "false"),
+    resumeTimeout: envNumber("NODE_RESUME_TIMEOUT", 30),
+    reconnectTries: envNumber("NODE_RECONNECT_TRIES", 5),
+    restTimeout: envNumber("NODE_REST_TIMEOUT", 10),
+    userAgent: env("LAVALINK_USER_AGENT", "Mozilla/5.0"),
   },
   nodes: [
     {
