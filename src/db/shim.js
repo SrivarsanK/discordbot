@@ -154,6 +154,8 @@ class Document {
       if (col === 'playlistName') { properties.add('PlaylistName'); }
       if (col === 'tracks') { properties.add('Playlist'); }
       if (col === 'createdOn') { properties.add('CreatedOn'); }
+      if (col === 'textId') { properties.add('TextId'); properties.add('textId'); }
+      if (col === 'voiceId') { properties.add('VoiceId'); properties.add('voiceId'); }
 
       for (const prop of properties) {
         if (prop in this) continue;

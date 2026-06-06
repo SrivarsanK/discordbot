@@ -76,6 +76,7 @@ async function startDashboard(client) {
 async function handleRequest(client, req, res) {
   const config = client.config.dashboard || {};
   const url = new URL(req.url, config.publicUrl || "http://localhost:3000");
+  client.logger?.log(`[Dashboard] ${req.method} ${url.pathname}`, "log");
 
   if (req.method === "GET" && url.pathname === "/login") {
     return redirectToDiscord(client, res);
@@ -252,13 +253,16 @@ function logout(client, req, res) {
 function getSession(client, req) {
   const cookieName = client.config.dashboard?.cookieName || "dsc_dashboard";
   const sessionId = readCookie(req, cookieName);
+  client.logger?.log(`[Dashboard] getSession - cookieName: ${cookieName}, sessionId: ${sessionId ? 'present' : 'missing'}`, "log");
   if (!sessionId) return null;
 
   const session = sessions.get(sessionId);
+  client.logger?.log(`[Dashboard] getSession - session found in memory: ${session ? 'yes' : 'no'}`, "log");
   if (!session) return null;
 
   const ttl = client.config.dashboard?.sessionTtlMs || 604800000;
   if (Date.now() - session.touchedAt > ttl || Date.now() > session.expiresAt + ttl) {
+    client.logger?.log(`[Dashboard] getSession - session expired!`, "log");
     sessions.delete(sessionId);
     return null;
   }

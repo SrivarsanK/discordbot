@@ -150,9 +150,9 @@ const voteBypass = pgTable("vote_bypass", {
 
 // ── always_on (247) ───────────────────────────────────────────────────────────
 const alwaysOn = pgTable("always_on", {
-  guildId:   text("guild_id").primaryKey(),
-  channelId: text("channel_id"),
-  enabled:   boolean("enabled").default(false),
+  guildId: text("guild_id").primaryKey(),
+  textId:  text("text_id"),
+  voiceId: text("voice_id"),
 });
 
 // ── emoji ─────────────────────────────────────────────────────────────────────
