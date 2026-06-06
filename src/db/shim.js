@@ -178,6 +178,10 @@ class Document {
   async deleteOne() {
     return this._model.deleteDocument(this);
   }
+
+  markModified(path) {
+    // No-op for Postgres/Drizzle compatibility
+  }
 }
 
 class ShimModel {
@@ -203,6 +207,7 @@ class ShimModel {
     Model.countDocuments = self.countDocuments.bind(self);
     Model.exists = self.exists.bind(self);
     Model.create = self.create.bind(self);
+    Model.insertMany = self.insertMany.bind(self);
     
     return Model;
   }
@@ -384,6 +389,25 @@ class ShimModel {
     }
     const [row] = await db.insert(this.table).values(mappedData).returning();
     return new Document(this, row, false);
+  }
+
+  async insertMany(arr, options = {}) {
+    if (!Array.isArray(arr) || arr.length === 0) return [];
+    
+    const db = getDb();
+    const mappedArr = arr.map(data => {
+      const mappedData = {};
+      for (const [k, v] of Object.entries(data)) {
+        const col = getColumnKey(this.table, k);
+        if (this.table[col]) {
+          mappedData[col] = v;
+        }
+      }
+      return mappedData;
+    });
+    
+    const rows = await db.insert(this.table).values(mappedArr).returning();
+    return rows.map(row => new Document(this, row, false));
   }
   
   async saveDocument(doc) {
