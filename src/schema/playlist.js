@@ -1,26 +1,5 @@
-const { Schema, model } = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { playlists } = require("../db/schema");
 
-const Playlist = new Schema({
-  Username: {
-    type: String,
-    required: false,
-  },
-  UserId: {
-    type: String,
-    required: true,
-  },
-  PlaylistName: {
-    type: String,
-    required: true,
-  },
-  Playlist: {
-    type: Array,
-    required: true,
-  },
-  CreatedOn: {
-    type: Number,
-    required: true,
-  },
-});
-
-module.exports = model("playlist", Playlist);
+module.exports = new ShimModel(playlists);

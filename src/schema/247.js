@@ -1,17 +1,5 @@
-const { Schema, model } = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { alwaysOn } = require("../db/schema");
 
-const autoReconnect = new Schema({
-  Guild: {
-    type: String,
-    required: true,
-  },
-  TextId: {
-    type: String,
-    required: true,
-  },
-  VoiceId: {
-    type: String,
-    required: true,
-  },
-});
-module.exports = model("autoreconnect", autoReconnect);
+module.exports = new ShimModel(alwaysOn);

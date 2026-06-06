@@ -1,7 +1,5 @@
-const { Schema, model } = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { accessNop } = require("../db/schema");
 
-const NopAccess = new Schema({
-  userId: String,
-});
-
-module.exports = model("noprefixaccess", NopAccess);
+module.exports = new ShimModel(accessNop);

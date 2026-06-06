@@ -1,13 +1,11 @@
 /** @format */
 
 const { Client, GatewayIntentBits, Collection, Events } = require("discord.js");
-const mongoose = require("mongoose");
 const { ClusterClient, getInfo } = require("discord-hybrid-sharding");
 const loadPlayerManager = require("../loaders/loadPlayerManager");
 const initializePremiumChecks = require("../utils/premiumChecks");
 const { loadEmojiLibrary } = require("../utils/emojiLibrary");
 const { syncClientOwnerIds } = require("../utils/owners");
-const { repairPremiumIndexes } = require("../utils/premiumIndexes");
 const startDashboard = require("../dashboard/server");
 const config = require("../config.js");
 
@@ -51,7 +49,8 @@ class MusicBot extends Client {
     this.spamMap = new Map();
     this.cooldowns = new Collection();
 
-    this._connectMongodb().catch((err) => {
+    const { getDb } = require("../db/client");
+    this._connectPostgres().catch((err) => {
       this.logger.log(`[DB] Failed to start connection: ${err.stack || err}`, "error");
     });
 
@@ -75,31 +74,10 @@ class MusicBot extends Client {
       require(`../loaders/${handler}`)(this);
     });
   }
-  async _connectMongodb() {
-    if (!this.config.mongourl) {
-      this.logger.log("[DB] Mongo URI is not set.", "warn");
-      return;
-    }
-
-    const dbOptions = this.config.mongoOptions || {};
-
-    mongoose.set("strictQuery", false);
-    mongoose.Promise = global.Promise;
-
-    mongoose.connection.on("connected", () => {
-      this.logger.log("[DB] Database connected", "ready");
-    });
-
-    mongoose.connection.on("error", (err) => {
-      this.logger.log(`[DB] Mongoose connection error: ${err.stack}`, "error");
-    });
-
-    mongoose.connection.on("disconnected", () => {
-      this.logger.log("[DB] Mongoose disconnected", "error");
-    });
-
-    await mongoose.connect(this.config.mongourl, dbOptions);
-    await repairPremiumIndexes(this.logger);
+  async _connectPostgres() {
+    // Just try to get the DB client instance which validates DATABASE_URL and initiates a handshake
+    const db = getDb();
+    this.logger.log("[DB] Database connected", "ready");
   }
 
   async connect() {

@@ -1,10 +1,5 @@
-const { Schema, model } = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { setup } = require("../db/schema");
 
-const Setup = new Schema({
-  Guild: String,
-  Channel: String,
-  Message: String,
-  voiceChannel: String,
-});
-
-module.exports = model("Setup", Setup);
+module.exports = new ShimModel(setup);

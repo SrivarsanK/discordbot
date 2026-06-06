@@ -1,8 +1,5 @@
-const mongoose = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { voiceRole } = require("../db/schema");
 
-const voiceRoleSchema = new mongoose.Schema({
-  guildId: { type: String, required: true },
-  roleId: { type: String, required: false }, // Role to assign/remove
-});
-
-module.exports = mongoose.model("VoiceRole", voiceRoleSchema);
+module.exports = new ShimModel(voiceRole);

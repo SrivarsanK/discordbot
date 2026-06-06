@@ -1,8 +1,5 @@
-const mongoose = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { blacklist } = require("../db/schema");
 
-const blacklistSchema = new mongoose.Schema({
-  userId: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now },
-});
-
-module.exports = mongoose.model("Blacklist", blacklistSchema);
+module.exports = new ShimModel(blacklist);

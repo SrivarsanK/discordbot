@@ -1,9 +1,5 @@
-const { Schema, model } = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { prefix } = require("../db/schema");
 
-const Prefix = new Schema({
-  Guild: String,
-  Prefix: String,
-  oldPrefix: String,
-});
-
-module.exports = model("prefix", Prefix);
+module.exports = new ShimModel(prefix);

@@ -36,7 +36,7 @@ const config = {
     searchMarket: env("SPOTIFY_SEARCH_MARKET"),
   },
 
-  mongourl: env("MONGO_URI"),
+  databaseUrl: env("DATABASE_URL"),
 
   embedColor: env("EMBED_COLOR"),
   color: env("BOT_COLOR", env("EMBED_COLOR")),
@@ -79,11 +79,6 @@ const config = {
     mode: env("CLUSTER_MODE"),
   },
 
-  mongoOptions: {
-    autoIndex: envBool("MONGO_AUTO_INDEX"),
-    connectTimeoutMS: envNumber("MONGO_CONNECT_TIMEOUT_MS"),
-    family: envNumber("MONGO_FAMILY"),
-  },
 
   intents: envList("INTENTS"),
 

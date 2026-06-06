@@ -1,10 +1,5 @@
-const mongo = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { afk } = require("../db/schema");
 
-const Schema = new mongo.Schema({
-  Guild: String,
-  Member: String,
-  Reason: String,
-  Time: String,
-});
-
-module.exports = mongo.model("afk", Schema);
+module.exports = new ShimModel(afk);

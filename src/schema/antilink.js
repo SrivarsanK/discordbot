@@ -1,10 +1,5 @@
-const mongoose = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { antilink } = require("../db/schema");
 
-const AntiLinkSchema = new mongoose.Schema({
-  guildId: { type: String, required: true },
-  isEnabled: { type: Boolean, default: false },
-  whitelistUsers: { type: [String], default: [] },
-  whitelistRoles: { type: [String], default: [] },
-});
-
-module.exports = mongoose.model("AntiLink", AntiLinkSchema);
+module.exports = new ShimModel(antilink);

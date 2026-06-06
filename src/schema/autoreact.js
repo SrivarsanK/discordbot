@@ -1,9 +1,5 @@
-const mongoose = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { autoReact } = require("../db/schema");
 
-const autoreactSchema = new mongoose.Schema({
-  guildId: { type: String, required: true },
-  keyword: { type: String, required: true },
-  emoji: { type: String, required: true },
-});
-
-module.exports = mongoose.model("AutoReact", autoreactSchema);
+module.exports = new ShimModel(autoReact);

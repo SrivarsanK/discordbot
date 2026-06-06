@@ -1,12 +1,5 @@
-const { Schema, model } = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { autoResponses } = require("../db/schema");
 
-const Autoresponder = new Schema({
-  guildId: String,
-  autoresponses: [
-    {
-      trigger: String,
-      response: String,
-    },
-  ],
-});
-module.exports = model("Autoresponser", Autoresponder);
+module.exports = new ShimModel(autoResponses);

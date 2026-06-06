@@ -1,15 +1,5 @@
-const { Schema, model } = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { voteBypass } = require("../db/schema");
 
-const VoteBypassUserSchema = new Schema({
-  userId: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  expiresAt: {
-    type: Date, // Optional field for expiration
-    default: null, // Null indicates no expiration
-  },
-});
-
-module.exports = model("VoteBypassUser", VoteBypassUserSchema);
+module.exports = new ShimModel(voteBypass);

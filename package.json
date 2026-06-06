@@ -8,6 +8,7 @@
   "dependencies": {
     "@flytri/lyrics-finder": "^1.0.7",
     "@iamtraction/google-translate": "^2.0.1",
+    "@neondatabase/serverless": "^1.1.0",
     "@top-gg/sdk": "^3.1.6",
     "archiver": "^7.0.1",
     "axios": "^1.8.1",
@@ -17,12 +18,12 @@
     "discord-hybrid-sharding": "^2.2.5",
     "discord.js": "^14.26.4",
     "dokdo": "^1.0.1",
+    "drizzle-orm": "^0.45.2",
     "kazagumo": "^3.4.3",
     "kazagumo-spotify": "^2.1.1",
     "moment": "^2.30.1",
     "moment-duration-format": "^2.3.2",
     "moment-timezone": "^0.5.47",
-    "mongoose": "^8.11.0",
     "musicard": "^2.0.5",
     "musicard-quartz": "^1.0.0",
     "quickchart-js": "^3.1.3",
@@ -31,5 +32,8 @@
   },
   "overrides": {
     "undici": "$undici"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10"
   }
 }

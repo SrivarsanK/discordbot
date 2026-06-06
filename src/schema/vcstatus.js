@@ -1,7 +1,5 @@
-const mongoose = require("mongoose");
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { vcStatus } = require("../db/schema");
 
-const VoiceStatus = new mongoose.Schema({
-  guildId: { type: String, required: true },
-});
-
-module.exports = mongoose.model("VcStatus", VoiceStatus);
+module.exports = new ShimModel(vcStatus);

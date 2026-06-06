@@ -1,9 +1,5 @@
-const { Schema, model } = require("mongoose");
-const mongoose = require("mongoose");
-const IgnoreChannelModel = new Schema({
-  guildId: String,
-  channelId: String,
-});
+/** @format */
+const { ShimModel } = require("../db/shim");
+const { ignoreChannel } = require("../db/schema");
 
-const db = model("ignorechannel", IgnoreChannelModel);
-module.exports = db;
+module.exports = new ShimModel(ignoreChannel);
