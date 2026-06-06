@@ -207,26 +207,42 @@ class ShimModel {
     return Model;
   }
   
-  async findOne(query) {
-    const db = getDb();
-    const whereClause = buildDrizzleWhere(this.table, query);
-    const queryBuilder = db.select().from(this.table);
-    if (whereClause) {
-      queryBuilder.where(whereClause);
-    }
-    const rows = await queryBuilder.limit(1);
-    return rows[0] ? new Document(this, rows[0], false) : null;
+  findOne(query) {
+    const promise = (async () => {
+      const db = getDb();
+      const whereClause = buildDrizzleWhere(this.table, query);
+      const queryBuilder = db.select().from(this.table);
+      if (whereClause) {
+        queryBuilder.where(whereClause);
+      }
+      const rows = await queryBuilder.limit(1);
+      return rows[0] ? new Document(this, rows[0], false) : null;
+    })();
+    
+    promise.lean = () => {
+      return promise.then(doc => doc ? doc._data : null);
+    };
+    
+    return promise;
   }
   
-  async find(query) {
-    const db = getDb();
-    const whereClause = buildDrizzleWhere(this.table, query);
-    const queryBuilder = db.select().from(this.table);
-    if (whereClause) {
-      queryBuilder.where(whereClause);
-    }
-    const rows = await queryBuilder;
-    return rows.map(row => new Document(this, row, false));
+  find(query) {
+    const promise = (async () => {
+      const db = getDb();
+      const whereClause = buildDrizzleWhere(this.table, query);
+      const queryBuilder = db.select().from(this.table);
+      if (whereClause) {
+        queryBuilder.where(whereClause);
+      }
+      const rows = await queryBuilder;
+      return rows.map(row => new Document(this, row, false));
+    })();
+    
+    promise.lean = () => {
+      return promise.then(docs => docs.map(doc => doc._data));
+    };
+    
+    return promise;
   }
   
   async deleteOne(query) {
@@ -257,9 +273,17 @@ class ShimModel {
     };
   }
   
-  async findOneAndUpdate(query, update, options = {}) {
-    await this.updateOne(query, update, options);
-    return this.findOne(query);
+  findOneAndUpdate(query, update, options = {}) {
+    const promise = (async () => {
+      await this.updateOne(query, update, options);
+      return this.findOne(query);
+    })();
+    
+    promise.lean = () => {
+      return promise.then(doc => doc ? doc._data : null);
+    };
+    
+    return promise;
   }
   
   async updateOne(query, update, options = {}) {
