@@ -1,4 +1,3 @@
-const Premium = require("../schema/premium");
 const PremiumLevel = require("../schema/premiumLevel");
 const PremiumSettings = require("../schema/premiumSettings");
 
@@ -7,27 +6,11 @@ const premiumCache = new Map();
 const CACHE_MS = 30 * 1000;
 
 async function getActivePremium(guildId, userId = null) {
-  const candidates = [
-    guildId ? { id: guildId, type: "guild" } : null,
-    userId ? { id: userId, type: "user" } : null,
-  ].filter(Boolean);
-
-  for (const query of candidates) {
-    const key = `${query.type}:${query.id}`;
-    const cached = premiumCache.get(key);
-    if (cached && cached.expires > Date.now()) return cached.value;
-
-    const entry = await Premium.findOne(query);
-    const active = entry && entry.isActive() ? entry : null;
-    premiumCache.set(key, { value: active, expires: Date.now() + CACHE_MS });
-    if (active) return active;
-  }
-
   return null;
 }
 
 async function isPremiumEnabled(guildId, userId = null) {
-  return Boolean(await getActivePremium(guildId, userId));
+  return false;
 }
 
 async function getPremiumSettings(guildId) {

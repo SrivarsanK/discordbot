@@ -5,7 +5,6 @@ const MAX_IMAGE_SOURCE_LENGTH = 8 * 1024 * 1024;
 const pages = [
   { id: "overview", label: "Home", icon: "home", group: "Main" },
   { id: "general", label: "General Settings", icon: "settings", group: "Main" },
-  { id: "premium", label: "Premium", icon: "gem", group: "Main", status: "premium.active" },
   { id: "music", label: "Music", icon: "music", group: "Modules", status: "music247.enabled" },
   { id: "leveling", label: "Leveling", icon: "award", group: "Modules", status: "premium.leveling.enabled" },
   { id: "vcguard", label: "VC Guard", icon: "shield", group: "Modules", status: "premium.vcGuard.enabled" },
@@ -298,7 +297,7 @@ function renderSidebar() {
 
 function renderNavItem(page) {
   const statusPath = page.status;
-  const hasToggle = statusPath && statusPath !== "premium.active" && statusPath !== "roles.any";
+  const hasToggle = statusPath && statusPath !== "roles.any";
   const on = statusPath ? statusFor(statusPath) : false;
   return `
     <button class="nav-item ${state.page === page.id ? "active" : ""}" type="button" data-nav="${page.id}">
@@ -337,8 +336,6 @@ function renderPage() {
   switch (state.page) {
     case "general":
       return renderGeneral();
-    case "premium":
-      return renderPremium();
     case "leveling":
       return renderLeveling();
     case "vcguard":
@@ -383,7 +380,6 @@ function renderOverview() {
         ${shortcutCard("Leveling", "XP", "Free chat and voice XP for active members.", "leveling", "Configure XP")}
         ${shortcutCard("VC guard", "VC", "Protect selected voice channels with bypass roles.", "vcguard", "Configure guard")}
         ${shortcutCard("Sticky messages", "Sticky", "Keep an important message at the bottom of a channel.", "sticky", "Configure sticky")}
-        ${shortcutCard("Premium branding", "Premium", "Paid bot nickname branding for this server.", "premium", "Open premium")}
         ${shortcutCard("Anti nuke", "Anti Nuke", "Extra owners and whitelisted roles.", "antinuke", "Secure server")}
         ${shortcutCard("Audit logging", "Logging", "Configure the logging channel for security and bot events.", "logging", "Configure logging")}
         ${shortcutCard("Role tools", "Roles", "Autorole, voice role, and shortcut roles.", "roles", "Manage roles")}
@@ -727,65 +723,6 @@ function renderMusic() {
   `;
 }
 
-function renderPremium() {
-  const premium = state.data.premium || {};
-  const guildPremium = premium.guild || premium;
-  const userPremium = premium.user || {};
-  const brandingUnlocked = Boolean(guildPremium.active);
-
-  return `
-    <section class="page wide">
-      ${pageHead("gem", "Premium", "Paid bot branding and server upgrades.")}
-      <div class="premium-status-grid">
-        ${premiumStatusPanel("Server premium", guildPremium, "Unlocks bot branding for this server.")}
-        ${premiumStatusPanel("Your premium", userPremium, "Your personal premium status.")}
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span class="mini-icon"><i data-lucide="tag"></i></span>
-            <div><h2>Bot branding</h2><p>Premium bot nickname for this server.</p></div>
-          </div>
-          ${toggleField("premium.branding.enabled", { disabled: !brandingUnlocked })}
-        </div>
-        <div class="setting-grid single">
-          ${inputField("Bot nickname", "premium.branding.nickname", "text", { max: 32, disabled: !brandingUnlocked })}
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-function premiumStatusPanel(title, entry, description) {
-  const active = Boolean(entry?.active);
-  return `
-    <div class="panel premium-status-card">
-      <div class="panel-head">
-        <div class="panel-title">
-          <span class="mini-icon"><i data-lucide="gem"></i></span>
-          <div>
-            <h2>${escapeHtml(title)}</h2>
-            <p>${escapeHtml(description)}</p>
-          </div>
-        </div>
-        <span class="status-pill ${active ? "on" : "warn"}">${active ? "ACTIVE" : "FREE"}</span>
-      </div>
-      <div class="premium-status-body">
-        <strong>${active ? `${escapeHtml(entry.tier || "premium")} premium active` : "No active premium"}</strong>
-        <span>${premiumStatusText(entry)}</span>
-      </div>
-    </div>
-  `;
-}
-
-function premiumStatusText(entry) {
-  if (!entry?.active) return "Status: free";
-  const expiry = entry.expiresAt
-    ? `expires ${new Date(entry.expiresAt).toLocaleDateString()}`
-    : "lifetime";
-  return `Status: ${entry.status || "active"}, ${expiry}`;
-}
 
 function renderLeveling() {
   return `
@@ -1219,7 +1156,7 @@ function shortcutCard(title, label, text, page, action) {
   const pageObj = pages.find(p => p.id === page);
   const iconName = pageObj ? pageObj.icon : "box";
   const statusPath = pageObj?.status;
-  const hasToggle = statusPath && statusPath !== "premium.active" && statusPath !== "roles.any";
+  const hasToggle = statusPath && statusPath !== "roles.any";
   const on = hasToggle ? statusFor(statusPath) : false;
   return `
     <article class="card ${hasToggle && !on ? "disabled-card" : ""}">

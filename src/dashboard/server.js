@@ -16,12 +16,10 @@ const Roles = require("../schema/roles");
 const IgnoreChannel = require("../schema/ignorechannel");
 const AutoReconnect = require("../schema/247");
 const WelcomeSettings = require("../schema/welcomesystem");
-const Premium = require("../schema/premium");
 const PremiumSettings = require("../schema/premiumSettings");
 const Logging = require("../schema/logging");
 const {
   clearPremiumSettingsCache,
-  getActivePremium,
 } = require("../utils/premiumFeatures");
 const { normalizeWelcomeDynamicImages } = require("../utils/welcomeImage");
 
@@ -491,9 +489,7 @@ async function buildGuildPayload(client, guildId, session) {
 
   const settings = await loadGuildSettings(client, guild);
   const premium = await buildPremiumPayload(guildId, session?.user?.id);
-  if (!premium.guild?.active) {
-    settings.premium.branding = { enabled: false, nickname: "" };
-  }
+  settings.premium.branding = { enabled: false, nickname: "" };
   const viewer = await formatViewer(client, guild, session);
   return {
     guild: formatGuild(guild),
@@ -932,12 +928,9 @@ async function saveMusic247(guildId, music247) {
 }
 
 async function savePremiumSettings(client, guild, premium) {
-  const active = await getActivePremium(guild.id);
   const nextPremium = {
     ...premium,
-    branding: active
-      ? premium.branding
-      : { enabled: false, nickname: "" },
+    branding: { enabled: false, nickname: "" },
   };
 
   await PremiumSettings.findOneAndUpdate(
@@ -949,10 +942,8 @@ async function savePremiumSettings(client, guild, premium) {
   );
   clearPremiumSettingsCache(guild.id);
 
-  if (nextPremium.branding) {
-    const nickname = nextPremium.branding.enabled ? nextPremium.branding.nickname : "";
-    await guild.members.me?.setNickname(nickname || null).catch(() => null);
-  }
+  // Clear bot nickname since premium branding is disabled
+  await guild.members.me?.setNickname(null).catch(() => null);
 }
 
 function normalizeSettings(client, raw) {
@@ -1047,51 +1038,15 @@ function formatBot(client) {
 }
 
 async function buildPremiumPayload(guildId, userId) {
-  if (process.env.MOCK_DASHBOARD === "true") {
-    return {
-      active: true,
-      guild: { active: true, tier: "gold", status: "active", expiresAt: null },
-      user: { active: true, tier: "gold", status: "active", expiresAt: null },
-      tier: "gold",
-      status: "active",
-      expiresAt: null,
-    };
-  }
-  const [guildEntry, userEntry] = await Promise.all([
-    Premium.findOne({ id: guildId, type: "guild" }).lean(),
-    userId ? Premium.findOne({ id: userId, type: "user" }).lean() : null,
-  ]);
-  const guild = formatPremiumEntry(guildEntry, guildId, "guild");
-  const user = formatPremiumEntry(userEntry, userId, "user");
-
   return {
-    active: guild.active || user.active,
-    guild,
-    user,
-    tier: guild.tier,
-    status: guild.status,
-    expiresAt: guild.expiresAt,
-    provider: guild.provider,
-    checkoutUrl: guild.checkoutUrl,
-  };
-}
-
-function formatPremiumEntry(entry, id, type) {
-  const active = Boolean(
-    entry &&
-      entry.status !== "canceled" &&
-      (!entry.expiresAt || new Date(entry.expiresAt) > new Date()),
-  );
-  return {
-    id: id || "",
-    type,
-    active,
-    tier: entry?.tier || "free",
-    status: entry?.status || (active ? "active" : "free"),
-    expiresAt: entry?.expiresAt || null,
-    provider: entry?.payment?.provider || "",
-    checkoutUrl: entry?.payment?.checkoutUrl || "",
-    addedBy: entry?.addedBy || "",
+    active: false,
+    guild: { active: false, id: guildId || "", type: "guild", tier: "free", status: "free", expiresAt: null, provider: "", checkoutUrl: "" },
+    user: { active: false, id: userId || "", type: "user", tier: "free", status: "free", expiresAt: null, provider: "", checkoutUrl: "" },
+    tier: "free",
+    status: "free",
+    expiresAt: null,
+    provider: "",
+    checkoutUrl: "",
   };
 }
 

@@ -1,13 +1,11 @@
 const { v2 } = require("./v2");
 const Noprefix = require("../schema/noprefix");
-const Premium = require("../schema/premium");
 const VoteBypassUser = require("../schema/votebypassuser");
 
 async function cleanExpiredPermissions(client) {
   try {
     await cleanCollection(client, Noprefix, "NoPrefix Premium");
     await cleanCollection(client, VoteBypassUser, "Vote Bypass");
-    await markExpiredPremium(client);
   } catch (error) {
     client.logger?.log(
       `[PremiumChecks] Cleanup failed: ${error.stack || error}`,
@@ -16,19 +14,6 @@ async function cleanExpiredPermissions(client) {
   }
 }
 
-async function markExpiredPremium(client) {
-  const result = await Premium.updateMany(
-    {
-      expiresAt: { $lt: new Date() },
-      status: { $in: ["active", "trialing", "manual"] },
-    },
-    { $set: { status: "canceled" } },
-  );
-
-  if (result.modifiedCount) {
-    client.logger?.log(`[PremiumChecks] Marked ${result.modifiedCount} premium entries expired.`, "log");
-  }
-}
 
 async function cleanCollection(client, model, label) {
   const expiredEntries = await model.find({ expiresAt: { $lt: new Date() } });
