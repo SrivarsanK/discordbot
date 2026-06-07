@@ -549,7 +549,7 @@ function renderLogging() {
             <div style="min-width: 200px;">
               <select class="select" data-category-mass-select="${escapeAttr(cat.id)}">
                 <option value="" ${categoryChannel === "" ? "selected" : ""}>Set category channel...</option>
-                ${textChannels().map(ch => `<option value="${ch.id}" ${ch.id === categoryChannel ? "selected" : ""}>#${escapeHtml(ch.name)}</option>`).join("")}
+                ${textChannels().map(ch => `<option value="${ch.id}" ${ch.id === categoryChannel ? "selected" : ""}>${escapeHtml(ch.label || ch.name)}</option>`).join("")}
               </select>
             </div>
           </div>
@@ -562,7 +562,7 @@ function renderLogging() {
                   <div style="display: flex; gap: 10px; align-items: center;">
                     <select class="select" data-bind="logging.eventChannels.${evt.key}" style="min-width: 200px;">
                       <option value="">Disabled</option>
-                      ${textChannels().map(ch => `<option value="${ch.id}" ${ch.id === currentChan ? "selected" : ""}>#${escapeHtml(ch.name)}</option>`).join("")}
+                      ${textChannels().map(ch => `<option value="${ch.id}" ${ch.id === currentChan ? "selected" : ""}>${escapeHtml(ch.label || ch.name)}</option>`).join("")}
                     </select>
                     <button type="button" class="button ghost" data-verify-thread="${escapeAttr(evt.key)}" style="padding: 6px 12px; height: auto; font-size: 0.8em;">Thread Setup</button>
                   </div>
@@ -2791,21 +2791,51 @@ async function api(path, options = {}) {
 
 function textChannels() {
   const channels = state.data?.channels || [];
-  return channels.filter((channel) => {
-    if (channel.type === 0 || channel.type === 5 || channel.type === 15) return true;
-    if (channel.type === 10 || channel.type === 11 || channel.type === 12) {
-      const parent = channels.find(c => c.id === channel.parentId);
-      if (parent && parent.type === 15) {
-        return false;
+  return channels
+    .filter((channel) => {
+      if (channel.type === 0 || channel.type === 5 || channel.type === 15) return true;
+      if (channel.type === 10 || channel.type === 11 || channel.type === 12) {
+        const parent = channels.find(c => c.id === channel.parentId);
+        if (parent && parent.type === 15) {
+          return false;
+        }
+        return true;
       }
-      return true;
-    }
-    return false;
-  });
+      return false;
+    })
+    .map((ch) => {
+      let prefix = "# ";
+      let suffix = "";
+      if (ch.type === 5) {
+        prefix = "📢 ";
+        suffix = " (Announcement)";
+      } else if (ch.type === 15) {
+        prefix = "📁 ";
+        suffix = " (Forum)";
+      } else if (ch.type === 10 || ch.type === 11 || ch.type === 12) {
+        prefix = "🧵 ";
+        suffix = " (Thread)";
+      }
+      return {
+        ...ch,
+        label: `${prefix}${ch.name}${suffix}`,
+        name: `${prefix}${ch.name}${suffix}`
+      };
+    });
 }
 
 function voiceChannels() {
-  return (state.data?.channels || []).filter((channel) => channel.type === 2 || channel.type === 13);
+  return (state.data?.channels || [])
+    .filter((channel) => channel.type === 2 || channel.type === 13)
+    .map((ch) => {
+      const prefix = ch.type === 13 ? "🎤 " : "🔊 ";
+      const suffix = ch.type === 13 ? " (Stage)" : " (Voice)";
+      return {
+        ...ch,
+        label: `${prefix}${ch.name}${suffix}`,
+        name: `${prefix}${ch.name}${suffix}`
+      };
+    });
 }
 
 function statusFor(path) {
