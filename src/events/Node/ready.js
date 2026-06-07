@@ -19,11 +19,17 @@ module.exports = {
     );
 
     for (const data of maindata) {
-      const channel = client.channels.cache.get(data.TextId);
-      const voice = client.channels.cache.get(data.VoiceId);
+      let channel = client.channels.cache.get(data.TextId);
+      if (!channel) {
+        channel = await client.channels.fetch(data.TextId).catch(() => null);
+      }
+      let voice = client.channels.cache.get(data.VoiceId);
+      if (!voice) {
+        voice = await client.channels.fetch(data.VoiceId).catch(() => null);
+      }
 
       if (!channel || !voice) {
-        await data.deleteOne();
+        await data.deleteOne().catch(() => null);
         continue;
       }
 
@@ -35,8 +41,9 @@ module.exports = {
           deaf: true,
         })
         .catch(async (error) => {
+          const errMsg = error.cause ? `${error.stack || error} | Cause: ${error.cause.stack || error.cause}` : (error.stack || error);
           client.logger.log(
-            `[247] Failed to restore ${data.Guild}: ${error.stack || error}`,
+            `[247] Failed to restore ${data.Guild}: ${errMsg}`,
             "error",
           );
           await data.deleteOne().catch(() => null);

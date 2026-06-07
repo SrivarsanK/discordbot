@@ -24,5 +24,8 @@
   "join": "📥",
   "leave": "📤",
   "about": "🔎",
-  "jump": "⏭️"
+  "jump": "⏭️",
+  "cross": "❌",
+  "tick": "✅",
+  "dot": "•"
 }

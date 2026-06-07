@@ -20,6 +20,7 @@ const antinuke = pgTable("antinuke", {
   whitelistUsers: jsonb("whitelist_users").default([]),
   whitelistRoles: jsonb("whitelist_roles").default([]),
   logChannelId:   text("log_channel_id"),
+  disabledEvents: jsonb("disabled_events").default([]),
 });
 
 // ── antilink ──────────────────────────────────────────────────────────────────
@@ -221,6 +222,16 @@ const welcomeSystem = pgTable("welcome_system", {
   welcome: jsonb("welcome").default({}),
 });
 
+// ── dashboard_sessions ────────────────────────────────────────────────────────
+const dashboardSessions = pgTable("dashboard_sessions", {
+  sessionId:    text("session_id").primaryKey(),
+  userId:       text("user_id").notNull(),
+  data:         jsonb("data").notNull(),
+  expiresAt:    timestamp("expires_at").notNull(),
+  touchedAt:    timestamp("touched_at").notNull(),
+  createdAt:    timestamp("created_at").defaultNow(),
+});
+
 module.exports = {
   afk,
   alwaysOn,
@@ -233,6 +244,7 @@ module.exports = {
   autoRole,
   badge,
   blacklist,
+  dashboardSessions,
   emoji,
   ignoreChannel,
   noprefix,

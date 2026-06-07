@@ -3,7 +3,9 @@ const {
   InteractionType,
   PermissionsBitField,
   MessageFlags,
+  EmbedBuilder,
 } = require("discord.js");
+const { sendWebhook } = require("../../utils/webhook");
 const db = require("../../schema/prefix.js");
 const db3 = require("../../schema/setup");
 const { normalizePermissions } = require("../../utils/permissions");
@@ -126,8 +128,43 @@ module.exports = {
         }
       }
 
+      const originalReply = interaction.reply.bind(interaction);
+      const originalFollowUp = interaction.followUp.bind(interaction);
+      const originalDeferReply = interaction.deferReply.bind(interaction);
+
+      const forceEphemeral = (options) => {
+        if (typeof options === "string") {
+          options = { content: options, flags: MessageFlags.Ephemeral };
+        } else if (typeof options === "object" && options !== null) {
+          options.flags = (options.flags || 0) | MessageFlags.Ephemeral;
+          delete options.ephemeral;
+        } else if (options === undefined || options === null) {
+          options = { flags: MessageFlags.Ephemeral };
+        }
+        return options;
+      };
+
+      interaction.reply = (options) => originalReply(forceEphemeral(options));
+      interaction.followUp = (options) => originalFollowUp(forceEphemeral(options));
+      interaction.deferReply = (options) => originalDeferReply(forceEphemeral(options));
+
       try {
         await command.run(client, interaction, prefix);
+
+        // Log command execution to webhook
+        const commandlog = new EmbedBuilder()
+          .setAuthor({
+            name: interaction.user.tag,
+            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+          })
+          .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+          .setTimestamp()
+          .setDescription(
+            `Slash Command Just Used In : \`${interaction.guild.name} | ${interaction.guild.id}\`\n Command Used In Channel : \`${interaction.channel.name} | ${interaction.channel.id}\`\n Command Name : \`${command.name}\`\n Command Executor : \`${interaction.user.tag} | ${interaction.user.id}\`\n Command Options : \`${interaction.options.data.map(o => `${o.name}:${o.value}`).join(" ") || "None"}\``,
+          );
+        sendWebhook(client, client.config.Webhooks.cmdrun, {
+          embeds: [commandlog],
+        }, "command log");
       } catch (error) {
         if (interaction.replied) {
           await interaction

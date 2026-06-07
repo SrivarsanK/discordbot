@@ -11,15 +11,35 @@ function getColumnKey(table, key) {
   for (const col of columns) {
     if (col.toLowerCase() === lowerKey) return col;
     if (col === 'guildId' && (lowerKey === 'guild' || lowerKey === 'guildid')) return col;
-    if (col === 'userId' && (lowerKey === 'user' || lowerKey === 'userid')) return col;
+    if (col === 'userId' && (lowerKey === 'user' || lowerKey === 'userid' || lowerKey === 'member' || lowerKey === 'memberid')) return col;
     if (col === 'channelId' && lowerKey === 'channel') return col;
     if (col === 'roleId' && lowerKey === 'role') return col;
     if (col === 'messageId' && lowerKey === 'message') return col;
     if (col === 'tracks' && lowerKey === 'playlist') return col;
     if (col === 'playlistName' && lowerKey === 'playlistname') return col;
     if (col === 'createdOn' && lowerKey === 'createdon') return col;
+    if (col === 'timestamp' && (lowerKey === 'time' || lowerKey === 'timestamp')) return col;
   }
   return key;
+}
+
+function getTableName(table) {
+  if (!table) return "";
+  if (table._ && typeof table._.name === "string") return table._.name;
+  if (typeof table.tableName === "string") return table.tableName;
+  const sym = Symbol.for('drizzle:Name');
+  if (table[sym]) return table[sym];
+  return "";
+}
+
+function isTimestampColumn(table, col) {
+  const column = table[col];
+  if (!column) return false;
+  if (column.dataType === 'date') return true;
+  if (column.columnType && column.columnType.includes('Timestamp')) return true;
+  const lower = col.toLowerCase();
+  if (lower.endsWith('at') || lower === 'timestamp') return true;
+  return false;
 }
 
 function buildDrizzleWhere(table, query) {
@@ -131,7 +151,18 @@ class Document {
   constructor(model, data, isNew = true) {
     this._model = model;
     this._isNew = isNew;
-    this._data = { ...data };
+    this._data = {};
+    
+    if (data && typeof data === 'object') {
+      for (const [k, v] of Object.entries(data)) {
+        const col = getColumnKey(model.table, k);
+        if (model.table[col]) {
+          this._data[col] = v;
+        } else {
+          this._data[k] = v;
+        }
+      }
+    }
     
     // Assign custom document methods
     Object.assign(this, model.customDocMethods);
@@ -145,7 +176,14 @@ class Document {
       const properties = new Set([camel, pascal, snake]);
       
       if (col === 'guildId') { properties.add('Guild'); properties.add('guild'); }
-      if (col === 'userId') { properties.add('UserId'); properties.add('userId'); properties.add('user'); properties.add('User'); }
+      if (col === 'userId') {
+        properties.add('UserId');
+        properties.add('userId');
+        properties.add('user');
+        properties.add('User');
+        properties.add('Member');
+        properties.add('member');
+      }
       if (col === 'channelId') { properties.add('Channel'); properties.add('channel'); }
       if (col === 'roleId') { properties.add('Role'); properties.add('role'); }
       if (col === 'messageId') { properties.add('Message'); properties.add('message'); }
@@ -156,20 +194,185 @@ class Document {
       if (col === 'createdOn') { properties.add('CreatedOn'); }
       if (col === 'textId') { properties.add('TextId'); properties.add('textId'); }
       if (col === 'voiceId') { properties.add('VoiceId'); properties.add('voiceId'); }
+      if (col === 'timestamp') {
+        properties.add('Time');
+        properties.add('time');
+        properties.add('Timestamp');
+        properties.add('timestamp');
+      }
 
       for (const prop of properties) {
         if (prop in this) continue;
-        Object.defineProperty(this, prop, {
-          get: () => {
-            return this._data[col];
-          },
-          set: (val) => {
-            this._data[col] = val;
-          },
-          configurable: true,
-          enumerable: true
-        });
+        if (isTimestampColumn(model.table, col)) {
+          Object.defineProperty(this, prop, {
+            get: () => {
+              const val = this._data[col];
+              if (val instanceof Date) return val.getTime();
+              if (typeof val === 'string') {
+                const t = Date.parse(val);
+                return Number.isNaN(t) ? val : t;
+              }
+              return val;
+            },
+            set: (val) => {
+              if (typeof val === 'number') {
+                this._data[col] = new Date(val);
+              } else if (typeof val === 'string' && !Number.isNaN(Date.parse(val))) {
+                this._data[col] = new Date(val);
+              } else {
+                this._data[col] = val;
+              }
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } else {
+          Object.defineProperty(this, prop, {
+            get: () => {
+              return this._data[col];
+            },
+            set: (val) => {
+              this._data[col] = val;
+            },
+            configurable: true,
+            enumerable: true
+          });
+        }
       }
+    }
+
+    const tableName = getTableName(model.table);
+
+    if (tableName === 'antilink') {
+      Object.defineProperty(this, 'isEnabled', {
+        get: () => {
+          return this._data.enabled;
+        },
+        set: (val) => {
+          this._data.enabled = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+      Object.defineProperty(this, 'whitelistUsers', {
+        get: () => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [] };
+          }
+          return this._data.whitelist.users || [];
+        },
+        set: (val) => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [] };
+          }
+          this._data.whitelist.users = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+      Object.defineProperty(this, 'whitelistRoles', {
+        get: () => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [] };
+          }
+          return this._data.whitelist.roles || [];
+        },
+        set: (val) => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [] };
+          }
+          this._data.whitelist.roles = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+    }
+
+    if (tableName === 'antispam') {
+      Object.defineProperty(this, 'isEnabled', {
+        get: () => {
+          return this._data.enabled;
+        },
+        set: (val) => {
+          this._data.enabled = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+      Object.defineProperty(this, 'messageThreshold', {
+        get: () => {
+          return this._data.threshold;
+        },
+        set: (val) => {
+          this._data.threshold = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+      Object.defineProperty(this, 'timeframe', {
+        get: () => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [], timeframe: 10 };
+          }
+          return this._data.whitelist.timeframe !== undefined ? this._data.whitelist.timeframe : 10;
+        },
+        set: (val) => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [], timeframe: 10 };
+          }
+          this._data.whitelist.timeframe = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+      Object.defineProperty(this, 'whitelistUsers', {
+        get: () => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [], timeframe: 10 };
+          }
+          return this._data.whitelist.users || [];
+        },
+        set: (val) => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [], timeframe: 10 };
+          }
+          this._data.whitelist.users = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+      Object.defineProperty(this, 'whitelistRoles', {
+        get: () => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [], timeframe: 10 };
+          }
+          return this._data.whitelist.roles || [];
+        },
+        set: (val) => {
+          if (!this._data.whitelist || Array.isArray(this._data.whitelist) || typeof this._data.whitelist !== 'object') {
+            this._data.whitelist = { users: [], roles: [], timeframe: 10 };
+          }
+          this._data.whitelist.roles = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
+    }
+
+    if (tableName === 'badge') {
+      Object.defineProperty(this, 'badge', {
+        get: () => {
+          if (!this._data.badges || Array.isArray(this._data.badges) || typeof this._data.badges !== 'object') {
+            this._data.badges = {};
+          }
+          return this._data.badges;
+        },
+        set: (val) => {
+          this._data.badges = val;
+        },
+        configurable: true,
+        enumerable: true
+      });
     }
   }
 
@@ -321,7 +524,12 @@ class ShimModel {
     for (const [k, v] of Object.entries(setData)) {
       const col = getColumnKey(this.table, k);
       if (this.table[col]) {
-        mappedData[col] = v;
+        let val = v;
+        if (isTimestampColumn(this.table, col)) {
+          if (typeof val === 'number') val = new Date(val);
+          else if (typeof val === 'string' && !Number.isNaN(Date.parse(val))) val = new Date(val);
+        }
+        mappedData[col] = val;
       }
     }
     
@@ -332,7 +540,12 @@ class ShimModel {
         for (const [k, v] of Object.entries(query)) {
           const col = getColumnKey(this.table, k);
           if (this.table[col]) {
-            values[col] = v;
+            let val = v;
+            if (isTimestampColumn(this.table, col)) {
+              if (typeof val === 'number') val = new Date(val);
+              else if (typeof val === 'string' && !Number.isNaN(Date.parse(val))) val = new Date(val);
+            }
+            values[col] = val;
           }
         }
         const rows = await db.insert(this.table)
@@ -386,7 +599,12 @@ class ShimModel {
     for (const [k, v] of Object.entries(data)) {
       const col = getColumnKey(this.table, k);
       if (this.table[col]) {
-        mappedData[col] = v;
+        let val = v;
+        if (isTimestampColumn(this.table, col)) {
+          if (typeof val === 'number') val = new Date(val);
+          else if (typeof val === 'string' && !Number.isNaN(Date.parse(val))) val = new Date(val);
+        }
+        mappedData[col] = val;
       }
     }
     const [row] = await db.insert(this.table).values(mappedData).returning();
@@ -402,7 +620,12 @@ class ShimModel {
       for (const [k, v] of Object.entries(data)) {
         const col = getColumnKey(this.table, k);
         if (this.table[col]) {
-          mappedData[col] = v;
+          let val = v;
+          if (isTimestampColumn(this.table, col)) {
+            if (typeof val === 'number') val = new Date(val);
+            else if (typeof val === 'string' && !Number.isNaN(Date.parse(val))) val = new Date(val);
+          }
+          mappedData[col] = val;
         }
       }
       return mappedData;
@@ -420,7 +643,12 @@ class ShimModel {
     const mappedData = {};
     for (const col of Object.keys(this.table)) {
       if (doc._data[col] !== undefined) {
-        mappedData[col] = doc._data[col];
+        let val = doc._data[col];
+        if (isTimestampColumn(this.table, col)) {
+          if (typeof val === 'number') val = new Date(val);
+          else if (typeof val === 'string' && !Number.isNaN(Date.parse(val))) val = new Date(val);
+        }
+        mappedData[col] = val;
       }
     }
     

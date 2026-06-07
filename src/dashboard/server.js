@@ -24,13 +24,20 @@ const {
 } = require("../utils/premiumFeatures");
 const { normalizeWelcomeDynamicImages } = require("../utils/welcomeImage");
 
+const { getDb } = require("../db/client");
+const { dashboardSessions } = require("../db/schema");
+const { eq, lt } = require("drizzle-orm");
+
 const PUBLIC_DIR = path.join(__dirname, "public");
 const MANAGE_GUILD = 0x20n;
 const ADMINISTRATOR = 0x8n;
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
 const SNOWFLAKE = /^\d{16,22}$/;
 
-const sessions = new Map();
+// In-memory session cache (survives individual requests, cleared on restart)
+// DB is the source of truth — cache just avoids repeated DB reads per request
+const sessionCache = new Map();
+const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const oauthStates = new Map();
 let serverInstance = null;
 
@@ -139,7 +146,7 @@ async function handleCallback(client, req, res, url) {
     ]);
 
     const sessionId = crypto.randomBytes(32).toString("hex");
-    sessions.set(sessionId, {
+    const sessionData = {
       user,
       guilds: Array.isArray(guilds) ? guilds : [],
       accessToken: token.access_token,
@@ -147,11 +154,36 @@ async function handleCallback(client, req, res, url) {
       expiresAt: Date.now() + Number(token.expires_in || 604800) * 1000,
       createdAt: Date.now(),
       touchedAt: Date.now(),
-    });
+    };
+
+    // Persist session to DB so it survives restarts
+    try {
+      const db = getDb();
+      await db.insert(dashboardSessions).values({
+        sessionId,
+        userId: user.id,
+        data: sessionData,
+        expiresAt: new Date(sessionData.expiresAt),
+        touchedAt: new Date(sessionData.touchedAt),
+      }).onConflictDoUpdate({
+        target: dashboardSessions.sessionId,
+        set: {
+          data: sessionData,
+          expiresAt: new Date(sessionData.expiresAt),
+          touchedAt: new Date(sessionData.touchedAt),
+        },
+      });
+      // Warm the in-memory cache
+      sessionCache.set(sessionId, { data: sessionData, cachedAt: Date.now() });
+    } catch (dbErr) {
+      client.logger?.log(`[Dashboard] Session DB write failed: ${dbErr.message}`, "warn");
+      // Fall back to in-memory only
+      sessionCache.set(sessionId, { data: sessionData, cachedAt: Date.now() });
+    }
 
     res.writeHead(302, {
       Location: "/?choose=server",
-      "Set-Cookie": buildCookie(client, sessionId),
+      "Set-Cookie": buildCookie(client, sessionId, req),
     });
     res.end();
   } catch (error) {
@@ -206,7 +238,7 @@ async function timedFetch(client, url, options = {}) {
 }
 
 async function handleApi(client, req, res, url) {
-  const session = getSession(client, req);
+  const session = await getSession(client, req);
   if (!session) return sendJson(res, 401, { error: "Not logged in" });
 
   if (req.method === "GET" && url.pathname === "/api/me") {
@@ -242,33 +274,127 @@ async function handleApi(client, req, res, url) {
 }
 
 function logout(client, req, res) {
-  const sessionId = readCookie(req, client.config.dashboard?.cookieName || "dsc_dashboard");
-  if (sessionId) sessions.delete(sessionId);
+  const cookieName = client.config.dashboard?.cookieName || "dsc_dashboard";
+  const sessionId = readCookie(req, cookieName);
+  if (sessionId) {
+    sessionCache.delete(sessionId);
+    // Delete from DB asynchronously
+    try {
+      const db = getDb();
+      db.delete(dashboardSessions).where(eq(dashboardSessions.sessionId, sessionId)).catch(() => null);
+    } catch {}
+  }
   res.writeHead(204, {
     "Set-Cookie": clearCookie(client),
   });
   res.end();
 }
 
-function getSession(client, req) {
-  const cookieName = client.config.dashboard?.cookieName || "dsc_dashboard";
-  const sessionId = readCookie(req, cookieName);
-  client.logger?.log(`[Dashboard] getSession - cookieName: ${cookieName}, sessionId: ${sessionId ? 'present' : 'missing'}`, "log");
-  if (!sessionId) return null;
-
-  const session = sessions.get(sessionId);
-  client.logger?.log(`[Dashboard] getSession - session found in memory: ${session ? 'yes' : 'no'}`, "log");
-  if (!session) return null;
-
-  const ttl = client.config.dashboard?.sessionTtlMs || 604800000;
-  if (Date.now() - session.touchedAt > ttl || Date.now() > session.expiresAt + ttl) {
-    client.logger?.log(`[Dashboard] getSession - session expired!`, "log");
-    sessions.delete(sessionId);
-    return null;
+async function getSession(client, req) {
+  if (process.env.MOCK_DASHBOARD === "true") {
+    const devSessionId = "dev-session-id";
+    if (!sessionCache.has(devSessionId)) {
+      sessionCache.set(devSessionId, {
+        cachedAt: Date.now(),
+        data: {
+          user: {
+            id: "1067443868355809341",
+            username: "developer",
+            global_name: "Developer Admin",
+            avatar: "mock-avatar",
+            avatarCandidates: ["https://cdn.discordapp.com/avatars/1067443868355809341/mock-avatar.png"],
+          },
+          guilds: [
+            {
+              id: "123456789012345678",
+              name: "RawBlock Guild",
+              icon: "mock-icon",
+              iconCandidates: ["https://cdn.discordapp.com/icons/123456789012345678/mock-icon.png"],
+              owner: true,
+              permissions: "2147483647",
+              installed: true,
+              memberCount: 1337,
+            },
+            {
+              id: "876543210987654321",
+              name: "Free Guild",
+              icon: "mock-icon",
+              iconCandidates: ["https://cdn.discordapp.com/icons/876543210987654321/mock-icon.png"],
+              owner: false,
+              permissions: "0",
+              installed: false,
+              memberCount: 200,
+            }
+          ],
+          accessToken: "dev-token",
+          refreshToken: "dev-token",
+          expiresAt: Date.now() + 999999999,
+          createdAt: Date.now(),
+          touchedAt: Date.now(),
+        },
+      });
+    }
+    return sessionCache.get(devSessionId).data;
   }
 
-  session.touchedAt = Date.now();
-  return session;
+  const cookieName = client.config.dashboard?.cookieName || "dsc_dashboard";
+  const sessionId = readCookie(req, cookieName);
+  client.logger?.log(`[Dashboard Debug] getSession cookieName: ${cookieName}, sessionId found: ${sessionId ? "yes (length: " + sessionId.length + ")" : "no"}`, "log");
+  if (!sessionId) return null;
+
+  // Check in-memory cache first
+  const cached = sessionCache.get(sessionId);
+  if (cached && Date.now() - cached.cachedAt < SESSION_CACHE_TTL) {
+    const session = cached.data;
+    const ttl = client.config.dashboard?.sessionTtlMs || 604800000;
+    if (Date.now() - session.touchedAt > ttl || Date.now() > session.expiresAt) {
+      client.logger?.log(`[Dashboard Debug] Session in-memory cache expired (touchedAt: ${session.touchedAt}, expiresAt: ${session.expiresAt})`, "log");
+      sessionCache.delete(sessionId);
+      return null;
+    }
+    session.touchedAt = Date.now();
+    client.logger?.log(`[Dashboard Debug] Session found in-memory cache`, "log");
+    return session;
+  }
+
+  // Load from DB
+  try {
+    const db = getDb();
+    const rows = await db.select().from(dashboardSessions)
+      .where(eq(dashboardSessions.sessionId, sessionId))
+      .limit(1);
+
+    if (!rows.length) {
+      client.logger?.log(`[Dashboard Debug] Session ID not found in DB`, "log");
+      return null;
+    }
+
+    const row = rows[0];
+    const session = row.data;
+    const ttl = client.config.dashboard?.sessionTtlMs || 604800000;
+
+    if (!session || Date.now() - session.touchedAt > ttl || Date.now() > session.expiresAt) {
+      client.logger?.log(`[Dashboard Debug] Session in DB expired. Cleaning up.`, "log");
+      // Session expired — clean up
+      await db.delete(dashboardSessions).where(eq(dashboardSessions.sessionId, sessionId)).catch(() => null);
+      return null;
+    }
+
+    session.touchedAt = Date.now();
+    // Update touchedAt in DB (fire and forget)
+    db.update(dashboardSessions)
+      .set({ touchedAt: new Date(), data: session })
+      .where(eq(dashboardSessions.sessionId, sessionId))
+      .catch(() => null);
+
+    // Warm cache
+    sessionCache.set(sessionId, { data: session, cachedAt: Date.now() });
+    client.logger?.log(`[Dashboard Debug] Session loaded from DB and cached`, "log");
+    return session;
+  } catch (dbErr) {
+    client.logger?.log(`[Dashboard] Session DB read failed: ${dbErr.message}`, "warn");
+    return null;
+  }
 }
 
 function requireGuildAccess(client, session, guildId) {
@@ -368,6 +494,112 @@ async function hydrateGuild(guild) {
 }
 
 async function loadGuildSettings(client, guild) {
+  if (process.env.MOCK_DASHBOARD === "true") {
+    return {
+      prefix: "!",
+      ignoreChannels: ["c2"],
+      welcome: {
+        enabled: true,
+        channel: "c1",
+        content: "Welcome {user} to {server_name}!",
+        autodel: 0,
+        embed: {
+          enabled: true,
+          title: "Welcome to the server!",
+          description: "We hope you enjoy your stay.",
+          color: "#000000",
+          thumbnail: "",
+          image: "",
+          footer: "RawBlock Bot",
+        },
+        dynamicImages: {
+          enabled: true,
+          attachedId: "default",
+          templates: [
+            {
+              id: "default",
+              name: "Default Template",
+              layers: [
+                { id: "background", type: "background", color: "#ffffff" },
+                { id: "avatar", type: "avatar", x: 50, y: 50, radius: 50 },
+                { id: "text", type: "text", content: "Welcome!", x: 150, y: 80, font: "Archivo Black", size: 32 },
+              ],
+            }
+          ],
+        },
+      },
+      automod: {
+        antilink: {
+          isEnabled: true,
+          whitelistUsers: [],
+          whitelistRoles: ["r1"],
+        },
+        antispam: {
+          isEnabled: false,
+          messageThreshold: 5,
+          timeframe: 10,
+          whitelistUsers: [],
+          whitelistRoles: [],
+        },
+      },
+      antinuke: {
+        isEnabled: true,
+        logChannelId: "c1",
+        extraOwners: ["1067443868355809341"],
+        whitelistUsers: [],
+        whitelistRoles: [],
+      },
+      autorole: {
+        humanRoles: ["r3"],
+        botRoles: [],
+      },
+      voiceRole: {
+        roleId: "",
+      },
+      roles: {
+        reqrole: "",
+        official: "",
+        friend: "",
+        guest: "",
+        girl: "",
+        vip: "",
+      },
+      music247: {
+        enabled: true,
+        textChannelId: "c1",
+        voiceChannelId: "c2",
+      },
+      premium: {
+        branding: { enabled: true, nickname: "RAW BOT" },
+        leveling: {
+          enabled: true,
+          chatEnabled: true,
+          voiceEnabled: true,
+          announceChannelId: "c1",
+          levelUpMessage: "{user} leveled up to {level}!",
+          chatXpMin: 5,
+          chatXpMax: 15,
+          chatCooldownSeconds: 60,
+          voiceXpPerMinute: 3,
+        },
+        vcGuard: {
+          enabled: true,
+          protectedChannels: ["c2"],
+          bypassRoles: ["r1"],
+          logChannelId: "c1",
+          action: "disconnect",
+          message: "No entry!",
+        },
+        sticky: {
+          enabled: true,
+          messages: [
+            { channelId: "c1", content: "Keep it brutalist!", cooldownSeconds: 10 },
+          ],
+        },
+      },
+    };
+  }
+
   const guildId = guild.id;
   const [
     prefix,
@@ -382,15 +614,15 @@ async function loadGuildSettings(client, guild) {
     welcome,
     premiumSettings,
   ] = await Promise.all([
-    Prefix.findOne({ Guild: guildId }).lean(),
+    Prefix.findOne({ guildId }).lean(),
     AntiNuke.findOne({ guildId }).lean(),
     AntiLink.findOne({ guildId }).lean(),
     AntiSpam.findOne({ guildId }).lean(),
     AutoRole.findOne({ guildId }).lean(),
     VoiceRole.findOne({ guildId }).lean(),
     Roles.findOne({ guildId }).lean(),
-    IgnoreChannel.find({ guildId }).lean(),
-    AutoReconnect.findOne({ Guild: guildId }).lean(),
+    IgnoreChannel.findOne({ guildId }).lean(),
+    AutoReconnect.findOne({ guildId }).lean(),
     WelcomeSettings.getSettings(guild),
     PremiumSettings.findOneAndUpdate(
       { guildId },
@@ -399,9 +631,22 @@ async function loadGuildSettings(client, guild) {
     ).lean(),
   ]);
 
+  // antilink: schema uses `enabled` (bool) + `whitelist` (jsonb with {users,roles,mode})
+  const antilinkData = antilink?.whitelist || {};
+  // antispam: schema uses `enabled` (bool) + `whitelist` (jsonb with {users,roles}) + `threshold`
+  const antispamWhitelist = antispam?.whitelist || {};
+  // auto_role: schema uses single `roles` jsonb column storing {humanRoles, botRoles}
+  const autoroleData = autorole?.roles || {};
+  // voice_role: schema uses single `mappings` jsonb column storing {roleId}
+  const voiceRoleData = voiceRole?.mappings || {};
+  // roles: schema uses single `roles` jsonb column storing {reqrole, official, friend, guest, girl, vip}
+  const rolesData = roles?.roles || {};
+  // ignore_channel: schema uses single `channels` jsonb array column (one row per guild)
+  const ignoredArr = Array.isArray(ignored?.channels) ? ignored.channels : (Array.isArray(ignored) ? ignored.flatMap((item) => item.channels || (item.channelId ? [item.channelId] : [])) : []);
+
   return {
-    prefix: prefix?.Prefix || client.prefix,
-    ignoreChannels: ignored.map((item) => item.channelId).filter(Boolean),
+    prefix: prefix?.prefix || prefix?.Prefix || client.prefix,
+    ignoreChannels: ignoredArr.filter(Boolean),
     welcome: {
       enabled: Boolean(welcome?.welcome?.enabled),
       channel: welcome?.welcome?.channel || "",
@@ -420,16 +665,16 @@ async function loadGuildSettings(client, guild) {
     },
     automod: {
       antilink: {
-        isEnabled: Boolean(antilink?.isEnabled),
-        whitelistUsers: antilink?.whitelistUsers || [],
-        whitelistRoles: antilink?.whitelistRoles || [],
+        isEnabled: Boolean(antilink?.enabled),
+        whitelistUsers: antilinkData.users || [],
+        whitelistRoles: antilinkData.roles || [],
       },
       antispam: {
-        isEnabled: Boolean(antispam?.isEnabled),
-        messageThreshold: Number(antispam?.messageThreshold || 5),
-        timeframe: Number(antispam?.timeframe || 10),
-        whitelistUsers: antispam?.whitelistUsers || [],
-        whitelistRoles: antispam?.whitelistRoles || [],
+        isEnabled: Boolean(antispam?.enabled),
+        messageThreshold: Number(antispam?.threshold || 5),
+        timeframe: Number(antispamWhitelist.timeframe || 10),
+        whitelistUsers: antispamWhitelist.users || [],
+        whitelistRoles: antispamWhitelist.roles || [],
       },
     },
     antinuke: {
@@ -438,32 +683,37 @@ async function loadGuildSettings(client, guild) {
       extraOwners: antinuke?.extraOwners || [],
       whitelistUsers: antinuke?.whitelistUsers || [],
       whitelistRoles: antinuke?.whitelistRoles || [],
+      disabledEvents: antinuke?.disabledEvents || [],
     },
     autorole: {
-      humanRoles: autorole?.humanRoles || [],
-      botRoles: autorole?.botRoles || [],
+      humanRoles: autoroleData.humanRoles || [],
+      botRoles: autoroleData.botRoles || [],
     },
     voiceRole: {
-      roleId: voiceRole?.roleId || "",
+      roleId: voiceRoleData.roleId || "",
     },
     roles: {
-      reqrole: roles?.reqrole || "",
-      official: roles?.official || "",
-      friend: roles?.friend || "",
-      guest: roles?.guest || "",
-      girl: roles?.girl || "",
-      vip: roles?.vip || "",
+      reqrole: rolesData.reqrole || "",
+      official: rolesData.official || "",
+      friend: rolesData.friend || "",
+      guest: rolesData.guest || "",
+      girl: rolesData.girl || "",
+      vip: rolesData.vip || "",
     },
     music247: {
       enabled: Boolean(auto247),
-      textChannelId: auto247?.TextId || "",
-      voiceChannelId: auto247?.VoiceId || "",
+      textChannelId: auto247?.textId || auto247?.TextId || "",
+      voiceChannelId: auto247?.voiceId || auto247?.VoiceId || "",
     },
     premium: normalizePremiumSettings(premiumSettings || {}),
   };
 }
 
 async function saveGuildSettings(client, guildId, raw, session) {
+  if (process.env.MOCK_DASHBOARD === "true") {
+    return normalizeSettings(client, raw || {});
+  }
+
   const guild = client.guilds.cache.get(guildId);
   if (!guild) throw new Error(`Guild ${guildId} missing from cache`);
 
@@ -483,49 +733,78 @@ async function saveGuildSettings(client, guildId, raw, session) {
     );
   }
 
-  const existingPrefix = await Prefix.findOne({ Guild: guildId });
+  const existingPrefix = await Prefix.findOne({ guildId }).lean();
   await Prefix.findOneAndUpdate(
-    { Guild: guildId },
+    { guildId },
     {
-      Guild: guildId,
-      Prefix: settings.prefix,
-      oldPrefix: existingPrefix?.Prefix || client.prefix,
+      guildId,
+      prefix: settings.prefix,
+      oldPrefix: existingPrefix?.prefix || existingPrefix?.Prefix || client.prefix,
     },
     { upsert: true, new: true },
   );
 
-  await Promise.all([
-    saveWelcome(guild, settings.welcome),
+  const saveResults = await Promise.allSettled([
+    saveWelcome(guild, settings.welcome).catch((err) => { client.logger?.log(`[Dashboard] saveWelcome failed: ${err.message}`, "error"); throw err; }),
+    // antilink: schema stores enabled (bool) + whitelist jsonb {users, roles, mode}
     AntiLink.findOneAndUpdate(
       { guildId },
-      { guildId, ...settings.automod.antilink },
+      {
+        guildId,
+        enabled: settings.automod.antilink.isEnabled,
+        whitelist: {
+          users: settings.automod.antilink.whitelistUsers,
+          roles: settings.automod.antilink.whitelistRoles,
+          mode: "delete",
+        },
+      },
       { upsert: true, new: true },
-    ),
+    ).catch((err) => { client.logger?.log(`[Dashboard] AntiLink save failed: ${err.message}`, "error"); throw err; }),
+    // antispam: schema stores enabled (bool) + threshold (int) + whitelist jsonb {users, roles, timeframe}
     AntiSpam.findOneAndUpdate(
       { guildId },
-      { guildId, ...settings.automod.antispam },
+      {
+        guildId,
+        enabled: settings.automod.antispam.isEnabled,
+        threshold: settings.automod.antispam.messageThreshold,
+        whitelist: {
+          users: settings.automod.antispam.whitelistUsers,
+          roles: settings.automod.antispam.whitelistRoles,
+          timeframe: settings.automod.antispam.timeframe,
+        },
+      },
       { upsert: true, new: true },
-    ),
+    ).catch((err) => { client.logger?.log(`[Dashboard] AntiSpam save failed: ${err.message}`, "error"); throw err; }),
     AntiNuke.findOneAndUpdate(
       { guildId },
       { guildId, ...settings.antinuke },
       { upsert: true, new: true },
-    ),
+    ).catch((err) => { client.logger?.log(`[Dashboard] AntiNuke save failed: ${err.message}`, "error"); throw err; }),
+    // auto_role: schema stores a single `roles` jsonb column containing {humanRoles, botRoles}
     AutoRole.findOneAndUpdate(
       { guildId },
-      { guildId, ...settings.autorole },
+      { guildId, roles: { humanRoles: settings.autorole.humanRoles, botRoles: settings.autorole.botRoles } },
       { upsert: true, new: true },
-    ),
-    saveVoiceRole(guildId, settings.voiceRole),
+    ).catch((err) => { client.logger?.log(`[Dashboard] AutoRole save failed: ${err.message}`, "error"); throw err; }),
+    saveVoiceRole(guildId, settings.voiceRole).catch((err) => { client.logger?.log(`[Dashboard] VoiceRole save failed: ${err.message}`, "error"); throw err; }),
+    // roles: schema stores a single `roles` jsonb column containing {reqrole, official, friend, guest, girl, vip}
     Roles.findOneAndUpdate(
       { guildId },
-      { guildId, ...settings.roles },
+      { guildId, roles: { ...settings.roles } },
       { upsert: true, new: true },
-    ),
-    saveIgnoredChannels(guildId, settings.ignoreChannels),
-    saveMusic247(guildId, settings.music247),
-    savePremiumSettings(client, guild, settings.premium),
+    ).catch((err) => { client.logger?.log(`[Dashboard] Roles save failed: ${err.message}`, "error"); throw err; }),
+    saveIgnoredChannels(guildId, settings.ignoreChannels).catch((err) => { client.logger?.log(`[Dashboard] IgnoredChannels save failed: ${err.message}`, "error"); throw err; }),
+    saveMusic247(guildId, settings.music247).catch((err) => { client.logger?.log(`[Dashboard] Music247 save failed: ${err.message}`, "error"); throw err; }),
+    savePremiumSettings(client, guild, settings.premium).catch((err) => { client.logger?.log(`[Dashboard] PremiumSettings save failed: ${err.message}`, "error"); throw err; }),
   ]);
+
+  const failures = saveResults.filter((r) => r.status === "rejected");
+  if (failures.length) {
+    client.logger?.log(`[Dashboard] Save completed with ${failures.length} error(s): ${failures.map((f) => f.reason?.message).join(", ")}`, "error");
+    throw new Error(`Settings save failed: ${failures[0].reason?.message || "unknown error"}`);
+  }
+
+  client.logger?.log(`[Dashboard] All settings saved successfully for guild ${guildId}`, "log");
 
   return loadGuildSettings(client, guild);
 }
@@ -545,40 +824,35 @@ async function saveWelcome(guild, welcome) {
 }
 
 async function saveVoiceRole(guildId, voiceRole) {
-  if (!voiceRole.roleId) {
-    await VoiceRole.deleteOne({ guildId });
-    return;
-  }
-
+  // voice_role schema: single `mappings` jsonb column storing {roleId}
   await VoiceRole.findOneAndUpdate(
     { guildId },
-    { guildId, roleId: voiceRole.roleId },
+    { guildId, mappings: { roleId: voiceRole.roleId || "" } },
     { upsert: true, new: true },
   );
 }
 
 async function saveIgnoredChannels(guildId, channelIds) {
-  await IgnoreChannel.deleteMany({ guildId });
-  if (!channelIds.length) return;
-
-  await IgnoreChannel.insertMany(
-    channelIds.map((channelId) => ({ guildId, channelId })),
-    { ordered: false },
-  ).catch(() => null);
+  // ignore_channel schema: single `channels` jsonb array column (one row per guild)
+  await IgnoreChannel.findOneAndUpdate(
+    { guildId },
+    { guildId, channels: channelIds.filter(Boolean) },
+    { upsert: true, new: true },
+  );
 }
 
 async function saveMusic247(guildId, music247) {
   if (!music247.enabled || !music247.textChannelId || !music247.voiceChannelId) {
-    await AutoReconnect.deleteOne({ Guild: guildId });
+    await AutoReconnect.deleteOne({ guildId });
     return;
   }
 
   await AutoReconnect.findOneAndUpdate(
-    { Guild: guildId },
+    { guildId },
     {
-      Guild: guildId,
-      TextId: music247.textChannelId,
-      VoiceId: music247.voiceChannelId,
+      guildId,
+      textId: music247.textChannelId,
+      voiceId: music247.voiceChannelId,
     },
     { upsert: true, new: true },
   );
@@ -648,6 +922,7 @@ function normalizeSettings(client, raw) {
       extraOwners: snowflakeArray(raw.antinuke?.extraOwners),
       whitelistUsers: snowflakeArray(raw.antinuke?.whitelistUsers),
       whitelistRoles: snowflakeArray(raw.antinuke?.whitelistRoles),
+      disabledEvents: Array.isArray(raw.antinuke?.disabledEvents) ? raw.antinuke.disabledEvents : [],
     },
     autorole: {
       humanRoles: snowflakeArray(raw.autorole?.humanRoles),
@@ -688,6 +963,16 @@ function formatBot(client) {
 }
 
 async function buildPremiumPayload(guildId, userId) {
+  if (process.env.MOCK_DASHBOARD === "true") {
+    return {
+      active: true,
+      guild: { active: true, tier: "gold", status: "active", expiresAt: null },
+      user: { active: true, tier: "gold", status: "active", expiresAt: null },
+      tier: "gold",
+      status: "active",
+      expiresAt: null,
+    };
+  }
   const [guildEntry, userEntry] = await Promise.all([
     Premium.findOne({ id: guildId, type: "guild" }).lean(),
     userId ? Premium.findOne({ id: userId, type: "user" }).lean() : null,
@@ -1018,9 +1303,10 @@ function readCookie(req, name) {
   return "";
 }
 
-function buildCookie(client, sessionId) {
+function buildCookie(client, sessionId, req) {
   const config = client.config.dashboard || {};
-  const secure = config.publicUrl?.startsWith("https://") ? "; Secure" : "";
+  const isSecure = (req && (req.headers["x-forwarded-proto"] === "https" || req.socket.encrypted)) || config.publicUrl?.startsWith("https://");
+  const secure = isSecure ? "; Secure" : "";
   return `${config.cookieName}=${encodeURIComponent(sessionId)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${Math.floor((config.sessionTtlMs || 604800000) / 1000)}${secure}`;
 }
 
@@ -1031,12 +1317,21 @@ function clearCookie(client) {
 
 function cleanupStores(ttlMs = 604800000) {
   const now = Date.now();
-  for (const [id, session] of sessions) {
-    if (now - session.touchedAt > ttlMs || now > session.expiresAt + ttlMs) sessions.delete(id);
+  // Clean in-memory session cache entries
+  for (const [id, cached] of sessionCache) {
+    if (now - cached.cachedAt > SESSION_CACHE_TTL) sessionCache.delete(id);
   }
+  // Clean expired oauth states
   for (const [state, createdAt] of oauthStates) {
     if (now - createdAt > 1000 * 60 * 10) oauthStates.delete(state);
   }
+  // Clean expired sessions from DB (fire and forget)
+  try {
+    const db = getDb();
+    db.delete(dashboardSessions)
+      .where(lt(dashboardSessions.expiresAt, new Date()))
+      .catch(() => null);
+  } catch {}
 }
 
 function redirect(res, location) {

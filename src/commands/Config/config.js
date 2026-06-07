@@ -14,10 +14,13 @@ module.exports = {
   execute: async (message, args, client, prefix) => {
     const player = client.manager.players.get(message.guild.id);
     const data = await db.findOne({ Guild: message.guild.id });
+    const antinukeConfig = await require("../../schema/antinuke").findOne({ guildId: message.guild.id });
+    
     const text = player ? `<#${player.textId}>` : "play something";
     const autoplay = player?.data?.get("autoplay") ? client.emoji.tick : client.emoji.cross;
     const voice = player ? `<#${player.voiceId}>` : "play something";
     const status = data ? client.emoji.tick : client.emoji.cross;
+    const logChannel = antinukeConfig?.logChannelId ? `<#${antinukeConfig.logChannelId}>` : "`None`";
 
     const embed = new client.embed()
       .setAuthor({
@@ -25,7 +28,12 @@ module.exports = {
         iconURL: message.guild.iconURL(),
       })
       .d(
-        `**Prefix For This Server:** \`${prefix}\`\n- **Autoplay:** ${autoplay}\n- **247:** ${status}\n- **Player Created:** ${player ? client.emoji.tick : client.emoji.cross}\n${player ? `> ${client.emoji.dot} **Text:** ${text}\n> ${client.emoji.dot} **Voice:** ${voice}` : " "}`,
+        `**Prefix For This Server:** \`${prefix}\`\n` +
+        `- **Autoplay:** ${autoplay}\n` +
+        `- **247:** ${status}\n` +
+        `- **Log Channel:** ${logChannel}\n` +
+        `- **Player Created:** ${player ? client.emoji.tick : client.emoji.cross}\n` +
+        `${player ? `> ${client.emoji.dot} **Text:** ${text}\n> ${client.emoji.dot} **Voice:** ${voice}` : " "}`,
       )
       .setFooter({
         text: getFooterText(client),

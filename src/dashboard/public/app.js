@@ -3,17 +3,18 @@ const MAX_LOCAL_IMAGE_BYTES = 3 * 1024 * 1024;
 const MAX_IMAGE_SOURCE_LENGTH = 8 * 1024 * 1024;
 
 const pages = [
-  { id: "overview", label: "Home", icon: "H", group: "Main" },
-  { id: "general", label: "General Settings", icon: "G", group: "Main" },
-  { id: "premium", label: "Premium", icon: "P", group: "Main", status: "premium.active" },
-  { id: "music", label: "Music", icon: "M", group: "Modules", status: "music247.enabled" },
-  { id: "leveling", label: "Leveling", icon: "XP", group: "Modules", status: "premium.leveling.enabled" },
-  { id: "vcguard", label: "VC Guard", icon: "V", group: "Modules", status: "premium.vcGuard.enabled" },
-  { id: "sticky", label: "Sticky Messages", icon: "S", group: "Modules", status: "premium.sticky.enabled" },
-  { id: "automod", label: "Auto Moderation", icon: "A", group: "Modules", status: "automod.any" },
-  { id: "antinuke", label: "Anti Nuke", icon: "N", group: "Modules", status: "antinuke.isEnabled" },
-  { id: "welcome", label: "Welcome Messages", icon: "W", group: "Modules", status: "welcome.enabled" },
-  { id: "roles", label: "Roles", icon: "R", group: "Modules", status: "roles.any" },
+  { id: "overview", label: "Home", icon: "home", group: "Main" },
+  { id: "general", label: "General Settings", icon: "settings", group: "Main" },
+  { id: "premium", label: "Premium", icon: "gem", group: "Main", status: "premium.active" },
+  { id: "music", label: "Music", icon: "music", group: "Modules", status: "music247.enabled" },
+  { id: "leveling", label: "Leveling", icon: "award", group: "Modules", status: "premium.leveling.enabled" },
+  { id: "vcguard", label: "VC Guard", icon: "shield", group: "Modules", status: "premium.vcGuard.enabled" },
+  { id: "sticky", label: "Sticky Messages", icon: "pin", group: "Modules", status: "premium.sticky.enabled" },
+  { id: "automod", label: "Auto Moderation", icon: "gavel", group: "Modules", status: "automod.any" },
+  { id: "antinuke", label: "Anti Nuke", icon: "bomb", group: "Modules", status: "antinuke.isEnabled" },
+  { id: "welcome", label: "Welcome Messages", icon: "user-plus", group: "Modules", status: "welcome.enabled" },
+  { id: "roles", label: "Roles", icon: "users", group: "Modules", status: "roles.any" },
+  { id: "logging", label: "Logging", icon: "file-text", group: "Modules", status: "antinuke.isEnabled" },
 ];
 
 const antinukeProtections = [
@@ -93,7 +94,7 @@ function renderGuildChooser() {
         <section class="page wide server-chooser-page">
           <div class="server-hero">
             <div class="page-title">
-              <span class="title-icon">S</span>
+              <span class="title-icon"><i data-lucide="server"></i></span>
               <div>
                 <h1>Select Server</h1>
                 <p>Pick a server to manage, or invite DSC SRM RMP where it is missing.</p>
@@ -130,6 +131,7 @@ function renderGuildChooser() {
     </div>
   `;
   bindGlobalActions();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function guildChoiceCard(guild) {
@@ -207,6 +209,7 @@ function renderNoGuilds() {
     </div>
   `;
   bindGlobalActions();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function renderShell(loading = false) {
@@ -229,6 +232,7 @@ function renderShell(loading = false) {
   bindSidebar();
   bindFields();
   updateSavebar();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function renderTopbar() {
@@ -279,8 +283,8 @@ function renderSidebar() {
   return `
     <aside class="sidebar">
       <div class="sidebar-actions">
-        <button class="btn small ${state.page === "overview" ? "primary" : "ghost"}" type="button" data-nav="overview">Home</button>
-        <button class="btn small ghost" type="button" data-refresh>Refresh</button>
+        <button class="btn small ${state.page === "overview" ? "primary" : "ghost"}" type="button" data-nav="overview"><i data-lucide="home"></i> Home</button>
+        <button class="btn small ghost" type="button" data-refresh><i data-lucide="refresh-cw"></i> Refresh</button>
       </div>
       ${Object.entries(grouped).map(([group, items]) => `
         <nav class="nav-group">
@@ -293,11 +297,19 @@ function renderSidebar() {
 }
 
 function renderNavItem(page) {
-  const on = page.status ? statusFor(page.status) : false;
+  const statusPath = page.status;
+  const hasToggle = statusPath && statusPath !== "premium.active" && statusPath !== "roles.any";
+  const on = statusPath ? statusFor(statusPath) : false;
   return `
     <button class="nav-item ${state.page === page.id ? "active" : ""}" type="button" data-nav="${page.id}">
-      <span class="nav-label"><span class="nav-icon">${page.icon}</span>${escapeHtml(page.label)}</span>
-      ${page.status ? `<span class="nav-dot ${on ? "on" : ""}"></span>` : ""}
+      <span class="nav-label"><span class="nav-icon"><i data-lucide="${page.icon}"></i></span>${escapeHtml(page.label)}</span>
+      ${hasToggle ? `
+        <span class="small-toggle ${on ? "checked" : ""}" data-sidebar-toggle="${statusPath}" role="checkbox" aria-checked="${on}" tabindex="0">
+          <span></span>
+        </span>
+      ` : page.status ? `
+        <span class="nav-dot ${on ? "on" : ""}"></span>
+      ` : ""}
     </button>
   `;
 }
@@ -305,15 +317,7 @@ function renderNavItem(page) {
 function renderLoadingPage() {
   return `
     <section class="page">
-      <div class="page-head">
-        <div class="page-title">
-          <span class="title-icon">A</span>
-          <div>
-            <h1>Loading</h1>
-            <p>Fetching server settings...</p>
-          </div>
-        </div>
-      </div>
+      ${pageHead("refresh-cw", "Loading", "Fetching server settings...")}
     </section>
   `;
 }
@@ -351,6 +355,8 @@ function renderPage() {
       return renderWelcome();
     case "roles":
       return renderRoles();
+    case "logging":
+      return renderLogging();
     default:
       return renderOverview();
   }
@@ -362,7 +368,7 @@ function renderOverview() {
   const settings = state.draft;
   return `
     <section class="page wide">
-      ${pageHead("A", `Welcome <span class="accent">${escapeHtml(guild.name)}</span>,`, `${bot.commandCount} prefix commands, ${bot.slashCommandCount} slash commands, ${guild.memberCount} members`)}
+      ${pageHead("layout-dashboard", `Welcome <span class="accent">${escapeHtml(guild.name)}</span>,`, `${bot.commandCount} prefix commands, ${bot.slashCommandCount} slash commands, ${guild.memberCount} members`)}
       <div class="mini-stat-grid">
         ${miniStat("Prefix", settings.prefix)}
         ${miniStat("Automod", statusFor("automod.any") ? "On" : "Off")}
@@ -378,7 +384,8 @@ function renderOverview() {
         ${shortcutCard("VC guard", "VC", "Protect selected voice channels with bypass roles.", "vcguard", "Configure guard")}
         ${shortcutCard("Sticky messages", "Sticky", "Keep an important message at the bottom of a channel.", "sticky", "Configure sticky")}
         ${shortcutCard("Premium branding", "Premium", "Paid bot nickname branding for this server.", "premium", "Open premium")}
-        ${shortcutCard("Anti nuke", "Anti Nuke", "Extra owners, whitelists, and log channel.", "antinuke", "Secure server")}
+        ${shortcutCard("Anti nuke", "Anti Nuke", "Extra owners and whitelisted roles.", "antinuke", "Secure server")}
+        ${shortcutCard("Audit logging", "Logging", "Configure the logging channel for security and bot events.", "logging", "Configure logging")}
         ${shortcutCard("Role tools", "Roles", "Autorole, voice role, and shortcut roles.", "roles", "Manage roles")}
       </div>
     </section>
@@ -388,11 +395,11 @@ function renderOverview() {
 function renderGeneral() {
   return `
     <section class="page">
-      ${pageHead("G", "General Settings", "Prefix and ignored channels.")}
+      ${pageHead("settings", "General Settings", "Prefix and command ignore settings.")}
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">P</span>
+            <span class="mini-icon"><i data-lucide="key"></i></span>
             <div><h2>Command access</h2><p>Server-specific prefix and command ignore list.</p></div>
           </div>
         </div>
@@ -405,14 +412,79 @@ function renderGeneral() {
   `;
 }
 
-function renderMusic() {
+function renderLogging() {
+  const loggingEvents = [
+    { key: "antiBan",      label: "Member Ban / Unban Events" },
+    { key: "antiKick",     label: "Member Kick Events" },
+    { key: "channelChanges", label: "Channel Create / Delete / Update" },
+    { key: "roleChanges",  label: "Role Create / Delete / Update" },
+    { key: "emojiChanges", label: "Emoji & Sticker Changes" },
+    { key: "webhookChanges", label: "Webhook Create / Delete / Update" },
+    { key: "autoModChanges", label: "Auto Moderation Rule Changes" },
+    { key: "antiEveryone", label: "Everyone / Here Mention Alerts" },
+    { key: "serverUpdate", label: "Server Settings Changes" },
+    { key: "antiBotAdd",   label: "Suspicious Bot Addition Alerts" },
+  ];
+  const enabled = Boolean(state.draft.antinuke.isEnabled);
+  const disabled = new Set(state.draft.antinuke.disabledEvents || []);
+
   return `
-    <section class="page">
-      ${pageHead("M", "Music", "24/7 player persistence.")}
+    <section class="page wide">
+      ${pageHead("file-text", "Audit Logging Configuration", "Setup logging channel for bot and security events.")}
+      
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">24</span>
+            <span class="mini-icon"><i data-lucide="file-text"></i></span>
+            <div>
+              <h2>${enabled ? "Logging active" : "Logging disabled"}</h2>
+              <p>${enabled ? "Security events are being logged to your audit channel." : "Enable to start logging security and antinuke events."}</p>
+            </div>
+          </div>
+          ${toggleField("antinuke.isEnabled")}
+        </div>
+        <div class="setting-grid single">
+          ${selectField("Logging channel", "antinuke.logChannelId", textChannels(), "Auto create bot-logs")}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="shield"></i></span>
+            <div>
+              <h2>Monitored Security Events</h2>
+              <p>Toggle individual events to control what gets logged to your audit channel.</p>
+            </div>
+          </div>
+        </div>
+        <div class="setting-grid">
+          ${loggingEvents.map(({ key, label }) => {
+            const isOn = !disabled.has(key);
+            return `
+              <div class="row-head">
+                <label>${escapeHtml(label)}</label>
+                <label class="toggle">
+                  <input type="checkbox" data-event-toggle="antinuke.disabledEvents" data-event-key="${escapeAttr(key)}" ${isOn ? "checked" : ""}>
+                  <span></span>
+                </label>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderMusic() {
+  return `
+    <section class="page">
+      ${pageHead("music", "Music", "24/7 player persistence.")}
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="activity"></i></span>
             <div><h2>247 mode</h2><p>Reconnects the music player after restarts.</p></div>
           </div>
           ${toggleField("music247.enabled")}
@@ -434,7 +506,7 @@ function renderPremium() {
 
   return `
     <section class="page wide">
-      ${pageHead("P", "Premium", "Paid bot branding and server upgrades.")}
+      ${pageHead("gem", "Premium", "Paid bot branding and server upgrades.")}
       <div class="premium-status-grid">
         ${premiumStatusPanel("Server premium", guildPremium, "Unlocks bot branding for this server.")}
         ${premiumStatusPanel("Your premium", userPremium, "Your personal premium status.")}
@@ -443,7 +515,7 @@ function renderPremium() {
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">B</span>
+            <span class="mini-icon"><i data-lucide="tag"></i></span>
             <div><h2>Bot branding</h2><p>Premium bot nickname for this server.</p></div>
           </div>
           ${toggleField("premium.branding.enabled", { disabled: !brandingUnlocked })}
@@ -462,7 +534,7 @@ function premiumStatusPanel(title, entry, description) {
     <div class="panel premium-status-card">
       <div class="panel-head">
         <div class="panel-title">
-          <span class="mini-icon">P</span>
+          <span class="mini-icon"><i data-lucide="gem"></i></span>
           <div>
             <h2>${escapeHtml(title)}</h2>
             <p>${escapeHtml(description)}</p>
@@ -489,11 +561,11 @@ function premiumStatusText(entry) {
 function renderLeveling() {
   return `
     <section class="page wide">
-      ${pageHead("XP", "Leveling", "Free chat and voice XP system.")}
+      ${pageHead("award", "Leveling", "Free chat and voice XP system.")}
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">XP</span>
+            <span class="mini-icon"><i data-lucide="zap"></i></span>
             <div><h2>Chat and VC leveling</h2><p>XP system for messages and voice activity.</p></div>
           </div>
           ${toggleField("premium.leveling.enabled")}
@@ -516,11 +588,11 @@ function renderLeveling() {
 function renderVcGuard() {
   return `
     <section class="page wide">
-      ${pageHead("V", "VC Guard", "Protect voice channels with bypass roles.")}
+      ${pageHead("shield", "VC Guard", "Protect voice channels with bypass roles.")}
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">VC</span>
+            <span class="mini-icon"><i data-lucide="shield-check"></i></span>
             <div><h2>VC guard</h2><p>Disconnect users from protected voice channels unless they bypass.</p></div>
           </div>
           ${toggleField("premium.vcGuard.enabled")}
@@ -539,11 +611,11 @@ function renderVcGuard() {
 function renderSticky() {
   return `
     <section class="page wide">
-      ${pageHead("S", "Sticky Messages", "Keep one message pinned to the bottom of a channel.")}
+      ${pageHead("pin", "Sticky Messages", "Keep one message pinned to the bottom of a channel.")}
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">S</span>
+            <span class="mini-icon"><i data-lucide="message-square"></i></span>
             <div><h2>Sticky message</h2><p>Reposts a configured message at the bottom of a channel.</p></div>
           </div>
           ${toggleField("premium.sticky.enabled")}
@@ -561,11 +633,11 @@ function renderSticky() {
 function renderAutomod() {
   return `
     <section class="page">
-      ${pageHead("A", "Auto Moderation", "Anti link and anti spam settings.")}
+      ${pageHead("gavel", "Auto Moderation", "Anti link and anti spam settings.")}
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">L</span>
+            <span class="mini-icon"><i data-lucide="link"></i></span>
             <div><h2>Anti link</h2><p>Delete invite and URL spam using the bot event module.</p></div>
           </div>
           ${toggleField("automod.antilink.isEnabled")}
@@ -578,7 +650,7 @@ function renderAutomod() {
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">S</span>
+            <span class="mini-icon"><i data-lucide="mail-warning"></i></span>
             <div><h2>Anti spam</h2><p>Message threshold, timeframe, and bypass lists.</p></div>
           </div>
           ${toggleField("automod.antispam.isEnabled")}
@@ -600,11 +672,11 @@ function renderAntinuke() {
   const enabled = Boolean(antinuke.isEnabled);
   return `
     <section class="page wide">
-      ${pageHead("N", "Anti Nuke Security", "Server protection, trusted users, and audit logging.")}
+      ${pageHead("bomb", "Anti Nuke Security", "Server protection, trusted users, and audit logging.")}
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">N</span>
+            <span class="mini-icon"><i data-lucide="shield-alert"></i></span>
             <div>
               <h2>${enabled ? "Protection online" : "Protection disabled"}</h2>
               <p>${enabled ? "Destructive actions are watched and logged." : "Enable to protect the server from raids and staff abuse."}</p>
@@ -625,7 +697,7 @@ function renderAntinuke() {
       <div class="grid">
         <div class="panel">
           <div class="panel-title">
-            <span class="mini-icon">L</span>
+            <span class="mini-icon"><i data-lucide="file-text"></i></span>
             <div><h2>Audit logging</h2><p>If enabled without a channel, the bot creates a private log channel.</p></div>
           </div>
           <div class="setting-grid single">
@@ -634,7 +706,7 @@ function renderAntinuke() {
         </div>
         <div class="panel">
           <div class="panel-title">
-            <span class="mini-icon">O</span>
+            <span class="mini-icon"><i data-lucide="crown"></i></span>
             <div><h2>Extra owners</h2><p>Only the server owner and bot owners can edit this list.</p></div>
           </div>
           <div class="setting-grid single">
@@ -645,7 +717,7 @@ function renderAntinuke() {
 
       <div class="panel">
         <div class="panel-title">
-          <span class="mini-icon">W</span>
+          <span class="mini-icon"><i data-lucide="user-check"></i></span>
           <div><h2>Whitelist bypass</h2><p>Trusted users and roles are logged but not punished.</p></div>
         </div>
         <div class="setting-grid">
@@ -663,7 +735,7 @@ function renderWelcome() {
 
   return `
     <section class="page wide">
-      ${pageHead("W", "Welcome Messages", "Join messages, dynamic images, and simulation.")}
+      ${pageHead("user-plus", "Welcome Messages", "Join messages, dynamic images, and simulation.")}
       ${renderWelcomeTabs()}
       ${state.welcomeTab === "dynamic" ? renderWelcomeDynamicImages() : ""}
       ${state.welcomeTab === "simulation" ? renderWelcomeSimulation() : ""}
@@ -697,7 +769,7 @@ function renderWelcomeMessages() {
           <div class="panel">
             <div class="panel-head">
               <div class="panel-title">
-                <span class="mini-icon">W</span>
+                <span class="mini-icon"><i data-lucide="message-square"></i></span>
                 <div><h2>Message</h2><p>Variables: {user}, {server_name}, {member_count}</p></div>
               </div>
               ${toggleField("welcome.enabled")}
@@ -711,7 +783,7 @@ function renderWelcomeMessages() {
           <div class="panel">
             <div class="panel-head">
               <div class="panel-title">
-                <span class="mini-icon">E</span>
+                <span class="mini-icon"><i data-lucide="code"></i></span>
                 <div><h2>Embed</h2><p>Optional rich message fields.</p></div>
               </div>
               ${toggleField("welcome.embed.enabled")}
@@ -728,7 +800,7 @@ function renderWelcomeMessages() {
         </div>
         <div class="panel">
           <div class="panel-title">
-            <span class="mini-icon">P</span>
+            <span class="mini-icon"><i data-lucide="eye"></i></span>
             <div><h2>Preview</h2><p>Discord-style output.</p></div>
           </div>
           <div class="preview" data-welcome-preview>${preview}</div>
@@ -789,7 +861,7 @@ function renderWelcomeDynamicImages() {
       <div class="panel dynamic-editor">
         <div class="panel-head">
           <div class="panel-title">
-            <span class="mini-icon">D</span>
+            <span class="mini-icon"><i data-lucide="image"></i></span>
             <div><h2>Image editor</h2><p>${attached ? "This image is attached to the welcome message." : "Edit the image, then attach it when ready."}</p></div>
           </div>
         </div>
@@ -828,14 +900,14 @@ function renderWelcomeSimulation() {
     <div class="grid">
       <div class="panel">
         <div class="panel-title">
-          <span class="mini-icon">S</span>
+          <span class="mini-icon"><i data-lucide="play"></i></span>
           <div><h2>Join simulation</h2><p>Preview using the current dashboard user as the joining member.</p></div>
         </div>
         <div class="preview simulation-preview" data-welcome-preview>${renderWelcomePreview()}</div>
       </div>
       <div class="panel">
         <div class="panel-title">
-          <span class="mini-icon">I</span>
+          <span class="mini-icon"><i data-lucide="file-image"></i></span>
           <div><h2>Attached image</h2><p>${dynamic ? "This PNG will be attached with the message." : "No dynamic image is attached."}</p></div>
         </div>
         <div class="image-stage simulation-image" data-simulation-image>
@@ -849,10 +921,10 @@ function renderWelcomeSimulation() {
 function renderRoles() {
   return `
     <section class="page">
-      ${pageHead("R", "Roles", "Command roles, join roles, and voice role.")}
+      ${pageHead("users", "Roles", "Command roles, join roles, and voice role.")}
       <div class="panel">
         <div class="panel-title">
-          <span class="mini-icon">C</span>
+          <span class="mini-icon"><i data-lucide="sliders"></i></span>
           <div><h2>Role command targets</h2><p>Choose what role each role command gives or removes.</p></div>
         </div>
         <div class="setting-grid">
@@ -866,7 +938,7 @@ function renderRoles() {
       </div>
       <div class="panel">
         <div class="panel-title">
-          <span class="mini-icon">A</span>
+          <span class="mini-icon"><i data-lucide="user-plus"></i></span>
           <div><h2>Join autorole</h2><p>Roles added automatically when humans or bots join.</p></div>
         </div>
         <div class="setting-grid">
@@ -876,7 +948,7 @@ function renderRoles() {
       </div>
       <div class="panel">
         <div class="panel-title">
-          <span class="mini-icon">V</span>
+          <span class="mini-icon"><i data-lucide="mic"></i></span>
           <div><h2>Voice role</h2><p>Role assigned while a member is in voice.</p></div>
         </div>
         <div class="setting-grid single">
@@ -898,10 +970,13 @@ function renderSavebar() {
 }
 
 function pageHead(icon, title, subtitle) {
+  const iconHtml = icon.length > 2 
+    ? `<i data-lucide="${icon}"></i>`
+    : escapeHtml(icon);
   return `
     <div class="page-head">
       <div class="page-title">
-        <span class="title-icon">${escapeHtml(icon)}</span>
+        <span class="title-icon">${iconHtml}</span>
         <div>
           <h1>${title}</h1>
           <p>${escapeHtml(subtitle)}</p>
@@ -912,9 +987,22 @@ function pageHead(icon, title, subtitle) {
 }
 
 function shortcutCard(title, label, text, page, action) {
+  const pageObj = pages.find(p => p.id === page);
+  const iconName = pageObj ? pageObj.icon : "box";
+  const statusPath = pageObj?.status;
+  const hasToggle = statusPath && statusPath !== "premium.active" && statusPath !== "roles.any";
+  const on = hasToggle ? statusFor(statusPath) : false;
   return `
-    <article class="card">
-      <span class="mini-icon">${escapeHtml(label[0])}</span>
+    <article class="card ${hasToggle && !on ? "disabled-card" : ""}">
+      <div class="card-head-row">
+        <span class="mini-icon"><i data-lucide="${iconName}"></i></span>
+        ${hasToggle ? `
+          <label class="toggle small">
+            <input type="checkbox" data-card-toggle="${statusPath}" ${on ? "checked" : ""}>
+            <span></span>
+          </label>
+        ` : ""}
+      </div>
       <h3>${escapeHtml(title)}</h3>
       <p>${escapeHtml(text)}</p>
       <div class="card-actions">
@@ -1030,6 +1118,7 @@ function updateWelcomePreview() {
   previews.forEach((preview) => {
     preview.innerHTML = renderWelcomePreview();
   });
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function renderWelcomePreview() {
@@ -1914,6 +2003,44 @@ function bindGlobalActions() {
   bindDynamicEditorDrag();
   bindAvatarImages();
   bindWheelPassthrough();
+
+  // Bind sidebar module toggles
+  app.querySelectorAll("[data-sidebar-toggle]").forEach((toggle) => {
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const path = toggle.dataset.sidebarToggle;
+      const on = toggle.classList.contains("checked");
+      const nextState = !on;
+      
+      if (path === "automod.any") {
+        setPath(state.draft, "automod.antilink.isEnabled", nextState);
+        setPath(state.draft, "automod.antispam.isEnabled", nextState);
+      } else {
+        setPath(state.draft, path, nextState);
+      }
+      
+      markDirty();
+      renderShell();
+    });
+  });
+
+  // Bind Home overview page card toggles
+  app.querySelectorAll("[data-card-toggle]").forEach((toggle) => {
+    toggle.addEventListener("change", () => {
+      const path = toggle.dataset.cardToggle;
+      const checked = toggle.checked;
+      
+      if (path === "automod.any") {
+        setPath(state.draft, "automod.antilink.isEnabled", checked);
+        setPath(state.draft, "automod.antispam.isEnabled", checked);
+      } else {
+        setPath(state.draft, path, checked);
+      }
+      
+      markDirty();
+      renderShell();
+    });
+  });
 }
 
 function filterServerCards() {
@@ -2010,6 +2137,20 @@ function bindFields() {
       markDirty();
       if (path.startsWith("welcome.dynamicImages.")) updateDynamicImagePreview();
       if (path.startsWith("welcome.")) updateWelcomePreview();
+
+      const masterPaths = [
+        "music247.enabled",
+        "premium.leveling.enabled",
+        "premium.vcGuard.enabled",
+        "premium.sticky.enabled",
+        "automod.antilink.isEnabled",
+        "automod.antispam.isEnabled",
+        "antinuke.isEnabled",
+        "welcome.enabled"
+      ];
+      if (masterPaths.includes(path)) {
+        renderShell();
+      }
     });
   });
 
@@ -2021,6 +2162,22 @@ function bindFields() {
         .map((input) => input.value)
         .filter(Boolean);
       setPath(state.draft, path, values);
+      markDirty();
+    });
+  });
+
+  // data-event-toggle: inverted membership — checked means NOT in disabledEvents
+  app.querySelectorAll("[data-event-toggle]").forEach((field) => {
+    field.addEventListener("change", () => {
+      const path = field.dataset.eventToggle;   // e.g. "antinuke.disabledEvents"
+      const key  = field.dataset.eventKey;      // e.g. "antiBan"
+      const current = new Set(getPath(state.draft, path) || []);
+      if (field.checked) {
+        current.delete(key);   // enabled → remove from disabled list
+      } else {
+        current.add(key);      // disabled → add to disabled list
+      }
+      setPath(state.draft, path, Array.from(current));
       markDirty();
     });
   });

@@ -62,8 +62,9 @@ module.exports = {
         deaf: true,
       })
       .catch((error) => {
+        const errMsg = error.cause ? `${error.stack || error} | Cause: ${error.cause.stack || error.cause}` : (error.stack || error);
         client.logger?.log(
-          `[Music] Failed to create player: ${error.stack || error}`,
+          `[Music] Failed to create player: ${errMsg}`,
           "error",
         );
         return null;

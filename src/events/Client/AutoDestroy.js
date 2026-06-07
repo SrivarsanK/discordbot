@@ -78,6 +78,10 @@ module.exports = {
       currentChannel.members.filter((m) => !m.user.bot).size === 0
     ) {
       setTimeout(async () => {
+        const db = require("../../schema/247");
+        const has247 = await db.findOne({ Guild: guildId });
+        if (has247) return;
+
         const activePlayer = client.manager.players.get(guildId);
         const stillInVC = currentChannel.members.has(botId);
         const stillAlone =

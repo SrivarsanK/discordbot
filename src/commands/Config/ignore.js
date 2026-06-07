@@ -1,10 +1,9 @@
 const { v2 } = require("../../utils/v2");
 const {
   EmbedBuilder,
-  MessageFlags,
   PermissionsBitField,
 } = require("discord.js");
-const IgnoreChannelModel = require("../../schema/ignorechannel"); // Import your MongoDB model
+const IgnoreChannelModel = require("../../schema/ignorechannel");
 
 module.exports = {
   name: "ignore",
@@ -25,7 +24,6 @@ module.exports = {
       return message.reply(v2({
         embeds: [
           new EmbedBuilder()
-            
             .setDescription(
               `${client.emoji.cross} | You must have \`Manage Channels\` permissions to use this command.`,
             ),
@@ -36,7 +34,6 @@ module.exports = {
     if (!args[0]) {
       const embed = new EmbedBuilder()
         .setThumbnail(client.user.displayAvatarURL())
-        
         .setDescription(
           ` \`\`\`[] = Optional Argument\n<> = Required Argument\nDo NOT type these when using commands!\`\`\`\n\n**Aliases:**\n\`\`[ignore]\`\`\n**Usage:**\n\`\`add/remove/config/reset\`\``,
         )
@@ -47,75 +44,72 @@ module.exports = {
       return message.channel.send(v2({ embeds: [embed] }));
     }
 
+    const guildId = message.guild.id;
+
+    // Helper: load the guild's channels array from the single-row schema
+    async function loadChannels() {
+      const doc = await IgnoreChannelModel.findOne({ guildId }).lean();
+      return Array.isArray(doc?.channels) ? doc.channels : [];
+    }
+
+    // Helper: save updated channels array back to the single-row schema
+    async function saveChannels(channels) {
+      await IgnoreChannelModel.findOneAndUpdate(
+        { guildId },
+        { guildId, channels },
+        { upsert: true, new: true },
+      );
+    }
+
     const option = args[0].toLowerCase();
+
     if (option === "add") {
       const channel =
         message.mentions.channels.first() ||
         message.guild.channels.cache.get(args[1]);
       if (!channel)
-        return message.channel.send(v2({
-          content: `Please provide a valid channel.`,
-        }));
-      const data = await IgnoreChannelModel.findOne({
-        guildId: message.guild.id,
-        channelId: channel.id,
-      });
-      if (data)
-        return message.channel.send(v2({
-          content: `This channel is already in the ignore channel list.`,
-        }));
-      const newData = new IgnoreChannelModel({
-        guildId: message.guild.id,
-        channelId: channel.id,
-      });
-      await newData.save();
-      return message.channel.send(v2({
-        content: `Successfully added ${channel} to the ignore channel list.`,
-      }));
+        return message.channel.send(v2({ content: `Please provide a valid channel.` }));
+
+      const channels = await loadChannels();
+      if (channels.includes(channel.id))
+        return message.channel.send(v2({ content: `This channel is already in the ignore channel list.` }));
+
+      channels.push(channel.id);
+      await saveChannels(channels);
+      return message.channel.send(v2({ content: `Successfully added ${channel} to the ignore channel list.` }));
+
     } else if (option === "remove") {
       const channel =
         message.mentions.channels.first() ||
         message.guild.channels.cache.get(args[1]);
       if (!channel)
-        return message.channel.send(v2({
-          content: `Please provide a valid channel.`,
-        }));
-      const data = await IgnoreChannelModel.findOne({
-        guildId: message.guild.id,
-        channelId: channel.id,
-      });
-      if (!data)
-        return message.channel.send(v2({
-          content: `This channel is not in the ignore channel list.`,
-        }));
-      await data.delete();
-      return message.channel.send(v2({
-        content: `Successfully removed ${channel} from the ignore channel list.`,
-      }));
+        return message.channel.send(v2({ content: `Please provide a valid channel.` }));
+
+      const channels = await loadChannels();
+      if (!channels.includes(channel.id))
+        return message.channel.send(v2({ content: `This channel is not in the ignore channel list.` }));
+
+      await saveChannels(channels.filter((id) => id !== channel.id));
+      return message.channel.send(v2({ content: `Successfully removed ${channel} from the ignore channel list.` }));
+
     } else if (option === "config") {
-      const data = await IgnoreChannelModel.find({ guildId: message.guild.id });
-      if (data.length === 0)
-        return message.channel.send(v2({
-          content: `There are no channels in the ignore channel list.`,
-        }));
-      const channels = data
-        .map((d, i) => `> ${i + 1} <#${d.channelId}>`)
-        .join("\n");
+      const channels = await loadChannels();
+      if (!channels.length)
+        return message.channel.send(v2({ content: `There are no channels in the ignore channel list.` }));
+
+      const list = channels.map((id, i) => `> ${i + 1} <#${id}>`).join("\n");
       const embed = new EmbedBuilder()
-        
         .setTitle("The following channels are in the ignore channel list:-")
-        .setDescription(`${channels}`);
+        .setDescription(list);
       return message.channel.send(v2({ embeds: [embed] }));
+
     } else if (option === "reset") {
-      const data = await IgnoreChannelModel.find({ guildId: message.guild.id });
-      if (data.length === 0)
-        return message.channel.send(v2({
-          content: `There are no channels in the ignore channel list.`,
-        }));
-      await IgnoreChannelModel.deleteMany({ guildId: message.guild.id });
-      return message.channel.send(v2({
-        content: `Successfully cleared the ignore channel list.`,
-      }));
+      const channels = await loadChannels();
+      if (!channels.length)
+        return message.channel.send(v2({ content: `There are no channels in the ignore channel list.` }));
+
+      await saveChannels([]);
+      return message.channel.send(v2({ content: `Successfully cleared the ignore channel list.` }));
     }
   },
 };

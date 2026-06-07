@@ -146,10 +146,9 @@ module.exports = {
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
     const ICHchannelId = message.channel.id;
-    const isIgnored = await IgnoreChannelModel.findOne({
-      guildId: message.guild.id,
-      channelId: ICHchannelId,
-    });
+    const ignoreDoc = await IgnoreChannelModel.findOne({ guildId: message.guild.id }).lean();
+    const ignoredChannels = Array.isArray(ignoreDoc?.channels) ? ignoreDoc.channels : [];
+    const isIgnored = ignoredChannels.includes(ICHchannelId);
     if (isIgnored) {
       const baap = new EmbedBuilder()
         .setAuthor({
@@ -258,6 +257,26 @@ module.exports = {
       return message.channel.send(v2({ embeds: [embed] })).catch(() => null);
     }
 
+    if (command.category === "Antinuke" || command.category === "Automod") {
+      const AntiNuke = require("../../schema/antinuke");
+      const antinukeConfig = await AntiNuke.findOne({ guildId: message.guild.id });
+      const extraOwners = antinukeConfig?.extraOwners || [];
+      const whitelistRoles = antinukeConfig?.whitelistRoles || [];
+
+      const hasWhitelistedRole = message.member.roles.cache.some(role => whitelistRoles.includes(role.id));
+      const isAuthorized =
+        message.author.id === message.guild.ownerId ||
+        isBotOwner(client, message.author.id) ||
+        extraOwners.includes(message.author.id) ||
+        hasWhitelistedRole;
+
+      if (!isAuthorized) {
+        const embed = new EmbedBuilder()
+          .setDescription(`❌ | Only the **server owner**, **extra owners**, or members with **whitelisted roles** can use security commands.`);
+        return message.channel.send(v2({ embeds: [embed] })).catch(() => null);
+      }
+    }
+
     const player = client.manager.players.get(message.guild.id);
     if (command.player && !player) {
       return message.channel.send(v2(`i'm not in any vc!`)).catch(() => null);;
@@ -285,6 +304,33 @@ module.exports = {
       }
     }
     //
+
+    const isMusicOrPlaylist = command.category === "Music" || command.category === "Playlist";
+    if (!isMusicOrPlaylist) {
+      // Delete command trigger message
+      message.delete().catch(() => {});
+
+      // Intercept channel.send and reply to auto-delete after 8 seconds
+      const originalSend = message.channel.send.bind(message.channel);
+      const originalReply = message.reply.bind(message);
+
+      const autoDeleteResponse = async (promise) => {
+        try {
+          const sentMessage = await promise;
+          if (sentMessage && typeof sentMessage.delete === "function") {
+            setTimeout(() => {
+              sentMessage.delete().catch(() => {});
+            }, 8000);
+          }
+          return sentMessage;
+        } catch (err) {
+          throw err;
+        }
+      };
+
+      message.channel.send = (options) => autoDeleteResponse(originalSend(options));
+      message.reply = (options) => autoDeleteResponse(originalReply(options));
+    }
 
     Promise.resolve()
       .then(() => command.execute(message, args, client, prefix))

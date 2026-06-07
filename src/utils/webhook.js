@@ -18,7 +18,7 @@ async function sendWebhook(client, url, payload, label = "webhook") {
 
   try {
     const webhook = new WebhookClient({ url: url.trim() });
-    return await webhook.send(v2(payload));
+    return await webhook.send(payload);
   } catch (error) {
     client?.logger?.log(
       `[Webhook] Failed to send ${label}: ${error.message || error}`,
