@@ -12,25 +12,25 @@ module.exports = {
       if (!autoRole) return;
       const rolesToAdd = [];
       if (member.user.bot) {
-        for (const roleId of autoRole.botRoles) {
-          const botRole = member.guild.roles.cache.get(roleId);
+        const botRoles = autoRole.roles?.botRoles || [];
+        for (const roleId of botRoles) {
+          const botRole = member.guild.roles.cache.get(roleId) || await member.guild.roles.fetch(roleId).catch(() => null);
           if (botRole) {
             rolesToAdd.push(botRole);
-          } else {
-            return;
           }
         }
       } else {
-        for (const roleId of autoRole.humanRoles) {
-          const humanRole = member.guild.roles.cache.get(roleId);
+        const humanRoles = autoRole.roles?.humanRoles || [];
+        for (const roleId of humanRoles) {
+          const humanRole = member.guild.roles.cache.get(roleId) || await member.guild.roles.fetch(roleId).catch(() => null);
           if (humanRole) {
             rolesToAdd.push(humanRole);
-          } else return;
+          }
         }
       }
       if (rolesToAdd.length > 0) {
-        await member.roles.add(rolesToAdd).catch(() => {
-          console.log(`missing perms in ${member.guild.name} autorole`);
+        await member.roles.add(rolesToAdd).catch((err) => {
+          console.log(`missing perms in ${member.guild.name} autorole: ${err.message}`);
         });
       }
     } catch (err) {
