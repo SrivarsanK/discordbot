@@ -57,7 +57,7 @@ module.exports = {
       });
 
     const buttonRow = new ActionRowBuilder().addComponents(
-      new client.button().s("home", "", client.emoji.home),
+      new client.button().s("home", client.emoji.home ? null : "Home", client.emoji.home || null),
     );
 
     const commandCategories = [
