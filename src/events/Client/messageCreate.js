@@ -12,7 +12,7 @@ const VoteBypassUserModel = require("../../schema/votebypassuser");
 const db4 = require("../../schema/noprefix");
 const { normalizePermissions } = require("../../utils/permissions");
 const { getFooterText, getVoteUrl } = require("../../utils/botMeta");
-const { sendWebhook } = require("../../utils/webhook");
+const { sendCommandLog } = require("../../utils/commandLog");
 const { isBotOwner } = require("../../utils/owners");
 const cooldowns = new Map();
 
@@ -352,9 +352,7 @@ module.exports = {
         .setDescription(
           `Command Just Used In : \`${message.guild.name} | ${message.guild.id}\`\n Command Used In Channel : \`${message.channel.name} | ${message.channel.id}\`\n Command Name : \`${command.name}\`\n Command Executor : \`${message.author.tag} | ${message.author.id}\`\n Command Content : \`${message.content}\``,
         );
-      sendWebhook(client, client.config.Webhooks.cmdrun, {
-        embeds: [commandlog],
-      }, "command log");
+      sendCommandLog(client, message.guild, commandlog);
     }
   },
 };

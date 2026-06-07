@@ -5,7 +5,7 @@ const {
   MessageFlags,
   EmbedBuilder,
 } = require("discord.js");
-const { sendWebhook } = require("../../utils/webhook");
+const { sendCommandLog } = require("../../utils/commandLog");
 const db = require("../../schema/prefix.js");
 const db3 = require("../../schema/setup");
 const { normalizePermissions } = require("../../utils/permissions");
@@ -162,9 +162,7 @@ module.exports = {
           .setDescription(
             `Slash Command Just Used In : \`${interaction.guild.name} | ${interaction.guild.id}\`\n Command Used In Channel : \`${interaction.channel.name} | ${interaction.channel.id}\`\n Command Name : \`${command.name}\`\n Command Executor : \`${interaction.user.tag} | ${interaction.user.id}\`\n Command Options : \`${interaction.options.data.map(o => `${o.name}:${o.value}`).join(" ") || "None"}\``,
           );
-        sendWebhook(client, client.config.Webhooks.cmdrun, {
-          embeds: [commandlog],
-        }, "command log");
+        sendCommandLog(client, interaction.guild, commandlog);
       } catch (error) {
         if (interaction.replied) {
           await interaction
