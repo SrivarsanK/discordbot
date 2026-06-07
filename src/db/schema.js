@@ -232,6 +232,21 @@ const dashboardSessions = pgTable("dashboard_sessions", {
   createdAt:    timestamp("created_at").defaultNow(),
 });
 
+// ── logging ───────────────────────────────────────────────────────────────────
+const logging = pgTable("logging", {
+  guildId: text("guild_id").primaryKey(),
+  isEnabled: boolean("is_enabled").default(false),
+  eventChannels: jsonb("event_channels").default({}),
+  ignoredChannels: jsonb("ignored_channels").default([]),
+  ignoredRoles: jsonb("ignored_roles").default([]),
+  ignoredUsers: jsonb("ignored_users").default([]),
+  ignoreEmbeds: boolean("ignore_embeds").default(false),
+  ignorePolls: boolean("ignore_polls").default(false),
+  ignoreSticky: boolean("ignore_sticky").default(false),
+  applyIgnoreToVoice: boolean("apply_ignore_to_voice").default(false),
+  verificationTokens: jsonb("verification_tokens").default([]),
+});
+
 module.exports = {
   afk,
   alwaysOn,
@@ -247,6 +262,7 @@ module.exports = {
   dashboardSessions,
   emoji,
   ignoreChannel,
+  logging,
   noprefix,
   playlists,
   prefix,

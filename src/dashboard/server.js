@@ -18,6 +18,7 @@ const AutoReconnect = require("../schema/247");
 const WelcomeSettings = require("../schema/welcomesystem");
 const Premium = require("../schema/premium");
 const PremiumSettings = require("../schema/premiumSettings");
+const Logging = require("../schema/logging");
 const {
   clearPremiumSettingsCache,
   getActivePremium,
@@ -247,6 +248,26 @@ async function handleApi(client, req, res, url) {
       bot: formatBot(client),
       guilds: getManageableGuilds(client, session),
     });
+  }
+
+  const tokenMatch = url.pathname.match(/^\/api\/guilds\/(\d{16,22})\/verify-log-token$/);
+  if (tokenMatch) {
+    const guildId = tokenMatch[1];
+    const access = requireGuildAccess(client, session, guildId);
+    if (!access.ok) return sendJson(res, access.status, { error: access.error });
+
+    if (req.method === "POST") {
+      const body = await readJsonBody(req);
+      const eventKey = body.eventKey;
+      if (!eventKey) return sendJson(res, 400, { error: "Missing eventKey" });
+
+      const { generateVerificationToken } = require("../utils/logSender");
+      const token = await generateVerificationToken(guildId, eventKey);
+      if (!token) return sendJson(res, 500, { error: "Failed to generate token" });
+
+      return sendJson(res, 200, { token });
+    }
+    return sendJson(res, 405, { error: "Method not allowed" });
   }
 
   const guildMatch = url.pathname.match(/^\/api\/guilds\/(\d{16,22})(?:\/settings)?$/);
@@ -613,6 +634,7 @@ async function loadGuildSettings(client, guild) {
     auto247,
     welcome,
     premiumSettings,
+    logging,
   ] = await Promise.all([
     Prefix.findOne({ guildId }).lean(),
     AntiNuke.findOne({ guildId }).lean(),
@@ -625,6 +647,11 @@ async function loadGuildSettings(client, guild) {
     AutoReconnect.findOne({ guildId }).lean(),
     WelcomeSettings.getSettings(guild),
     PremiumSettings.findOneAndUpdate(
+      { guildId },
+      { $setOnInsert: { guildId } },
+      { upsert: true, new: true, setDefaultsOnInsert: true },
+    ).lean(),
+    Logging.findOneAndUpdate(
       { guildId },
       { $setOnInsert: { guildId } },
       { upsert: true, new: true, setDefaultsOnInsert: true },
@@ -643,6 +670,20 @@ async function loadGuildSettings(client, guild) {
   const rolesData = roles?.roles || {};
   // ignore_channel: schema uses single `channels` jsonb array column (one row per guild)
   const ignoredArr = Array.isArray(ignored?.channels) ? ignored.channels : (Array.isArray(ignored) ? ignored.flatMap((item) => item.channels || (item.channelId ? [item.channelId] : [])) : []);
+
+  // Normalize any eventChannels mapping to use parent forum IDs if they point to threads under a forum
+  const eventChannelsNormalized = { ...(logging?.eventChannels || {}) };
+  for (const [key, channelId] of Object.entries(eventChannelsNormalized)) {
+    if (channelId) {
+      const channel = guild.channels.cache.get(channelId);
+      if (channel && channel.isThread()) {
+        const parent = channel.parent || await guild.channels.fetch(channel.parentId).catch(() => null);
+        if (parent && parent.type === ChannelType.GuildForum) {
+          eventChannelsNormalized[key] = parent.id;
+        }
+      }
+    }
+  }
 
   return {
     prefix: prefix?.prefix || prefix?.Prefix || client.prefix,
@@ -706,6 +747,17 @@ async function loadGuildSettings(client, guild) {
       voiceChannelId: auto247?.voiceId || auto247?.VoiceId || "",
     },
     premium: normalizePremiumSettings(premiumSettings || {}),
+    logging: {
+      isEnabled: Boolean(logging?.isEnabled),
+      eventChannels: eventChannelsNormalized,
+      ignoredChannels: logging?.ignoredChannels || [],
+      ignoredRoles: logging?.ignoredRoles || [],
+      ignoredUsers: logging?.ignoredUsers || [],
+      ignoreEmbeds: Boolean(logging?.ignoreEmbeds),
+      ignorePolls: Boolean(logging?.ignorePolls),
+      ignoreSticky: Boolean(logging?.ignoreSticky),
+      applyIgnoreToVoice: Boolean(logging?.applyIgnoreToVoice),
+    },
   };
 }
 
@@ -720,6 +772,22 @@ async function saveGuildSettings(client, guildId, raw, session) {
   await hydrateGuild(guild);
 
   const settings = normalizeSettings(client, raw || {});
+
+  // Normalize any eventChannels mapping to use parent forum IDs if they point to threads under a forum
+  if (settings.logging?.eventChannels) {
+    for (const [key, channelId] of Object.entries(settings.logging.eventChannels)) {
+      if (channelId) {
+        const channel = guild.channels.cache.get(channelId);
+        if (channel && channel.isThread()) {
+          const parent = channel.parent || await guild.channels.fetch(channel.parentId).catch(() => null);
+          if (parent && parent.type === ChannelType.GuildForum) {
+            settings.logging.eventChannels[key] = parent.id;
+          }
+        }
+      }
+    }
+  }
+
   const existingAntinuke = await AntiNuke.findOne({ guildId }).lean();
   if (!canManageExtraOwners(client, guild, session)) {
     settings.antinuke.extraOwners = existingAntinuke?.extraOwners || [];
@@ -796,6 +864,11 @@ async function saveGuildSettings(client, guildId, raw, session) {
     saveIgnoredChannels(guildId, settings.ignoreChannels).catch((err) => { client.logger?.log(`[Dashboard] IgnoredChannels save failed: ${err.message}`, "error"); throw err; }),
     saveMusic247(guildId, settings.music247).catch((err) => { client.logger?.log(`[Dashboard] Music247 save failed: ${err.message}`, "error"); throw err; }),
     savePremiumSettings(client, guild, settings.premium).catch((err) => { client.logger?.log(`[Dashboard] PremiumSettings save failed: ${err.message}`, "error"); throw err; }),
+    Logging.findOneAndUpdate(
+      { guildId },
+      { guildId, ...settings.logging },
+      { upsert: true, new: true },
+    ).catch((err) => { client.logger?.log(`[Dashboard] Logging save failed: ${err.message}`, "error"); throw err; }),
   ]);
 
   const failures = saveResults.filter((r) => r.status === "rejected");
@@ -945,6 +1018,17 @@ function normalizeSettings(client, raw) {
       voiceChannelId: snowflakeValue(raw.music247?.voiceChannelId),
     },
     premium: normalizePremiumSettings(raw.premium || {}),
+    logging: {
+      isEnabled: Boolean(raw.logging?.isEnabled),
+      eventChannels: raw.logging?.eventChannels || {},
+      ignoredChannels: snowflakeArray(raw.logging?.ignoredChannels),
+      ignoredRoles: snowflakeArray(raw.logging?.ignoredRoles),
+      ignoredUsers: snowflakeArray(raw.logging?.ignoredUsers),
+      ignoreEmbeds: Boolean(raw.logging?.ignoreEmbeds),
+      ignorePolls: Boolean(raw.logging?.ignorePolls),
+      ignoreSticky: Boolean(raw.logging?.ignoreSticky),
+      applyIgnoreToVoice: Boolean(raw.logging?.applyIgnoreToVoice),
+    },
   };
 }
 
@@ -1195,6 +1279,9 @@ function formatChannels(guild) {
       ChannelType.GuildVoice,
       ChannelType.GuildStageVoice,
       ChannelType.GuildForum,
+      ChannelType.PublicThread,
+      ChannelType.PrivateThread,
+      ChannelType.AnnouncementThread,
     ].includes(channel.type))
     .map((channel) => ({
       id: channel.id,

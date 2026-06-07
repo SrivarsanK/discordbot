@@ -4,6 +4,7 @@ const { v2 } = require("../../utils/v2");
 const {
   EmbedBuilder,
   PermissionsBitField,
+  ChannelType,
 } = require("discord.js");
 const db = require("../../schema/prefix.js");
 const bl = require("../../schema/blacklist");
@@ -20,6 +21,52 @@ module.exports = {
   name: "messageCreate",
   run: async (client, message) => {
     if (message.author.bot || !message.guild) return;
+
+    // Verify thread/forum channel log validation command: !verify-log <token>
+    if (message.content.startsWith("!verify-log ")) {
+      const token = message.content.substring(12).trim();
+      const Logging = require("../../schema/logging");
+      const loggingData = await Logging.findOne({ guildId: message.guild.id });
+      if (loggingData) {
+        const matchingTokenIndex = (loggingData.verificationTokens || []).findIndex(
+          t => t.token === token && t.expiresAt > Date.now()
+        );
+        if (matchingTokenIndex !== -1) {
+          const matchingToken = loggingData.verificationTokens[matchingTokenIndex];
+          const eventKey = matchingToken.eventKey;
+
+          let targetChannelId = message.channel.id;
+          if (message.channel.isThread()) {
+            const parent = message.channel.parent || await message.guild.channels.fetch(message.channel.parentId).catch(() => null);
+            if (parent && parent.type === ChannelType.GuildForum) {
+              targetChannelId = parent.id;
+            }
+          }
+
+          // Set the channel for this event type to the message channel (or parent forum channel)
+          loggingData.eventChannels = {
+            ...(loggingData.eventChannels || {}),
+            [eventKey]: targetChannelId
+          };
+
+          // Remove the used token
+          loggingData.verificationTokens.splice(matchingTokenIndex, 1);
+          loggingData.markModified("eventChannels");
+          loggingData.markModified("verificationTokens");
+          await loggingData.save();
+
+          // Delete user message and reply
+          await message.delete().catch(() => {});
+          const reply = await message.channel.send(
+            `✅ Channel successfully verified as the log destination for **${eventKey}**!`
+          ).catch(() => null);
+          if (reply) {
+            setTimeout(() => reply.delete().catch(() => {}), 5000);
+          }
+          return;
+        }
+      }
+    }
 
     let prefix = client.prefix;
     const ress = await db.findOne({ Guild: message.guildId });

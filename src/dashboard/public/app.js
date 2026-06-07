@@ -412,25 +412,202 @@ function renderGeneral() {
   `;
 }
 
-function renderLogging() {
-  const loggingEvents = [
-    { key: "antiBan",      label: "Member Ban / Unban Events" },
-    { key: "antiKick",     label: "Member Kick Events" },
-    { key: "channelChanges", label: "Channel Create / Delete / Update" },
-    { key: "roleChanges",  label: "Role Create / Delete / Update" },
-    { key: "emojiChanges", label: "Emoji & Sticker Changes" },
-    { key: "webhookChanges", label: "Webhook Create / Delete / Update" },
-    { key: "autoModChanges", label: "Auto Moderation Rule Changes" },
-    { key: "antiEveryone", label: "Everyone / Here Mention Alerts" },
-    { key: "serverUpdate", label: "Server Settings Changes" },
-    { key: "antiBotAdd",   label: "Suspicious Bot Addition Alerts" },
+function renderLoggingTabs() {
+  const items = [
+    ["channels", "Log Channels"],
+    ["ignores", "Ignore Settings"]
   ];
-  const enabled = Boolean(state.draft.antinuke.isEnabled);
-  const disabled = new Set(state.draft.antinuke.disabledEvents || []);
+  return `
+    <div class="welcome-tabs" role="tablist" aria-label="Logging tabs">
+      ${items.map(([id, label]) => `
+        <button class="${state.loggingTab === id ? "active" : ""}" type="button" data-logging-tab="${id}" role="tab" aria-selected="${state.loggingTab === id}">
+          ${escapeHtml(label)}
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderLogging() {
+  const enabled = Boolean(state.draft.logging.isEnabled);
+  state.loggingTab ||= "channels";
+
+  const categories = [
+    {
+      id: "messages",
+      name: "Messages",
+      events: [
+        { key: "messageDelete", label: "Message Delete" },
+        { key: "messageUpdate", label: "Message Edit" }
+      ]
+    },
+    {
+      id: "channels",
+      name: "Channels",
+      events: [
+        { key: "channelCreate", label: "Channel Create" },
+        { key: "channelDelete", label: "Channel Delete" },
+        { key: "channelUpdate", label: "Channel Update" }
+      ]
+    },
+    {
+      id: "roles",
+      name: "Roles",
+      events: [
+        { key: "roleCreate", label: "Role Create" },
+        { key: "roleDelete", label: "Role Delete" },
+        { key: "roleUpdate", label: "Role Update" }
+      ]
+    },
+    {
+      id: "members",
+      name: "Members",
+      events: [
+        { key: "guildMemberAdd", label: "Member Join" },
+        { key: "guildMemberRemove", label: "Member Leave" },
+        { key: "guildMemberUpdate", label: "Member Update" }
+      ]
+    },
+    {
+      id: "voice",
+      name: "Voice",
+      events: [
+        { key: "voiceStateUpdate", label: "Voice Join/Leave/Move" }
+      ]
+    },
+    {
+      id: "threads",
+      name: "Threads",
+      events: [
+        { key: "threadCreate", label: "Thread Create" },
+        { key: "threadDelete", label: "Thread Delete" },
+        { key: "threadUpdate", label: "Thread Update" },
+        { key: "threadMemberUpdate", label: "Thread Member Update" }
+      ]
+    },
+    {
+      id: "invites",
+      name: "Invites & Webhooks",
+      events: [
+        { key: "inviteCreate", label: "Invite Create" },
+        { key: "inviteDelete", label: "Invite Delete" },
+        { key: "webhookUpdate", label: "Webhook Update" }
+      ]
+    },
+    {
+      id: "server",
+      name: "Server",
+      events: [
+        { key: "guildUpdate", label: "Server Update" }
+      ]
+    }
+  ];
+
+  const verificationModal = state.activeVerification ? `
+    <div class="verification-modal-overlay">
+      <div class="verification-modal">
+        <h3>Verify Thread/Forum Channel</h3>
+        <p>Log channel setup for <strong>${state.activeVerification.eventKey}</strong>.</p>
+        <p>1. Copy this verification code:</p>
+        <div class="verification-code-box">
+          <code>!verify-log ${state.activeVerification.token}</code>
+          <button type="button" class="copy-btn" data-copy-verification-token>Copy</button>
+        </div>
+        <p>2. Paste this code into the Discord thread or forum channel you wish to use.</p>
+        <p>3. The bot will automatically verify the channel and configure it.</p>
+        <div class="modal-actions">
+          <button type="button" class="button" data-refresh-logging>Check Verification</button>
+          <button type="button" class="button ghost" data-close-verification>Close</button>
+        </div>
+      </div>
+    </div>
+  ` : "";
+
+  const channelTabContent = `
+    <div class="setting-grid single" style="margin-bottom: 20px;">
+      <p style="color: #9e969a;">Configure target channels for specific log types. Grouped by category.</p>
+    </div>
+    ${categories.map(cat => {
+      const categoryChannel = (() => {
+        const channelIds = cat.events.map(evt => state.draft.logging.eventChannels?.[evt.key] || "");
+        const first = channelIds[0];
+        if (first && channelIds.every(id => id === first)) {
+          return first;
+        }
+        return "";
+      })();
+      return `
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <span class="mini-icon"><i data-lucide="folder"></i></span>
+              <div>
+                <h2>${escapeHtml(cat.name)}</h2>
+                <p>Set logging channel for this category.</p>
+              </div>
+            </div>
+            <div style="min-width: 200px;">
+              <select class="select" data-category-mass-select="${escapeAttr(cat.id)}">
+                <option value="" ${categoryChannel === "" ? "selected" : ""}>Set category channel...</option>
+                ${textChannels().map(ch => `<option value="${ch.id}" ${ch.id === categoryChannel ? "selected" : ""}>#${escapeHtml(ch.name)}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div class="setting-grid" style="grid-template-columns: 1fr; gap: 15px; padding: 20px;">
+            ${cat.events.map(evt => {
+              const currentChan = state.draft.logging.eventChannels?.[evt.key] || "";
+              return `
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2b2d31; padding-bottom: 10px;">
+                  <label style="font-weight: 500;">${escapeHtml(evt.label)}</label>
+                  <div style="display: flex; gap: 10px; align-items: center;">
+                    <select class="select" data-bind="logging.eventChannels.${evt.key}" style="min-width: 200px;">
+                      <option value="">Disabled</option>
+                      ${textChannels().map(ch => `<option value="${ch.id}" ${ch.id === currentChan ? "selected" : ""}>#${escapeHtml(ch.name)}</option>`).join("")}
+                    </select>
+                    <button type="button" class="button ghost" data-verify-thread="${escapeAttr(evt.key)}" style="padding: 6px 12px; height: auto; font-size: 0.8em;">Thread Setup</button>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }).join("")}
+  `;
+
+  const ignoreTabContent = `
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <span class="mini-icon"><i data-lucide="eye-off"></i></span>
+          <div><h2>Ignore Settings</h2><p>Ignore specific channels, roles, users, and message components from logs.</p></div>
+        </div>
+      </div>
+      <div class="setting-grid">
+        <div class="field">${toggleLine("logging.ignoreEmbeds", "Ignore Embed Messages")}</div>
+        <div class="field">${toggleLine("logging.ignorePolls", "Ignore Poll Deletions")}</div>
+        <div class="field">${toggleLine("logging.ignoreSticky", "Ignore Sticky Messages")}</div>
+        <div class="field">${toggleLine("logging.applyIgnoreToVoice", "Apply Ignores to Voice Events")}</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <span class="mini-icon"><i data-lucide="alert-octagon"></i></span>
+          <div><h2>Bypass Config</h2><p>Bypass logging entirely for selected resources.</p></div>
+        </div>
+      </div>
+      <div class="setting-grid">
+        ${multiSelectField("Ignored Roles", "logging.ignoredRoles", state.data.roles)}
+        ${textareaField("Ignored Channel IDs (one per line)", "logging.ignoredChannels", { lines: true })}
+        ${textareaField("Ignored User IDs (one per line)", "logging.ignoredUsers", { lines: true })}
+      </div>
+    </div>
+  `;
 
   return `
     <section class="page wide">
-      ${pageHead("file-text", "Audit Logging Configuration", "Setup logging channel for bot and security events.")}
+      ${pageHead("file-text", "Audit Logging Configuration", "Setup logging channels, verification codes, and ignore preferences.")}
       
       <div class="panel">
         <div class="panel-head">
@@ -438,41 +615,82 @@ function renderLogging() {
             <span class="mini-icon"><i data-lucide="file-text"></i></span>
             <div>
               <h2>${enabled ? "Logging active" : "Logging disabled"}</h2>
-              <p>${enabled ? "Security events are being logged to your audit channel." : "Enable to start logging security and antinuke events."}</p>
+              <p>${enabled ? "Security and server events are being logged." : "Enable to start logging events."}</p>
             </div>
           </div>
-          ${toggleField("antinuke.isEnabled")}
-        </div>
-        <div class="setting-grid single">
-          ${selectField("Logging channel", "antinuke.logChannelId", textChannels(), "Auto create bot-logs")}
+          ${toggleField("logging.isEnabled")}
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span class="mini-icon"><i data-lucide="shield"></i></span>
-            <div>
-              <h2>Monitored Security Events</h2>
-              <p>Toggle individual events to control what gets logged to your audit channel.</p>
-            </div>
-          </div>
-        </div>
-        <div class="setting-grid">
-          ${loggingEvents.map(({ key, label }) => {
-            const isOn = !disabled.has(key);
-            return `
-              <div class="row-head">
-                <label>${escapeHtml(label)}</label>
-                <label class="toggle">
-                  <input type="checkbox" data-event-toggle="antinuke.disabledEvents" data-event-key="${escapeAttr(key)}" ${isOn ? "checked" : ""}>
-                  <span></span>
-                </label>
-              </div>
-            `;
-          }).join("")}
-        </div>
+      ${renderLoggingTabs()}
+      
+      <div class="logging-tab-content" style="margin-top: 20px;">
+        ${state.loggingTab === "ignores" ? ignoreTabContent : channelTabContent}
       </div>
+
+      ${verificationModal}
+
+      <style>
+        .verification-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.75);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 10000;
+        }
+        .verification-modal {
+          background: #1e1f22;
+          border: 1px solid #3f4147;
+          border-radius: 8px;
+          padding: 24px;
+          max-width: 500px;
+          width: 90%;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+          color: #dbdee1;
+        }
+        .verification-modal h3 {
+          margin-top: 0;
+          color: #fff;
+        }
+        .verification-code-box {
+          display: flex;
+          background: #2b2d31;
+          border: 1px solid #1e1f22;
+          border-radius: 4px;
+          padding: 12px;
+          margin: 16px 0;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .verification-code-box code {
+          color: #5865f2;
+          font-weight: bold;
+          font-family: monospace;
+          user-select: all;
+        }
+        .verification-code-box .copy-btn {
+          background: #5865f2;
+          color: #fff;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .verification-code-box .copy-btn:hover {
+          background: #4752c4;
+        }
+        .modal-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+          margin-top: 24px;
+        }
+      </style>
     </section>
   `;
 }
@@ -2004,6 +2222,82 @@ function bindGlobalActions() {
   bindAvatarImages();
   bindWheelPassthrough();
 
+  // Bind advanced logging events
+  app.querySelectorAll("[data-logging-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.loggingTab = button.dataset.loggingTab || "channels";
+      localStorage.setItem("dsc:loggingTab", state.loggingTab);
+      renderShell();
+    });
+  });
+
+  app.querySelectorAll("[data-verify-thread]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const eventKey = button.dataset.verifyThread;
+      try {
+        const res = await api(`/api/guilds/${state.guildId}/verify-log-token`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ eventKey })
+        });
+        if (res.token) {
+          state.activeVerification = { token: res.token, eventKey };
+          renderShell();
+        }
+      } catch (err) {
+        alert("Failed to generate token: " + err.message);
+      }
+    });
+  });
+
+  app.querySelector("[data-close-verification]")?.addEventListener("click", () => {
+    state.activeVerification = null;
+    renderShell();
+  });
+
+  app.querySelector("[data-refresh-logging]")?.addEventListener("click", async () => {
+    state.activeVerification = null;
+    await loadGuild(state.guildId);
+  });
+
+  app.querySelector("[data-copy-verification-token]")?.addEventListener("click", () => {
+    if (state.activeVerification) {
+      navigator.clipboard.writeText(`!verify-log ${state.activeVerification.token}`);
+      const btn = app.querySelector("[data-copy-verification-token]");
+      if (btn) {
+        btn.textContent = "Copied!";
+        setTimeout(() => { btn.textContent = "Copy"; }, 2000);
+      }
+    }
+  });
+
+  // Category mass select handler
+  app.querySelectorAll("[data-category-mass-select]").forEach((select) => {
+    select.addEventListener("change", () => {
+      const channelId = select.value;
+      const catId = select.dataset.categoryMassSelect;
+      const categories = {
+        messages: ["messageDelete", "messageUpdate"],
+        channels: ["channelCreate", "channelDelete", "channelUpdate"],
+        roles: ["roleCreate", "roleDelete", "roleUpdate"],
+        members: ["guildMemberAdd", "guildMemberRemove", "guildMemberUpdate"],
+        voice: ["voiceStateUpdate"],
+        threads: ["threadCreate", "threadDelete", "threadUpdate", "threadMemberUpdate"],
+        invites: ["inviteCreate", "inviteDelete", "webhookUpdate"],
+        server: ["guildUpdate"]
+      };
+
+      const keys = categories[catId];
+      if (keys) {
+        keys.forEach(key => {
+          setPath(state.draft, `logging.eventChannels.${key}`, channelId);
+        });
+        markDirty();
+        renderShell();
+      }
+    });
+  });
+
   // Bind sidebar module toggles
   app.querySelectorAll("[data-sidebar-toggle]").forEach((toggle) => {
     toggle.addEventListener("click", (event) => {
@@ -2496,7 +2790,18 @@ async function api(path, options = {}) {
 }
 
 function textChannels() {
-  return (state.data?.channels || []).filter((channel) => channel.type === 0 || channel.type === 5 || channel.type === 15);
+  const channels = state.data?.channels || [];
+  return channels.filter((channel) => {
+    if (channel.type === 0 || channel.type === 5 || channel.type === 15) return true;
+    if (channel.type === 10 || channel.type === 11 || channel.type === 12) {
+      const parent = channels.find(c => c.id === channel.parentId);
+      if (parent && parent.type === 15) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  });
 }
 
 function voiceChannels() {
@@ -2632,6 +2937,17 @@ function ensureDraftShape() {
     dynamic.attachedId = dynamic.templates[0]?.id || "default";
   }
   state.dynamicImageIndex = clampIndex(state.dynamicImageIndex, dynamic.templates.length);
+
+  state.draft.logging ||= {};
+  state.draft.logging.isEnabled = Boolean(state.draft.logging.isEnabled);
+  state.draft.logging.eventChannels ||= {};
+  state.draft.logging.ignoredChannels ||= [];
+  state.draft.logging.ignoredRoles ||= [];
+  state.draft.logging.ignoredUsers ||= [];
+  state.draft.logging.ignoreEmbeds = Boolean(state.draft.logging.ignoreEmbeds);
+  state.draft.logging.ignorePolls = Boolean(state.draft.logging.ignorePolls);
+  state.draft.logging.ignoreSticky = Boolean(state.draft.logging.ignoreSticky);
+  state.draft.logging.applyIgnoreToVoice = Boolean(state.draft.logging.applyIgnoreToVoice);
 }
 
 function initial(text) {
