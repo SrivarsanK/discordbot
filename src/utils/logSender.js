@@ -95,7 +95,12 @@ async function sendEventLog(client, guild, eventKey, buildEmbedFn, contextData =
         inviteCreate: "Invite logs",
         inviteDelete: "Invite logs",
         webhookUpdate: "Webhook logs",
-        guildUpdate: "Server logs"
+        guildUpdate: "Server logs",
+        guildBanAdd: "Moderation logs",
+        guildBanRemove: "Moderation logs",
+        guildMemberKick: "Moderation logs",
+        guildMemberTimeout: "Moderation logs",
+        messageDeleteBulk: "Moderation logs"
       };
 
       const threadName = FORUM_THREAD_NAMES[eventKey] || `${eventKey} logs`;

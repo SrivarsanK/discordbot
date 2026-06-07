@@ -11,7 +11,10 @@ const VALID_EVENTS = [
   "threadCreate", "threadDelete", "threadUpdate",
   "inviteCreate", "inviteDelete",
   "webhookUpdate",
-  "guildUpdate"
+  "guildUpdate",
+  "guildBanAdd", "guildBanRemove",
+  "guildMemberKick", "guildMemberTimeout",
+  "messageDeleteBulk"
 ];
 
 const EVENT_LABELS = {
@@ -24,7 +27,7 @@ const EVENT_LABELS = {
   roleDelete: "🛡️ Role Delete",
   roleUpdate: "🛡️ Role Update",
   guildMemberAdd: "📥 Member Join",
-  guildMemberRemove: "📤 Member Leave/Kick/Ban",
+  guildMemberRemove: "📤 Member Leave",
   guildMemberUpdate: "👤 Member Update",
   voiceStateUpdate: "🔊 Voice State Update",
   threadCreate: "🧵 Thread Create",
@@ -33,7 +36,12 @@ const EVENT_LABELS = {
   inviteCreate: "✉️ Invite Create",
   inviteDelete: "✉️ Invite Delete",
   webhookUpdate: "🔗 Webhook Update",
-  guildUpdate: "🏢 Server Update"
+  guildUpdate: "🏢 Server Update",
+  guildBanAdd: "🔨 Member Ban",
+  guildBanRemove: "🔓 Member Unban",
+  guildMemberKick: "👢 Member Kick",
+  guildMemberTimeout: "⏳ Member Timeout",
+  messageDeleteBulk: "🧹 Message Purge (Bulk Delete)"
 };
 
 module.exports = {

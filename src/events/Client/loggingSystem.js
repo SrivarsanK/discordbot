@@ -219,30 +219,33 @@ module.exports = {
     });
 
     client.on("guildMemberRemove", async (member) => {
+      const banLog = await fetchExecutor(member.guild, AuditLogEvent.MemberBanAdd);
+      if (banLog) {
+        // Skip guildMemberRemove since guildBanAdd will handle it
+        return;
+      }
+
+      const kickLog = await fetchExecutor(member.guild, AuditLogEvent.MemberKick);
+      if (kickLog) {
+        await sendEventLog(client, member.guild, "guildMemberKick", async () => {
+          const embed = new EmbedBuilder()
+            .setTitle("👢 Member Kicked")
+            .setColor("#ffaa00")
+            .setThumbnail(member.user.displayAvatarURL())
+            .setDescription(`**User:** ${member.user} (${member.user.tag})\n**ID:** ${member.id}\n` +
+              `**Kicked By:** ${kickLog} (${kickLog.tag})`)
+            .setTimestamp();
+          return { embeds: [embed] };
+        });
+        return;
+      }
+
       await sendEventLog(client, member.guild, "guildMemberRemove", async () => {
-        const kickLog = await fetchExecutor(member.guild, AuditLogEvent.MemberKick);
-        const banLog = await fetchExecutor(member.guild, AuditLogEvent.MemberBan);
-
-        let action = "Left the server";
-        let color = "#aaaaaa";
-        let executor = null;
-
-        if (banLog) {
-          action = "Banned from server";
-          color = "#ff3333";
-          executor = banLog;
-        } else if (kickLog) {
-          action = "Kicked from server";
-          color = "#ff8833";
-          executor = kickLog;
-        }
-
         const embed = new EmbedBuilder()
-          .setTitle(`📤 Member ${banLog ? "Banned" : (kickLog ? "Kicked" : "Left")}`)
-          .setColor(color)
+          .setTitle("📤 Member Left")
+          .setColor("#aaaaaa")
           .setThumbnail(member.user.displayAvatarURL())
-          .setDescription(`**User:** ${member.user} (${member.user.tag})\n**Action:** ${action}\n` +
-            (executor ? `**Responsible Mod:** ${executor} (${executor.tag})` : ""))
+          .setDescription(`**User:** ${member.user} (${member.user.tag})\n**ID:** ${member.id}\n**Action:** Left the server`)
           .setTimestamp();
 
         return { embeds: [embed] };
@@ -250,6 +253,25 @@ module.exports = {
     });
 
     client.on("guildMemberUpdate", async (oldMember, newMember) => {
+      // Timeout check first
+      if (oldMember.communicationDisabledUntilTimestamp !== newMember.communicationDisabledUntilTimestamp) {
+        const isTimeout = !!newMember.communicationDisabledUntilTimestamp;
+        const executor = await fetchExecutor(newMember.guild, AuditLogEvent.MemberUpdate);
+        
+        await sendEventLog(client, newMember.guild, "guildMemberTimeout", async () => {
+          const embed = new EmbedBuilder()
+            .setTitle(isTimeout ? "⏳ Member Timed Out" : "⏳ Member Timeout Removed")
+            .setColor(isTimeout ? "#ffaa00" : "#33ff33")
+            .setThumbnail(newMember.user.displayAvatarURL())
+            .setDescription(`**Member:** ${newMember} (${newMember.user.tag})\n**ID:** ${newMember.id}\n` +
+              (isTimeout ? `**Duration:** Timed out until <t:${Math.floor(newMember.communicationDisabledUntilTimestamp / 1000)}:f>\n` : "") +
+              (executor ? `**Responsible Mod:** ${executor} (${executor.tag})` : ""))
+            .setTimestamp();
+          return { embeds: [embed] };
+        });
+        return;
+      }
+
       await sendEventLog(client, newMember.guild, "guildMemberUpdate", async () => {
         const executor = await fetchExecutor(newMember.guild, AuditLogEvent.MemberUpdate);
         const changes = [];
@@ -269,15 +291,6 @@ module.exports = {
         }
         if (removedRoles.length > 0) {
           changes.push(`**Removed Roles:** ${removedRoles.map(rid => `<@&${rid}>`).join(", ")}`);
-        }
-
-        // Timeout check
-        if (oldMember.communicationDisabledUntilTimestamp !== newMember.communicationDisabledUntilTimestamp) {
-          if (newMember.communicationDisabledUntilTimestamp) {
-            changes.push(`**Timed Out Until:** <t:${Math.floor(newMember.communicationDisabledUntilTimestamp / 1000)}:f>`);
-          } else {
-            changes.push(`**Timeout Removed**`);
-          }
         }
 
         if (changes.length === 0) return null;
@@ -444,6 +457,57 @@ module.exports = {
 
         return { embeds: [embed] };
       });
+    });
+
+    // ── MODERATION EVENTS ──
+    client.on("guildBanAdd", async (ban) => {
+      await sendEventLog(client, ban.guild, "guildBanAdd", async () => {
+        const executor = await fetchExecutor(ban.guild, AuditLogEvent.MemberBanAdd);
+        const embed = new EmbedBuilder()
+          .setTitle("🔨 Member Banned")
+          .setColor("#ff3333")
+          .setThumbnail(ban.user.displayAvatarURL())
+          .setDescription(`**User:** ${ban.user} (${ban.user.tag})\n**ID:** ${ban.user.id}\n` +
+            (executor ? `**Banned By:** ${executor} (${executor.tag})\n` : "") +
+            `**Reason:** ${ban.reason || "No reason provided"}`)
+          .setTimestamp();
+        return { embeds: [embed] };
+      });
+    });
+
+    client.on("guildBanRemove", async (ban) => {
+      await sendEventLog(client, ban.guild, "guildBanRemove", async () => {
+        const executor = await fetchExecutor(ban.guild, AuditLogEvent.MemberBanRemove);
+        const embed = new EmbedBuilder()
+          .setTitle("🔓 Member Unbanned")
+          .setColor("#33ff33")
+          .setThumbnail(ban.user.displayAvatarURL())
+          .setDescription(`**User:** ${ban.user} (${ban.user.tag})\n**ID:** ${ban.user.id}\n` +
+            (executor ? `**Unbanned By:** ${executor} (${executor.tag})` : ""))
+          .setTimestamp();
+        return { embeds: [embed] };
+      });
+    });
+
+    client.on("messageDeleteBulk", async (messages) => {
+      const firstMsg = messages.first();
+      if (!firstMsg || !firstMsg.guild) return;
+
+      const context = {
+        channelId: firstMsg.channel.id,
+      };
+
+      await sendEventLog(client, firstMsg.guild, "messageDeleteBulk", async () => {
+        const executor = await fetchExecutor(firstMsg.guild, AuditLogEvent.MessageBulkDelete);
+        const embed = new EmbedBuilder()
+          .setTitle("🧹 Messages Purged")
+          .setColor("#ff5500")
+          .setDescription(`**Channel:** ${firstMsg.channel}\n` +
+            `**Amount:** \`${messages.size}\` messages\n` +
+            (executor ? `**Purged By:** ${executor} (${executor.tag})` : ""))
+          .setTimestamp();
+        return { embeds: [embed] };
+      }, context);
     });
   },
 };

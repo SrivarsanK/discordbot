@@ -500,6 +500,17 @@ function renderLogging() {
       events: [
         { key: "guildUpdate", label: "Server Update" }
       ]
+    },
+    {
+      id: "moderation",
+      name: "Moderation",
+      events: [
+        { key: "guildBanAdd", label: "Member Ban" },
+        { key: "guildBanRemove", label: "Member Unban" },
+        { key: "guildMemberKick", label: "Member Kick" },
+        { key: "guildMemberTimeout", label: "Member Timeout" },
+        { key: "messageDeleteBulk", label: "Message Purge (Bulk Delete)" }
+      ]
     }
   ];
 
@@ -2284,7 +2295,8 @@ function bindGlobalActions() {
         voice: ["voiceStateUpdate"],
         threads: ["threadCreate", "threadDelete", "threadUpdate", "threadMemberUpdate"],
         invites: ["inviteCreate", "inviteDelete", "webhookUpdate"],
-        server: ["guildUpdate"]
+        server: ["guildUpdate"],
+        moderation: ["guildBanAdd", "guildBanRemove", "guildMemberKick", "guildMemberTimeout", "messageDeleteBulk"]
       };
 
       const keys = categories[catId];
