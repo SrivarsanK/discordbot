@@ -102,11 +102,15 @@ async function loadEmojiLibrary(client) {
           const applicationEmojis = await listApplicationEmojis(token, applicationId, timeoutMs);
           const byName = new Map(applicationEmojis.filter((emoji) => emoji.name).map((emoji) => [emoji.name, emoji]));
 
+          const missingEmojis = [];
           for (const item of libraryEmojis) {
             if (!item?.name) continue;
 
             const emoji = byName.get(item.applicationName) || byName.get(item.emojiName) || byName.get(item.name);
-            if (!emoji?.id) continue;
+            if (!emoji?.id) {
+              if (item.url) missingEmojis.push(item);
+              continue;
+            }
 
             const value = formatEmoji(emoji.name, emoji.id, emoji.animated);
             resolved[item.name] = value;
@@ -117,6 +121,13 @@ async function loadEmojiLibrary(client) {
           for (const [key, remoteName] of Object.entries(EMOJI_ALIASES)) {
             const emoji = byName.get(remoteName);
             if (emoji?.id) resolved[key] = formatEmoji(emoji.name, emoji.id, emoji.animated);
+          }
+
+          if (missingEmojis.length > 0) {
+            // Start background sync
+            syncMissingEmojis(token, applicationId, missingEmojis, byName, resolved, client, timeoutMs).catch((err) => {
+              client.logger?.log(`[EmojiLibrary] Background sync error: ${err.message || err}`, "warn");
+            });
           }
         } catch (error) {
           applicationWarning = ` Application emoji lookup skipped: ${error.message || error}.`;
@@ -145,6 +156,73 @@ async function loadEmojiLibrary(client) {
     client.logger?.log(`[EmojiLibrary] Failed to load remote emojis: ${error.message || error}`, "warn");
     return fallbackEmojis;
   }
+}
+
+async function syncMissingEmojis(token, applicationId, missingEmojis, byName, resolved, client, timeoutMs) {
+  client.logger?.log(`[EmojiLibrary] Found ${missingEmojis.length} missing application emojis. Starting background sync...`, "info");
+  
+  let successCount = 0;
+  let failCount = 0;
+
+  for (const item of missingEmojis) {
+    if (!item?.name || !item?.url) continue;
+    try {
+      const response = await fetchWithTimeout(item.url, {}, timeoutMs);
+      if (!response.ok) {
+        failCount++;
+        continue;
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString("base64");
+      const mimeType = item.mimeType || (item.animated ? "image/gif" : "image/webp");
+      const dataURI = `data:${mimeType};base64,${base64}`;
+
+      const newEmoji = await discordRequest(
+        token,
+        `/applications/${applicationId}/emojis`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: item.name,
+            image: dataURI,
+          }),
+        },
+        timeoutMs,
+      );
+
+      if (newEmoji?.id) {
+        const value = formatEmoji(newEmoji.name, newEmoji.id, newEmoji.animated);
+        resolved[item.name] = value;
+        resolved[item.name.toLowerCase()] = value;
+        
+        for (const [key, remoteName] of Object.entries(EMOJI_ALIASES)) {
+          if (remoteName === item.name) {
+            resolved[key] = value;
+          }
+        }
+        
+        byName.set(newEmoji.name, newEmoji);
+        successCount++;
+      } else {
+        failCount++;
+      }
+      
+      // Delay to respect rate limits
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      failCount++;
+      client.logger?.log(`[EmojiLibrary] Failed to sync emoji "${item.name}": ${error.message || error}`, "warn");
+      if (error.message && error.message.includes("429")) {
+        // Wait longer on 429
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+      }
+    }
+  }
+
+  client.logger?.log(`[EmojiLibrary] Background sync finished: ${successCount} synced, ${failCount} failed.`, "ready");
 }
 
 async function fetchLibraries(sourceUrl, fallbackUrls, timeoutMs, client) {

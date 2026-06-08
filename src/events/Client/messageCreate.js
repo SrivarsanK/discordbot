@@ -357,7 +357,7 @@ module.exports = {
       // Delete command trigger message
       message.delete().catch(() => {});
 
-      // Intercept channel.send and reply to auto-delete after 8 seconds
+      // Intercept channel.send and reply to auto-delete after 1 minute (60 seconds)
       const originalSend = message.channel.send.bind(message.channel);
       const originalReply = message.reply.bind(message);
 
@@ -367,7 +367,7 @@ module.exports = {
           if (sentMessage && typeof sentMessage.delete === "function") {
             setTimeout(() => {
               sentMessage.delete().catch(() => {});
-            }, 8000);
+            }, 60000);
           }
           return sentMessage;
         } catch (err) {
