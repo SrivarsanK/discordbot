@@ -8,9 +8,9 @@
 Requirements for the advanced logging system.
 
 ### Database Setup
-- [ ] **DB-01**: Define `logging` Drizzle table with configurations for enabled state, channel mappings, ignores (channels, roles, users, embeds, polls, sticky), and thread verification tokens.
-- [ ] **DB-02**: Create database shim `src/schema/logging.js` using `ShimModel`.
-- [ ] **DB-03**: Create and execute Neon database migration script `migrate-logging-system.js`.
+- [x] **DB-01**: Define `logging` Drizzle table with configurations for enabled state, channel mappings, ignores (channels, roles, users, embeds, polls, sticky), and thread verification tokens.
+- [x] **DB-02**: Create database shim `src/schema/logging.js` using `ShimModel`.
+- [x] **DB-03**: Create and execute Neon database migration script `migrate-logging-system.js`.
 
 ### Logging Core & Event Routing
 - [ ] **CORE-01**: Implement `src/utils/logSender.js` for checking ignores, building embeds, and posting to normal/thread channels.
@@ -43,9 +43,9 @@ Requirements for the advanced logging system.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DB-01 | Phase 1 | Pending |
-| DB-02 | Phase 1 | Pending |
-| DB-03 | Phase 1 | Pending |
+| DB-01 | Phase 1 | Completed |
+| DB-02 | Phase 1 | Completed |
+| DB-03 | Phase 1 | Completed |
 | CORE-01 | Phase 2 | Pending |
 | CORE-02 | Phase 2 | Pending |
 | EVT-01 | Phase 3 | Pending |

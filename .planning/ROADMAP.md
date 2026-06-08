@@ -6,7 +6,7 @@ Implementing a complete Sapphire-style logging system in the Discord bot. We wil
 
 ## Phases
 
-- [ ] **Phase 1: Database Setup & Migration** - Define the logging table, create schema shim, and migrate database.
+- [x] **Phase 1: Database Setup & Migration** - Define the logging table, create schema shim, and migrate database.
 - [ ] **Phase 2: Logging Core Utility & Thread Verification** - Implement the central logSender router and verification logic.
 - [ ] **Phase 3: Event Listeners** - Hook up all 10 categories of Discord events to the logSender.
 - [ ] **Phase 4: Dashboard Integration** - Build backend endpoints and frontend control page for logging.
@@ -22,7 +22,7 @@ Implementing a complete Sapphire-style logging system in the Discord bot. We wil
   1. Drizzle schema validates successfully.
   2. Neon database has the new `logging` table.
 **Plans**: 1 plan
-- [ ] 01-01: Setup database schema and run migration
+- [x] 01-01: Setup database schema and run migration
 
 ### Phase 2: Logging Core & Thread Verification
 **Goal**: Establish central logging engine and token validation.
@@ -67,7 +67,7 @@ Implementing a complete Sapphire-style logging system in the Discord bot. We wil
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Database Setup | 0/1 | Not started | - |
+| 1. Database Setup | 1/1 | Completed | 2026-06-08 |
 | 2. Logging Core | 0/1 | Not started | - |
 | 3. Event Listeners | 0/1 | Not started | - |
 | 4. Dashboard | 0/1 | Not started | - |
