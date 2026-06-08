@@ -13,8 +13,8 @@ Requirements for the advanced logging system.
 - [x] **DB-03**: Create and execute Neon database migration script `migrate-logging-system.js`.
 
 ### Logging Core & Event Routing
-- [ ] **CORE-01**: Implement `src/utils/logSender.js` for checking ignores, building embeds, and posting to normal/thread channels.
-- [ ] **CORE-02**: Intercept `!verify-log <token>` command in `messageCreate.js` to verify thread/forum channels and assign them.
+- [x] **CORE-01**: Implement `src/utils/logSender.js` for checking ignores, building embeds, and posting to normal/thread channels.
+- [x] **CORE-02**: Intercept `!verify-log <token>` command in `messageCreate.js` to verify thread/forum channels and assign them.
 
 ### Event Listeners
 - [ ] **EVT-01**: Implement Message events (`messageDelete`, `messageUpdate`).
@@ -46,8 +46,8 @@ Requirements for the advanced logging system.
 | DB-01 | Phase 1 | Completed |
 | DB-02 | Phase 1 | Completed |
 | DB-03 | Phase 1 | Completed |
-| CORE-01 | Phase 2 | Pending |
-| CORE-02 | Phase 2 | Pending |
+| CORE-01 | Phase 2 | Completed |
+| CORE-02 | Phase 2 | Completed |
 | EVT-01 | Phase 3 | Pending |
 | EVT-02 | Phase 3 | Pending |
 | EVT-03 | Phase 3 | Pending |
