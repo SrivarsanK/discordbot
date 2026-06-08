@@ -17,14 +17,14 @@ Requirements for the advanced logging system.
 - [x] **CORE-02**: Intercept `!verify-log <token>` command in `messageCreate.js` to verify thread/forum channels and assign them.
 
 ### Event Listeners
-- [ ] **EVT-01**: Implement Message events (`messageDelete`, `messageUpdate`).
-- [ ] **EVT-02**: Implement Channel events (`channelCreate`, `channelDelete`, `channelUpdate`).
-- [ ] **EVT-03**: Implement Role events (`roleCreate`, `roleDelete`, `roleUpdate`).
-- [ ] **EVT-04**: Implement Member events (`guildMemberAdd`, `guildMemberRemove`, `guildMemberUpdate`).
-- [ ] **EVT-05**: Implement Voice state events (`voiceStateUpdate`).
-- [ ] **EVT-06**: Implement Thread events (`threadCreate`, `threadDelete`, `threadUpdate`, `threadMemberUpdate`).
-- [ ] **EVT-07**: Implement Invite & Webhook events (`inviteCreate`, `inviteDelete`, `webhookUpdate`).
-- [ ] **EVT-08**: Implement Server update event (`guildUpdate`).
+- [x] **EVT-01**: Implement Message events (`messageDelete`, `messageUpdate`).
+- [x] **EVT-02**: Implement Channel events (`channelCreate`, `channelDelete`, `channelUpdate`).
+- [x] **EVT-03**: Implement Role events (`roleCreate`, `roleDelete`, `roleUpdate`).
+- [x] **EVT-04**: Implement Member events (`guildMemberAdd`, `guildMemberRemove`, `guildMemberUpdate`).
+- [x] **EVT-05**: Implement Voice state events (`voiceStateUpdate`).
+- [x] **EVT-06**: Implement Thread events (`threadCreate`, `threadDelete`, `threadUpdate`, `threadMemberUpdate`).
+- [x] **EVT-07**: Implement Invite & Webhook events (`inviteCreate`, `inviteDelete`, `webhookUpdate`).
+- [x] **EVT-08**: Implement Server update event (`guildUpdate`).
 
 ### Dashboard Integration
 - [ ] **DASH-01**: Extend `server.js` settings load/save with the new logging attributes and verification endpoint.
@@ -48,14 +48,14 @@ Requirements for the advanced logging system.
 | DB-03 | Phase 1 | Completed |
 | CORE-01 | Phase 2 | Completed |
 | CORE-02 | Phase 2 | Completed |
-| EVT-01 | Phase 3 | Pending |
-| EVT-02 | Phase 3 | Pending |
-| EVT-03 | Phase 3 | Pending |
-| EVT-04 | Phase 3 | Pending |
-| EVT-05 | Phase 3 | Pending |
-| EVT-06 | Phase 3 | Pending |
-| EVT-07 | Phase 3 | Pending |
-| EVT-08 | Phase 3 | Pending |
+| EVT-01 | Phase 3 | Completed |
+| EVT-02 | Phase 3 | Completed |
+| EVT-03 | Phase 3 | Completed |
+| EVT-04 | Phase 3 | Completed |
+| EVT-05 | Phase 3 | Completed |
+| EVT-06 | Phase 3 | Completed |
+| EVT-07 | Phase 3 | Completed |
+| EVT-08 | Phase 3 | Completed |
 | DASH-01 | Phase 4 | Pending |
 | DASH-02 | Phase 4 | Pending |
 | CMD-01 | Phase 5 | Pending |

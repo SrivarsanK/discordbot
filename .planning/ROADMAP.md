@@ -8,7 +8,7 @@ Implementing a complete Sapphire-style logging system in the Discord bot. We wil
 
 - [x] **Phase 1: Database Setup & Migration** - Define the logging table, create schema shim, and migrate database.
 - [x] **Phase 2: Logging Core Utility & Thread Verification** - Implement the central logSender router and verification logic.
-- [ ] **Phase 3: Event Listeners** - Hook up all 10 categories of Discord events to the logSender.
+- [x] **Phase 3: Event Listeners** - Hook up all 10 categories of Discord events to the logSender.
 - [ ] **Phase 4: Dashboard Integration** - Build backend endpoints and frontend control page for logging.
 - [ ] **Phase 5: Discord Chat Command** - Implement `/log` command for setup via chat.
 
@@ -42,7 +42,7 @@ Implementing a complete Sapphire-style logging system in the Discord bot. We wil
   1. Events (deletions, updates, additions) in server trigger log generation.
   2. Deleted/edited messages, roles, channels, members join/leave, voice state changes log correctly.
 **Plans**: 1 plan
-- [ ] 03-01: Add all Discord event listeners
+- [x] 03-01: Add all Discord event listeners
 
 ### Phase 4: Dashboard Integration
 **Goal**: Setup dashboard API and UI for full customization.
@@ -69,6 +69,6 @@ Implementing a complete Sapphire-style logging system in the Discord bot. We wil
 |-------|----------------|--------|-----------|
 | 1. Database Setup | 1/1 | Completed | 2026-06-08 |
 | 2. Logging Core | 1/1 | Completed | 2026-06-08 |
-| 3. Event Listeners | 0/1 | Not started | - |
+| 3. Event Listeners | 1/1 | Completed | 2026-06-08 |
 | 4. Dashboard | 0/1 | Not started | - |
 | 5. Chat Command | 0/1 | Not started | - |
