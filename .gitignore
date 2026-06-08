@@ -7,3 +7,4 @@ gsd-core/
 .agent/
 .agents/skills/
 skills-lock.json
+.fallow/

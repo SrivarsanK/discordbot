@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "Shard.js",
+    "index.js",
+    "shards.js",
+    "migrate-disabled-events.js",
+    "migrate-logging-system.js",
+    "drizzle.config.js"
+  ],
+  "dynamicallyLoaded": [
+    "src/commands/**/*.js",
+    "src/slashCommands/**/*.js",
+    "src/events/**/*.js",
+    "src/loaders/**/*.js"
+  ],
+  "ignorePatterns": [
+    "gsd-core/**",
+    "scratch/**",
+    "src/dashboard/public/**"
+  ],
+  "ignoreExports": [
+    { "file": "src/commands/**/*.js", "exports": ["*"] },
+    { "file": "src/slashCommands/**/*.js", "exports": ["*"] },
+    { "file": "src/events/**/*.js", "exports": ["*"] },
+    { "file": "src/loaders/**/*.js", "exports": ["*"] },
+    { "file": "src/utils/convert.js", "exports": ["convertNumber", "chunk", "convertHmsToMs"] },
+    { "file": "src/utils/premiumFeatures.js", "exports": ["getActivePremium", "clearPremiumCache", "isPremiumEnabled", "levelFromXp"] },
+    { "file": "src/db/shim.js", "exports": ["Document"] },
+    { "file": "src/schema/welcomesystem.js", "exports": ["Model"] },
+    { "file": "src/utils/botMeta.js", "exports": ["getBrandText"] },
+    { "file": "src/utils/webhook.js", "exports": ["isValidWebhookUrl"] },
+    { "file": "src/utils/welcomeImage.js", "exports": ["DEFAULT_DYNAMIC_IMAGE_TEMPLATE"] }
+  ],
+  "ignoreDependencies": [
+    "undici"
+  ],
+  "ignoreUnresolvedImports": [
+    "/assets/app.js?v=*",
+    "/assets/styles.css?v=*",
+    "/assets/app.js?v=dashboard-20260524-26",
+    "/assets/styles.css?v=dashboard-20260524-26"
+  ],
+  "rules": {
+    "unresolved-imports": "error",
+    "unlisted-dependencies": "error",
+    "unused-exports": "warn"
+  },
+  "duplicates": {
+    "mode": "mild",
+    "minTokens": 50,
+    "minLines": 5,
+    "threshold": 0
+  }
+}
