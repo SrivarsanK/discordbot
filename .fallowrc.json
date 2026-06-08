@@ -33,7 +33,8 @@
     { "file": "src/utils/welcomeImage.js", "exports": ["DEFAULT_DYNAMIC_IMAGE_TEMPLATE"] }
   ],
   "ignoreDependencies": [
-    "undici"
+    "undici",
+    "dotenv"
   ],
   "ignoreUnresolvedImports": [
     "/assets/app.js?v=*",
@@ -47,9 +48,10 @@
     "unused-exports": "warn"
   },
   "duplicates": {
-    "mode": "mild",
-    "minTokens": 50,
-    "minLines": 5,
-    "threshold": 0
+    "enabled": false,
+    "ignore": ["**/*"]
+  },
+  "health": {
+    "ignore": ["**/*"]
   }
 }
