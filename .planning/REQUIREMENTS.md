@@ -27,8 +27,8 @@ Requirements for the advanced logging system.
 - [x] **EVT-08**: Implement Server update event (`guildUpdate`).
 
 ### Dashboard Integration
-- [ ] **DASH-01**: Extend `server.js` settings load/save with the new logging attributes and verification endpoint.
-- [ ] **DASH-02**: Rebuild the "Logging" module page in `app.js` to show Categories, Event selectors, Thread Verification instructions, and Ignores.
+- [x] **DASH-01**: Extend `server.js` settings load/save with the new logging attributes and verification endpoint.
+- [x] **DASH-02**: Rebuild the "Logging" module page in `app.js` to show Categories, Event selectors, Thread Verification instructions, and Ignores.
 
 ### Discord Commands
 - [ ] **CMD-01**: Implement `/log` command with subcommands: `set <channel> <types>`, `remove <types>`, `ignore <channel|role|user>`, and `view`.
@@ -56,8 +56,8 @@ Requirements for the advanced logging system.
 | EVT-06 | Phase 3 | Completed |
 | EVT-07 | Phase 3 | Completed |
 | EVT-08 | Phase 3 | Completed |
-| DASH-01 | Phase 4 | Pending |
-| DASH-02 | Phase 4 | Pending |
+| DASH-01 | Phase 4 | Completed |
+| DASH-02 | Phase 4 | Completed |
 | CMD-01 | Phase 5 | Pending |
 
 **Coverage:**
