@@ -1,16 +1,16 @@
 # DSC SRM RMP Discord Bot
 
-A feature-rich, all-in-one Discord bot with music, moderation, anti-nuke, automation, and much more! Built with discord.js v14, MongoDB for data persistence, and hybrid sharding for scalability.
+A feature-rich, all-in-one Discord bot with music, moderation, anti-nuke, automation, and much more! Built with discord.js v14, Neon Postgres (Drizzle ORM) for data persistence, and hybrid sharding for scalability.
 
 ## Description
 DSC SRM RMP is a complete Discord bot solution that offers:
 - Advanced music system with Kazagumo & Shoukaku
 - Comprehensive anti-nuke protection
 - Powerful moderation tools
-- Automation features (auto-responder, auto-react, auto-role, etc.)
+- Advanced logging system with thread/forum verification
+- Automation features (auto-responder, auto-react, auto-role, welcome messages, leveling, etc.)
 - Built-in web dashboard for easy management
 - Emoji Manager for managing Discord application emojis
-- Premium features with leveling, sticky messages, and more
 
 ## Features
 
@@ -21,7 +21,7 @@ DSC SRM RMP is a complete Discord bot solution that offers:
 - 24/7 mode, autoplay, loop, shuffle, seek, and more
 - Both prefix commands and slash commands available
 
-### �️ Anti-Nuke & Security
+### 🛡️ Anti-Nuke & Security
 - Comprehensive anti-nuke protection
 - Detects and blocks mass bans, kicks, role deletes, channel deletes, etc.
 - Whitelist system for trusted users
@@ -38,27 +38,39 @@ DSC SRM RMP is a complete Discord bot solution that offers:
 - Steal emojis and stickers
 - Server info and user info commands
 
+### 📝 Advanced Logging System
+- Per-event logging configuration with distinct, visual channel type indicators (Text, Announcement, Forum, Thread, Voice, Stage).
+- Support for normal text channels, threads, or forum parent channel destinations (automatically creates separate log threads).
+- Interactive thread/forum validation token system (`!verify-log <token>`) to securely hook channels from Discord.
+- Event ignore lists for channels, roles, and users.
+- Custom filters for ignoring embeds, poll deletions, and sticky messages.
+- Dedicated categories including:
+  - **Messages** (Edit, Delete)
+  - **Channels** (Create, Delete, Update)
+  - **Roles** (Create, Delete, Update)
+  - **Members** (Join, Leave, Profile Updates)
+  - **Voice** (Join, Leave, Move)
+  - **Threads** (Create, Delete, Update, Member Join)
+  - **Invites & Webhooks** (Create, Delete, Webhook updates)
+  - **Server** (Server profile updates)
+  - **Moderation** (Ban, Unban, Kick, Timeout, Message Purges)
+
 ### ⚙️ Automation
 - Auto-responder: Custom message triggers and replies
 - Auto-react: Automatic reactions to messages
-- Auto-role: Assign roles on member join
+- Auto-role: Assign human/bot roles on member join (failsafe with API backup)
 - Voice roles: Assign roles based on voice channel activity
 - Welcome system: Custom welcome messages and banners
 - AFK system
-- Leveling system (premium)
-
-### 🎉 Fun & Utility
-- Games (8ball, coinflip, rps, etc.)
-- Memes, text-to-emoji, and interactive commands
-- Image manipulation commands (kiss, hug, slap, etc.)
-- User profiles with bio and badges
-- Server banners, icons, and more
+- Leveling system: Chat and voice XP with level-up messages
+- VC Guard: Protect selected voice channels with bypass roles
+- Sticky messages: Keep important messages pinned to the bottom of channels
 
 ### 📊 Dashboard
 - Built-in web dashboard for easy bot management
 - Discord OAuth2 login
 - Server management
-- Settings configuration
+- Settings configuration (Welcome, Automod, Logging, Leveling, VC Guard, Sticky, Roles)
 - Default local URL: http://localhost:3000
 
 ### 😊 Emoji Manager
@@ -67,58 +79,10 @@ DSC SRM RMP is a complete Discord bot solution that offers:
 - Web UI for managing and syncing emojis
 - Default local URL: http://localhost:3077
 
-## Project Structure
-```
-dsc/
-├── emoji-manager/          # Standalone emoji manager server
-│   ├── public/             # Frontend files for emoji manager
-│   ├── package.json
-│   └── server.js
-├── src/
-│   ├── commands/           # Prefix-based commands organized by category
-│   │   ├── Antinuke/
-│   │   ├── Automod/
-│   │   ├── Config/
-│   │   ├── Extra/
-│   │   ├── Fun/
-│   │   ├── Image/
-│   │   ├── Information/
-│   │   ├── Moderation/
-│   │   ├── Music/
-│   │   ├── Owner/
-│   │   ├── Pfps/
-│   │   ├── Playlist/
-│   │   ├── Profile/
-│   │   ├── Role/
-│   │   ├── Utility/
-│   │   ├── Voice/
-│   │   └── Welcome/
-│   ├── custom/             # Custom utilities (buttons, embeds, etc.)
-│   ├── dashboard/          # Web dashboard server and frontend
-│   ├── events/             # Event handlers
-│   │   ├── Antinuke/
-│   │   ├── AutoMod/
-│   │   ├── Client/
-│   │   ├── Node/
-│   │   └── Players/
-│   ├── loaders/            # Module loaders
-│   ├── schema/             # MongoDB schemas
-│   ├── slashCommands/      # Slash commands organized by category
-│   ├── structures/         # Custom client structures
-│   ├── utils/              # Utility functions
-│   └── config.js           # Bot configuration
-├── .gitignore
-├── README.md
-├── Shard.js                # Sharding manager entry point
-├── index.js                # Bot main entry point
-├── package-lock.json
-└── package.json
-```
-
 ## Tech Stack
 - **discord.js v14** - Discord API library
 - **discord-hybrid-sharding** - Hybrid sharding for scalability
-- **mongoose** - MongoDB ODM
+- **drizzle-orm** & **@neondatabase/serverless** - Neon Serverless Postgres database ODM
 - **kazagumo & shoukaku** - Music player system
 - **canvacard, canvafy, musicard** - Image/graphics libraries
 - **express (dashboard/emoji-manager)** - Web server
@@ -133,9 +97,13 @@ dsc/
    npm install
    ```
 3. **Configure environment variables** - Create a `.env` file in the root directory (see Configuration section)
-4. **Set up MongoDB** - Have a MongoDB instance running locally or use MongoDB Atlas
-5. **Set up Lavalink** - Have a Lavalink server running for music features
-6. **Start the bot**
+4. **Set up Neon Postgres** - Create a project on Neon.tech and get your database connection string
+5. **Run Migrations**
+   ```bash
+   npx drizzle-kit push
+   ```
+6. **Set up Lavalink** - Have a Lavalink server running for music features
+7. **Start the bot**
    ```bash
    npm start
    ```
@@ -147,10 +115,12 @@ Create a `.env` file in the root directory with the following variables (at mini
 # Discord Bot
 DISCORD_TOKEN=your-bot-token
 DISCORD_CLIENT_ID=your-bot-client-id
+DISCORD_CLIENT_SECRET=your-bot-client-secret
 OWNER_ID=your-discord-user-id
+PREFIX=!
 
-# MongoDB
-MONGO_URI=mongodb://localhost:27017/dsc
+# Database
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
 
 # Lavalink
 NODE_URL=localhost:2333
@@ -168,15 +138,7 @@ DASHBOARD_PORT=3000
 
 See `src/config.js` for all available configuration options.
 
-## Emoji Manager
-The emoji manager is a standalone server that helps manage Discord application emojis. To run it:
-1. Navigate to the emoji-manager directory
-2. Run `npm start` or `node server.js`
-3. Open http://localhost:3077 in your browser
-
 ## Requirements
 - Node.js 18+
-- MongoDB server
+- Neon Serverless Postgres database
 - Lavalink server (for music features)
-
-## Modified by SrivarsanK
