@@ -31,7 +31,7 @@ Requirements for the advanced logging system.
 - [x] **DASH-02**: Rebuild the "Logging" module page in `app.js` to show Categories, Event selectors, Thread Verification instructions, and Ignores.
 
 ### Discord Commands
-- [ ] **CMD-01**: Implement `/log` command with subcommands: `set <channel> <types>`, `remove <types>`, `ignore <channel|role|user>`, and `view`.
+- [x] **CMD-01**: Implement `/log` command with subcommands: `set <channel> <types>`, `remove <types>`, `ignore <channel|role|user>`, and `view`.
 
 ## v2 Requirements
 - **PRE-01**: Implement custom embed style configurations (colors, custom headers) per log event from the dashboard.
@@ -58,7 +58,7 @@ Requirements for the advanced logging system.
 | EVT-08 | Phase 3 | Completed |
 | DASH-01 | Phase 4 | Completed |
 | DASH-02 | Phase 4 | Completed |
-| CMD-01 | Phase 5 | Pending |
+| CMD-01 | Phase 5 | Completed |
 
 **Coverage:**
 - v1 requirements: 15 total
