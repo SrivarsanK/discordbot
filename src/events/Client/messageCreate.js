@@ -197,6 +197,7 @@ module.exports = {
     const ignoredChannels = Array.isArray(ignoreDoc?.channels) ? ignoreDoc.channels : [];
     const isIgnored = ignoredChannels.includes(ICHchannelId);
     if (isIgnored) {
+      message.delete().catch(() => {});
       const baap = new EmbedBuilder()
         .setAuthor({
           name: `This channel is set to ignored channel..`,
