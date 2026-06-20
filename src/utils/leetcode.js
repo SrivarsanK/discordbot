@@ -264,9 +264,13 @@ function buildAutoPostEmbed(questionData, config) {
   if (questionData.description) {
     defaultDesc += `\n\n${questionData.description}`;
   }
-  const embedDesc = config.autoPostDescription
+  let embedDesc = config.autoPostDescription
     ? interpolateVars(config.autoPostDescription, vars)
     : defaultDesc;
+
+  if (questionData.nonce) {
+    embedDesc += `\n\n\`\`\`\n# challenge: ${questionData.nonce}\n\`\`\`\n*Paste the challenge block above as a comment in your solution before submitting, then run \`/submit\` with a screenshot of the Accepted result.*`;
+  }
 
   let defaultFooterText = "Link your account using !register to earn points upon solving!";
   if (questionData.customFooter) {
@@ -345,6 +349,15 @@ function buildAutoPostEmbed(questionData, config) {
   return embed;
 }
 
+function generateNonce() {
+  const charset = "234679ACDEFGHJKMNPQRTUVWXYZ";
+  let token = "";
+  for (let i = 0; i < 6; i++) {
+    token += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return `LC-${token}`;
+}
+
 async function checkDailyChallengePost(client) {
   try {
     const dailyData = await fetchLeetcodeDailyChallenge();
@@ -375,10 +388,11 @@ async function checkDailyChallengePost(client) {
       });
 
       if (!alreadyPosted) {
-        const announceEmbed = buildAutoPostEmbed({ title, titleSlug, difficulty, tags }, config);
+        const nonce = generateNonce();
+        const announceEmbed = buildAutoPostEmbed({ title, titleSlug, difficulty, tags, nonce }, config);
 
         await channel.send(v2({ embeds: [announceEmbed] })).then(async () => {
-          await savePostedQuestion(autoPostChannelId, titleSlug, title, difficulty, tags);
+          await savePostedQuestion(autoPostChannelId, titleSlug, title, difficulty, tags, nonce);
           client.logger?.log(`[LeetCode AutoPoster] Posted daily challenge "${title}" to channel ${autoPostChannelId} in guild ${guildId}`, "ready");
         }).catch((err) => {
           console.error(`[LeetCode AutoPoster] Failed to send auto-post in ${autoPostChannelId}:`, err.message);
@@ -422,6 +436,7 @@ async function checkDailyChallengePost(client) {
                 const qDetails = await fetchQuestionDetails(csvSlug);
                 if (qDetails) {
                   const csvTags = (qDetails.topicTags || []).map(t => t.name);
+                  const nonce = generateNonce();
                   const csvEmbed = buildAutoPostEmbed({
                     title: qDetails.title,
                     titleSlug: csvSlug,
@@ -433,11 +448,12 @@ async function checkDailyChallengePost(client) {
                     hint: row.hint,
                     customFooter: row.footer,
                     day: row.day,
-                    leetcodeQno: row.leetcodeQno
+                    leetcodeQno: row.leetcodeQno,
+                    nonce
                   }, config);
 
                   await channel.send(v2({ embeds: [csvEmbed] })).then(async () => {
-                    await savePostedQuestion(autoPostChannelId, csvSlug, qDetails.title, qDetails.difficulty, csvTags);
+                    await savePostedQuestion(autoPostChannelId, csvSlug, qDetails.title, qDetails.difficulty, csvTags, nonce);
                     client.logger?.log(`[LeetCode CSV] Posted CSV question "${qDetails.title}" to channel ${autoPostChannelId} in guild ${guildId}`, "ready");
                     
                     // Increment the day counter in the database
@@ -468,18 +484,18 @@ async function checkDailyChallengePost(client) {
 /**
  * Save a posted question record (check-and-create for composite key).
  */
-async function savePostedQuestion(channelId, slug, title, difficulty, tags) {
+async function savePostedQuestion(channelId, slug, title, difficulty, tags, nonce) {
   const existing = await LeetcodePostedQuestions.findOne({ channelId, slug });
   if (existing) {
     await LeetcodePostedQuestions.updateOne(
       { channelId, slug },
-      { title, difficulty, tags, postedAt: new Date() }
+      { title, difficulty, tags, nonce, postedAt: new Date() }
     ).catch(dbErr => {
       console.error(`[LeetCode AutoPoster] Error saving posted question:`, dbErr.message);
     });
   } else {
     await LeetcodePostedQuestions.create({
-      channelId, slug, title, difficulty, tags, postedAt: new Date()
+      channelId, slug, title, difficulty, tags, nonce, postedAt: new Date()
     }).catch(dbErr => {
       console.error(`[LeetCode AutoPoster] Error saving posted question:`, dbErr.message);
     });
@@ -682,5 +698,6 @@ module.exports = {
   startLeetcodeInterval,
   checkVerifyCooldown,
   fetchLeetcodeDailyChallenge,
-  checkDailyChallengePost
+  checkDailyChallengePost,
+  generateNonce
 };

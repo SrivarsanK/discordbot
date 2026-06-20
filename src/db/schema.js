@@ -274,6 +274,7 @@ const leetcodePostedQuestions = pgTable("leetcode_posted_questions", {
   title: text("title").notNull(),
   difficulty: text("difficulty").notNull(),
   tags: jsonb("tags").default([]),
+  nonce: text("nonce"),
   postedAt: timestamp("posted_at").defaultNow(),
 }, (t) => ({
   pk: primaryKey({ columns: [t.channelId, t.slug] }),
