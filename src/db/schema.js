@@ -10,6 +10,7 @@ const {
   jsonb,
   primaryKey,
   serial,
+  uniqueIndex,
 } = require("drizzle-orm/pg-core");
 
 // ── antinuke ──────────────────────────────────────────────────────────────────
@@ -247,6 +248,57 @@ const logging = pgTable("logging", {
   verificationTokens: jsonb("verification_tokens").default([]),
 });
 
+// ── leetcode_users ────────────────────────────────────────────────────────────
+const leetcodeUsers = pgTable("leetcode_users", {
+  discordId: text("discord_id").primaryKey(),
+  lcUsername: text("lc_username").notNull().unique(),
+  boundAt: timestamp("bound_at").defaultNow(),
+});
+
+// ── leetcode_pending ──────────────────────────────────────────────────────────
+const leetcodePending = pgTable("leetcode_pending", {
+  discordId: text("discord_id").primaryKey(),
+  lcUsername: text("lc_username").notNull(),
+  token: text("token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
+// ── leetcode_posted_questions ──────────────────────────────────────────────────
+const leetcodePostedQuestions = pgTable("leetcode_posted_questions", {
+  channelId: text("channel_id").notNull(),
+  slug: text("slug").notNull(),
+  title: text("title").notNull(),
+  difficulty: text("difficulty").notNull(),
+  tags: jsonb("tags").default([]),
+  postedAt: timestamp("posted_at").defaultNow(),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.channelId, t.slug] }),
+}));
+
+// ── leetcode_solves ────────────────────────────────────────────────────────────
+const leetcodeSolves = pgTable("leetcode_solves", {
+  id: serial("id").primaryKey(),
+  guildId: text("guild_id").notNull(),
+  discordId: text("discord_id").notNull(),
+  slug: text("slug").notNull(),
+  title: text("title").notNull(),
+  difficulty: text("difficulty").notNull(),
+  pointsAwarded: integer("points_awarded").notNull(),
+  solvedAt: timestamp("solved_at").notNull(),
+  recordedAt: timestamp("recorded_at").defaultNow(),
+}, (t) => ({
+  uniqueSolve: uniqueIndex("leetcode_solves_uniq").on(t.guildId, t.discordId, t.slug),
+}));
+
+// ── leetcode_server_config ─────────────────────────────────────────────────────
+const leetcodeServerConfig = pgTable("leetcode_server_config", {
+  guildId: text("guild_id").primaryKey(),
+  pointsEasy: integer("points_easy").default(10).notNull(),
+  pointsMedium: integer("points_medium").default(20).notNull(),
+  pointsHard: integer("points_hard").default(30).notNull(),
+  shoutoutChannelId: text("shoutout_channel_id"),
+});
+
 module.exports = {
   afk,
   alwaysOn,
@@ -277,4 +329,9 @@ module.exports = {
   voiceRole,
   voteBypass,
   welcomeSystem,
+  leetcodeUsers,
+  leetcodePending,
+  leetcodePostedQuestions,
+  leetcodeSolves,
+  leetcodeServerConfig,
 };

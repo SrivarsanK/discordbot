@@ -3,6 +3,7 @@
 const { ActivityType, Events } = require("discord.js");
 const deploySlashCommands = require("../../utils/deploySlashCommands");
 const { refreshApplicationOwners } = require("../../utils/owners");
+const { startLeetcodeInterval } = require("../../utils/leetcode");
 
 module.exports = {
   name: Events.ClientReady,
@@ -16,6 +17,13 @@ module.exports = {
     );
     const owners = await refreshApplicationOwners(client);
     client.logger.log(`[Owners] Loaded ${owners.length} owner access ID(s).`, "ready");
+
+    // Start LeetCode solver tracking background service
+    try {
+      startLeetcodeInterval(client);
+    } catch (err) {
+      client.logger.log(`[LeetCode Tracker] Startup failed: ${err.message}`, "error");
+    }
 
     if (client.config.slashCommands?.deployOnReady) {
       client.logger.log("Deploying slash commands to Discord...", "cmd");
