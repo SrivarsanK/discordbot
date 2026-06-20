@@ -2095,6 +2095,96 @@ input[type="color"].input::-moz-color-swatch {
   background: #ffb84d;
 }
 
+/* LeetCode Embed Config Components */
+.var-ref-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.var-ref-grid code {
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: var(--product-leetcode);
+  font-weight: 600;
+}
+.var-ref-grid span {
+  color: var(--text-2);
+}
+
+.csv-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.csv-table-wrap {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.csv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.csv-table th,
+.csv-table td {
+  padding: 6px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.csv-table th {
+  background: var(--surface-2);
+  position: sticky;
+  top: 0;
+  font-weight: 600;
+  color: var(--text-2);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.csv-table td:last-child {
+  width: 36px;
+  text-align: center;
+}
+.csv-table code {
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.82rem;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-icon:hover {
+  background: var(--surface-2);
+}
+.btn-icon.danger:hover {
+  background: rgba(237, 66, 69, 0.15);
+  color: #ED4245;
+}
+.btn-icon svg,
+.btn-icon i {
+  width: 14px;
+  height: 14px;
+}
+
 /* Responsive Overrides */
 @media (max-width: 980px) {
   .layout {

@@ -253,6 +253,10 @@ const leetcodeUsers = pgTable("leetcode_users", {
   discordId: text("discord_id").primaryKey(),
   lcUsername: text("lc_username").notNull().unique(),
   boundAt: timestamp("bound_at").defaultNow(),
+  solvedEasy: integer("solved_easy").default(0).notNull(),
+  solvedMedium: integer("solved_medium").default(0).notNull(),
+  solvedHard: integer("solved_hard").default(0).notNull(),
+  lastUpdated: timestamp("last_updated"),
 });
 
 // ── leetcode_pending ──────────────────────────────────────────────────────────
@@ -297,6 +301,19 @@ const leetcodeServerConfig = pgTable("leetcode_server_config", {
   pointsMedium: integer("points_medium").default(20).notNull(),
   pointsHard: integer("points_hard").default(30).notNull(),
   shoutoutChannelId: text("shoutout_channel_id"),
+  autoPostEnabled: boolean("auto_post_enabled").default(false).notNull(),
+  autoPostChannelId: text("auto_post_channel_id"),
+  // Embed customization
+  autoPostTitle: text("auto_post_title"),
+  autoPostDescription: text("auto_post_description"),
+  autoPostFooter: text("auto_post_footer"),
+  autoPostColor: text("auto_post_color"),
+  autoPostThumbnail: text("auto_post_thumbnail"),
+  autoPostShowThumbnail: boolean("auto_post_show_thumbnail").default(false).notNull(),
+  autoPostCsvDay: integer("auto_post_csv_day").default(1).notNull(),
+  autoPostSeparator: text("auto_post_separator").default("line"),
+  // CSV question bank (stored as JSON array of {slug} objects)
+  autoPostCsvData: jsonb("auto_post_csv_data").default([]),
 });
 
 module.exports = {

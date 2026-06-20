@@ -76,6 +76,48 @@ async function fetchRecentAcSubmissions(username, limit = 15) {
 }
 
 /**
+ * Fetch unified LeetCode user profile data including solved stats and recent submissions.
+ */
+async function fetchLeetcodeUserData(username, limit = 15) {
+  const query = `
+    query getLeetcodeUserData($username: String!, $limit: Int!) {
+      matchedUser(username: $username) {
+        username
+        profile {
+          aboutMe
+          userAvatar
+          reputation
+        }
+        submitStatsGlobal {
+          acSubmissionNum {
+            difficulty
+            count
+          }
+        }
+      }
+      recentAcSubmissionList(username: $username, limit: $limit) {
+        id
+        title
+        titleSlug
+        timestamp
+      }
+    }
+  `;
+
+  try {
+    const response = await axios.post(LEETCODE_GQL_URL, {
+      query,
+      variables: { username, limit }
+    }, { headers: HEADERS });
+
+    return response.data?.data || null;
+  } catch (error) {
+    console.error(`[LeetCode API] Error fetching user data for ${username}:`, error.message);
+    return null;
+  }
+}
+
+/**
  * Fetch details of a specific problem.
  */
 async function fetchQuestionDetails(titleSlug) {
@@ -106,6 +148,345 @@ async function fetchQuestionDetails(titleSlug) {
 }
 
 /**
+ * Fetch the active LeetCode daily coding challenge.
+ */
+async function fetchLeetcodeDailyChallenge() {
+  const query = `
+    query getDailyChallenge {
+      activeDailyCodingChallengeQuestion {
+        date
+        link
+        question {
+          title
+          titleSlug
+          difficulty
+          topicTags {
+            name
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await axios.post(LEETCODE_GQL_URL, {
+      query
+    }, { headers: HEADERS });
+
+    return response.data?.data?.activeDailyCodingChallengeQuestion || null;
+  } catch (error) {
+    console.error("[LeetCode API] Error fetching daily challenge:", error.message);
+    return null;
+  }
+}
+
+/**
+ * Check and automatically post the active daily coding challenge to configured channels.
+ */
+/**
+ * Interpolate custom variables into a template string.
+ */
+function interpolateVars(template, vars) {
+  if (!template) return template;
+  return template
+    .replace(/\{title\}/gi, vars.title || "")
+    .replace(/\{slug\}/gi, vars.slug || "")
+    .replace(/\{difficulty\}/gi, vars.difficulty || "")
+    .replace(/\{diffEmoji\}/gi, vars.diffEmoji || "")
+    .replace(/\{tags\}/gi, vars.tags || "")
+    .replace(/\{url\}/gi, vars.url || "")
+    .replace(/\{date\}/gi, vars.date || "")
+    .replace(/\{diffColor\}/gi, vars.diffColor || "")
+    .replace(/\{description\}/gi, vars.description || "")
+    .replace(/\{approach\}/gi, vars.approach || "")
+    .replace(/\{advice\}/gi, vars.advice || "")
+    .replace(/\{hint\}/gi, vars.hint || "")
+    .replace(/\{footer\}/gi, vars.footer || "")
+    .replace(/\{day\}/gi, vars.day || "")
+    .replace(/\{qno\}/gi, vars.qno || "")
+    .replace(/\{leetcodeqno\}/gi, vars.leetcodeQno || "");
+}
+
+/**
+ * Build separator text based on config style.
+ */
+function buildSeparator(style) {
+  if (style === "line") return "───────────────────────────";
+  if (style === "blank") return "\u200b";
+  return "";
+}
+
+/**
+ * Build an auto-post embed from question data and server config.
+ */
+function buildAutoPostEmbed(questionData, config) {
+  const { title, titleSlug, difficulty, tags } = questionData;
+
+  let diffEmoji = "🟢 Easy";
+  let diffColor = "#57F287";
+  const diff = difficulty.toLowerCase();
+  if (diff === "medium") { diffEmoji = "🟡 Medium"; diffColor = "#FEE75C"; }
+  else if (diff === "hard") { diffEmoji = "🔴 Hard"; diffColor = "#ED4245"; }
+
+  const url = `https://leetcode.com/problems/${titleSlug}/`;
+  const date = new Date().toISOString().slice(0, 10);
+  const tagsStr = tags.length > 0 ? tags.map(t => `\`${t}\``).join(", ") : "*None*";
+
+  const vars = {
+    title,
+    slug: titleSlug,
+    difficulty,
+    diffEmoji,
+    tags: tagsStr,
+    url,
+    date,
+    diffColor,
+    description: questionData.description || "",
+    approach: questionData.approach || "",
+    advice: questionData.advice || "",
+    hint: questionData.hint ? `||${questionData.hint}||` : "",
+    footer: questionData.customFooter || "",
+    day: questionData.day || "",
+    qno: questionData.leetcodeQno || "",
+    leetcodeQno: questionData.leetcodeQno || ""
+  };
+
+  // Determine embed content (custom or defaults)
+  let defaultTitle = `📅 New LeetCode Daily Challenge Posted!`;
+  if (questionData.day) {
+    defaultTitle = `📅 LeetCode Challenge - Day ${questionData.day}`;
+  }
+  const embedTitle = config.autoPostTitle
+    ? interpolateVars(config.autoPostTitle, vars)
+    : defaultTitle;
+
+  let defaultDesc = `### **[${title}](${url})**`;
+  if (questionData.description) {
+    defaultDesc += `\n\n${questionData.description}`;
+  }
+  const embedDesc = config.autoPostDescription
+    ? interpolateVars(config.autoPostDescription, vars)
+    : defaultDesc;
+
+  let defaultFooterText = "Link your account using !register to earn points upon solving!";
+  if (questionData.customFooter) {
+    defaultFooterText = questionData.customFooter;
+  }
+  const embedFooter = config.autoPostFooter
+    ? interpolateVars(config.autoPostFooter, vars)
+    : defaultFooterText;
+
+  const embedColor = /^#[0-9a-fA-F]{6}$/.test(config.autoPostColor) ? config.autoPostColor : diffColor;
+  const embedThumbnail = config.autoPostThumbnail || "https://assets.leetcode.com/users/default_avatar.jpg";
+  const separatorStyle = config.autoPostSeparator || "line";
+
+  const embed = new EmbedBuilder()
+    .setTitle(embedTitle)
+    .setDescription(embedDesc)
+    .setColor(embedColor)
+    .setFooter({ text: embedFooter })
+    .setTimestamp();
+
+  if (config.autoPostShowThumbnail) {
+    embed.setThumbnail(embedThumbnail);
+  }
+
+  // Add fields with separator
+  const sep = buildSeparator(separatorStyle);
+  const fields = [];
+
+  if (questionData.leetcodeQno) {
+    fields.push({ name: "Question No.", value: String(questionData.leetcodeQno), inline: true });
+  }
+  if (questionData.day) {
+    fields.push({ name: "Challenge Day", value: `Day ${questionData.day}`, inline: true });
+  }
+  fields.push(
+    { name: "Difficulty", value: diffEmoji, inline: true },
+    { name: "Tags", value: tagsStr, inline: true }
+  );
+
+  if (questionData.approach) {
+    fields.push({ name: "Approach", value: questionData.approach, inline: false });
+  }
+  if (questionData.advice) {
+    fields.push({ name: "Advice", value: questionData.advice, inline: false });
+  }
+  if (questionData.hint) {
+    fields.push({ name: "Hint", value: `||${questionData.hint}||`, inline: false });
+  }
+
+  // Count inline fields to put separator in the right place
+  let inlineCount = 0;
+  let splitIndex = 0;
+  for (let i = 0; i < fields.length; i++) {
+    if (fields[i].inline) {
+      inlineCount++;
+      splitIndex = i + 1;
+    } else {
+      break;
+    }
+  }
+
+  if (sep && separatorStyle !== "none") {
+    // Insert separator after the inline fields
+    const inlineFields = fields.slice(0, splitIndex);
+    const customFields = fields.slice(splitIndex);
+
+    embed.addFields(...inlineFields);
+    embed.addFields({ name: "\u200b", value: sep, inline: false });
+    if (customFields.length > 0) {
+      embed.addFields(...customFields);
+    }
+  } else {
+    embed.addFields(...fields);
+  }
+
+  return embed;
+}
+
+async function checkDailyChallengePost(client) {
+  try {
+    const dailyData = await fetchLeetcodeDailyChallenge();
+    if (!dailyData || !dailyData.question) return;
+
+    const { title, titleSlug, difficulty, topicTags } = dailyData.question;
+    const tags = (topicTags || []).map(t => t.name);
+
+    // Fetch all server configurations where auto posting is enabled
+    const configs = await LeetcodeServerConfig.find({ autoPostEnabled: true });
+    if (!configs || configs.length === 0) return;
+
+    for (const config of configs) {
+      const { guildId, autoPostChannelId } = config;
+      if (!autoPostChannelId) continue;
+
+      // Resolve guild and channel
+      const guild = client.guilds.cache.get(guildId) || await client.guilds.fetch(guildId).catch(() => null);
+      if (!guild) continue;
+      const channel = guild.channels.cache.get(autoPostChannelId) || 
+                      await guild.channels.fetch(autoPostChannelId).catch(() => null);
+      if (!channel) continue;
+
+      // ── Post Daily Challenge ──
+      const alreadyPosted = await LeetcodePostedQuestions.findOne({
+        channelId: autoPostChannelId,
+        slug: titleSlug
+      });
+
+      if (!alreadyPosted) {
+        const announceEmbed = buildAutoPostEmbed({ title, titleSlug, difficulty, tags }, config);
+
+        await channel.send(v2({ embeds: [announceEmbed] })).then(async () => {
+          await savePostedQuestion(autoPostChannelId, titleSlug, title, difficulty, tags);
+          client.logger?.log(`[LeetCode AutoPoster] Posted daily challenge "${title}" to channel ${autoPostChannelId} in guild ${guildId}`, "ready");
+        }).catch((err) => {
+          console.error(`[LeetCode AutoPoster] Failed to send auto-post in ${autoPostChannelId}:`, err.message);
+        });
+      }
+
+      // ── CSV Rotation Posting ──
+      const csvData = Array.isArray(config.autoPostCsvData) ? config.autoPostCsvData : [];
+      if (csvData.length > 0) {
+        const csvSlugs = csvData.map(r => r.slug).filter(Boolean);
+        if (csvSlugs.length > 0) {
+          const now = new Date();
+          const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+          // Check if any CSV question has already been posted today
+          const postedToday = await LeetcodePostedQuestions.find({
+            channelId: autoPostChannelId,
+            slug: { $in: csvSlugs },
+            postedAt: { $gte: midnight }
+          });
+
+          if (postedToday.length === 0) {
+            const targetDayStr = String(config.autoPostCsvDay || 1).trim();
+            const row = csvData.find(r => r && String(r.day || "").trim() === targetDayStr);
+            if (row && row.slug) {
+              const csvSlug = row.slug;
+
+              // Check time slot
+              let timePassed = true;
+              if (row.time) {
+                const [shour, smin] = row.time.split(":").map(Number);
+                const currentHour = now.getHours();
+                const currentMin = now.getMinutes();
+                if (currentHour < shour || (currentHour === shour && currentMin < smin)) {
+                  timePassed = false;
+                }
+              }
+
+              if (timePassed) {
+                // Fetch question details from LeetCode API
+                const qDetails = await fetchQuestionDetails(csvSlug);
+                if (qDetails) {
+                  const csvTags = (qDetails.topicTags || []).map(t => t.name);
+                  const csvEmbed = buildAutoPostEmbed({
+                    title: qDetails.title,
+                    titleSlug: csvSlug,
+                    difficulty: qDetails.difficulty,
+                    tags: csvTags,
+                    description: row.description,
+                    approach: row.approach,
+                    advice: row.advice,
+                    hint: row.hint,
+                    customFooter: row.footer,
+                    day: row.day,
+                    leetcodeQno: row.leetcodeQno
+                  }, config);
+
+                  await channel.send(v2({ embeds: [csvEmbed] })).then(async () => {
+                    await savePostedQuestion(autoPostChannelId, csvSlug, qDetails.title, qDetails.difficulty, csvTags);
+                    client.logger?.log(`[LeetCode CSV] Posted CSV question "${qDetails.title}" to channel ${autoPostChannelId} in guild ${guildId}`, "ready");
+                    
+                    // Increment the day counter in the database
+                    const nextDay = (config.autoPostCsvDay || 1) + 1;
+                    await LeetcodeServerConfig.findOneAndUpdate(
+                      { guildId },
+                      { autoPostCsvDay: nextDay }
+                    ).catch((err) => {
+                      console.error(`[LeetCode CSV] Failed to increment day counter for guild ${guildId}:`, err.message);
+                    });
+                  }).catch((err) => {
+                    console.error(`[LeetCode CSV] Failed to send CSV post for ${csvSlug}:`, err.message);
+                  });
+                } else {
+                  console.error(`[LeetCode CSV] Could not fetch details for slug "${csvSlug}", skipping.`);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error("[LeetCode AutoPoster] Error in checkDailyChallengePost execution:", error.stack || error);
+  }
+}
+
+/**
+ * Save a posted question record (check-and-create for composite key).
+ */
+async function savePostedQuestion(channelId, slug, title, difficulty, tags) {
+  const existing = await LeetcodePostedQuestions.findOne({ channelId, slug });
+  if (existing) {
+    await LeetcodePostedQuestions.updateOne(
+      { channelId, slug },
+      { title, difficulty, tags, postedAt: new Date() }
+    ).catch(dbErr => {
+      console.error(`[LeetCode AutoPoster] Error saving posted question:`, dbErr.message);
+    });
+  } else {
+    await LeetcodePostedQuestions.create({
+      channelId, slug, title, difficulty, tags, postedAt: new Date()
+    }).catch(dbErr => {
+      console.error(`[LeetCode AutoPoster] Error saving posted question:`, dbErr.message);
+    });
+  }
+}
+
+/**
  * Main polling logic to check solves for all bound users.
  */
 async function checkSolves(client) {
@@ -119,8 +500,24 @@ async function checkSolves(client) {
       // Stagger queries by 3 seconds to avoid rate limits
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      const submissions = await fetchRecentAcSubmissions(user.lcUsername, 15);
-      if (!submissions || submissions.length === 0) continue;
+      const data = await fetchLeetcodeUserData(user.lcUsername, 15);
+      if (!data) continue;
+
+      // Update overall solved stats cache in database
+      const stats = data.matchedUser?.submitStatsGlobal?.acSubmissionNum || [];
+      const solvedEasy = stats.find(s => s.difficulty === "Easy")?.count || 0;
+      const solvedMedium = stats.find(s => s.difficulty === "Medium")?.count || 0;
+      const solvedHard = stats.find(s => s.difficulty === "Hard")?.count || 0;
+
+      await LeetcodeUsers.updateOne(
+        { discordId: user.discordId },
+        { solvedEasy, solvedMedium, solvedHard, lastUpdated: new Date() }
+      ).catch(err => {
+        console.error(`[LeetCode Tracker] Error updating solved stats for ${user.discordId}:`, err.message);
+      });
+
+      const submissions = data.recentAcSubmissionList || [];
+      if (submissions.length === 0) continue;
 
       for (const sub of submissions) {
         const slug = sub.titleSlug;
@@ -223,6 +620,11 @@ async function checkSolves(client) {
         }
       }
     }
+
+    // Run the daily challenge auto-poster check
+    await checkDailyChallengePost(client).catch(err => {
+      console.error("[LeetCode AutoPoster] Error in background daily challenge post execution:", err);
+    });
   } catch (error) {
     console.error("[LeetCode Tracker] Error in checkSolves loop:", error.stack || error);
   }
@@ -274,8 +676,11 @@ function checkVerifyCooldown(userId) {
 module.exports = {
   fetchLeetcodeUser,
   fetchRecentAcSubmissions,
+  fetchLeetcodeUserData,
   fetchQuestionDetails,
   checkSolves,
   startLeetcodeInterval,
-  checkVerifyCooldown
+  checkVerifyCooldown,
+  fetchLeetcodeDailyChallenge,
+  checkDailyChallengePost
 };

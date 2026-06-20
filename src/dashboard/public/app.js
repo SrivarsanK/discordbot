@@ -728,6 +728,7 @@ function renderMusic() {
 }
 
 function renderLeetcode() {
+  const csvRows = getPath(state.draft, "leetcode.autoPostCsvData") || [];
   return `
     <section class="page">
       ${pageHead("code", "LeetCode Tracking", "Link accounts, track solves, and award points.")}
@@ -753,6 +754,212 @@ function renderLeetcode() {
         </div>
         <div class="setting-grid single">
           ${selectField("Announcement channel", "leetcode.shoutoutChannelId", textChannels(), "Select announcement channel")}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="calendar"></i></span>
+            <div><h2>Auto posting</h2><p>Automatically post the LeetCode Daily Challenge to a specific channel every day.</p></div>
+          </div>
+        </div>
+        <div class="setting-grid single">
+          ${selectField("Auto-posting channel", "leetcode.autoPostChannelId", textChannels(), "Select auto-posting channel")}
+        </div>
+        <div class="setting-grid single">
+          <div class="field">
+            <label class="field-label">Posting Control</label>
+            <div class="button-group" style="display: flex; gap: 10px; margin-top: 5px;">
+              <button type="button" class="btn" data-action="start-posting" style="background-color: ${getPath(state.draft, "leetcode.autoPostEnabled") ? "#2ecc71" : "#1a252f"}; color: white; border: 1px solid ${getPath(state.draft, "leetcode.autoPostEnabled") ? "#2ecc71" : "#34495e"}; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; opacity: ${getPath(state.draft, "leetcode.autoPostEnabled") ? "1" : "0.7"};">
+                <i data-lucide="play" style="width: 16px; height: 16px;"></i> Start Posting
+              </button>
+              <button type="button" class="btn" data-action="stop-posting" style="background-color: ${!getPath(state.draft, "leetcode.autoPostEnabled") ? "#e74c3c" : "#1a252f"}; color: white; border: 1px solid ${!getPath(state.draft, "leetcode.autoPostEnabled") ? "#e74c3c" : "#34495e"}; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; opacity: ${!getPath(state.draft, "leetcode.autoPostEnabled") ? "1" : "0.7"};">
+                <i data-lucide="square" style="width: 16px; height: 16px;"></i> Stop Posting
+              </button>
+            </div>
+            <p style="font-size: 0.85em; color: var(--text-muted); margin-top: 8px;">
+              Status: <span style="font-weight: 600; color: ${getPath(state.draft, "leetcode.autoPostEnabled") ? "#2ecc71" : "#e74c3c"}">${getPath(state.draft, "leetcode.autoPostEnabled") ? "ACTIVE" : "STOPPED"}</span>
+            </p>
+          </div>
+        </div>
+        <div class="setting-grid" style="margin-top: 15px;">
+          ${inputField("Rotation Day Counter", "leetcode.autoPostCsvDay", "number", { min: 1, step: 1 })}
+          <div class="field" style="display: flex; align-items: flex-end; margin-bottom: 2px;">
+            <button type="button" class="btn" data-action="reset-day" style="background-color: #e74c3c; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; height: 42px;">
+              <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i> Reset to Day 1
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="palette"></i></span>
+            <div><h2>Embed configuration</h2><p>Customize the auto-posted embed appearance. Leave blank to use defaults.</p></div>
+          </div>
+        </div>
+        <div class="setting-grid">
+          ${inputField("Title", "leetcode.autoPostTitle", "text", { max: 256 })}
+          ${inputField("Color", "leetcode.autoPostColor", "color")}
+        </div>
+        <div class="setting-grid single">
+          ${textareaField("Description", "leetcode.autoPostDescription")}
+        </div>
+        <div class="setting-grid">
+          ${inputField("Footer", "leetcode.autoPostFooter", "text", { max: 256 })}
+          ${inputField("Thumbnail URL", "leetcode.autoPostThumbnail", "text", { max: 512 })}
+        </div>
+        <div class="setting-grid single">
+          <div class="field">${toggleLine("leetcode.autoPostShowThumbnail", "Show thumbnail in embed")}</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="braces"></i></span>
+            <div><h2>Custom variables</h2><p>Use these placeholders in title, description, and footer. They are replaced at post time.</p></div>
+          </div>
+        </div>
+        <div class="setting-grid single">
+          <div class="field full">
+            <div class="var-ref-grid">
+              <code>{title}</code> <span>Question title</span>
+              <code>{slug}</code> <span>URL slug</span>
+              <code>{difficulty}</code> <span>Easy / Medium / Hard</span>
+              <code>{diffEmoji}</code> <span>🟢 Easy, 🟡 Medium, or 🔴 Hard</span>
+              <code>{tags}</code> <span>Comma-separated topic tags</span>
+              <code>{url}</code> <span>Full LeetCode problem URL</span>
+              <code>{date}</code> <span>Today's date (YYYY-MM-DD)</span>
+              <code>{diffColor}</code> <span>Hex color matching difficulty</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="separator-horizontal"></i></span>
+            <div><h2>Section separator</h2><p>How to separate different sections in the embed (between fields).</p></div>
+          </div>
+        </div>
+        <div class="setting-grid single">
+          ${selectField("Separator style", "leetcode.autoPostSeparator", [
+            { id: "line", label: "─── Horizontal line ───" },
+            { id: "blank", label: "Blank line" },
+            { id: "none", label: "No separator" }
+          ], "Select separator")}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="file-spreadsheet"></i></span>
+            <div><h2>CSV question bank</h2><p>Upload a CSV of question slugs for daily rotation posting. Bot picks next unposted slug each day.</p></div>
+          </div>
+        </div>
+        <div class="setting-grid single">
+          <div class="field full">
+            <div class="csv-actions">
+              <a class="btn small ghost" href="/assets/leetcode-questions-template.csv" download><i data-lucide="download"></i> Download template</a>
+              <button class="btn small primary" type="button" data-csv-upload><i data-lucide="upload"></i> Upload CSV</button>
+              <button class="btn small ghost" type="button" data-csv-export ${csvRows.length === 0 ? "disabled" : ""}><i data-lucide="download-cloud"></i> Export CSV</button>
+              <button class="btn small danger" type="button" data-csv-clear ${csvRows.length === 0 ? "disabled" : ""}><i data-lucide="trash-2"></i> Clear all</button>
+              <input class="hidden-file" data-csv-file type="file" accept=".csv,text/csv">
+            </div>
+          </div>
+          <div class="field full">
+            <details class="manual-add-details" style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem; margin-bottom: 1.5rem;">
+              <summary style="cursor: pointer; font-weight: 500; font-size: 0.95rem; user-select: none; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; color: var(--text-color);">
+                <i data-lucide="plus-circle" style="width: 18px; height: 18px; color: var(--color-primary);"></i> Add Question Manually
+              </summary>
+              <div class="setting-grid" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; padding-bottom: 1rem;">
+                <div class="field">
+                  <label>DAY</label>
+                  <input type="text" data-add-day placeholder="e.g. 1" style="width: 100%;">
+                </div>
+                <div class="field">
+                  <label>LEETCODE QNO</label>
+                  <input type="text" data-add-qno placeholder="e.g. 1" style="width: 100%;">
+                </div>
+                <div class="field">
+                  <label>SUM (slug)</label>
+                  <input type="text" data-add-slug placeholder="e.g. two-sum" style="width: 100%;">
+                </div>
+                <div class="field">
+                  <label>TIME SLOT</label>
+                  <input type="text" data-add-time placeholder="e.g. 14:30 (24h)" style="width: 100%;">
+                </div>
+                <div class="field full" style="grid-column: 1 / -1;">
+                  <label>DESCRIPTION</label>
+                  <textarea data-add-description placeholder="Enter challenge description..." rows="2" style="width: 100%; resize: vertical;"></textarea>
+                </div>
+                <div class="field full" style="grid-column: 1 / -1;">
+                  <label>APPROACH</label>
+                  <textarea data-add-approach placeholder="Enter solution approach..." rows="2" style="width: 100%; resize: vertical;"></textarea>
+                </div>
+                <div class="field full" style="grid-column: 1 / -1;">
+                  <label>ADVICE</label>
+                  <textarea data-add-advice placeholder="Enter general advice..." rows="2" style="width: 100%; resize: vertical;"></textarea>
+                </div>
+                <div class="field full" style="grid-column: 1 / -1;">
+                  <label>HINT (will be spoilered)</label>
+                  <textarea data-add-hint placeholder="Enter hint..." rows="2" style="width: 100%; resize: vertical;"></textarea>
+                </div>
+                <div class="field full" style="grid-column: 1 / -1;">
+                  <label>FOOTER</label>
+                  <input type="text" data-add-footer placeholder="Enter custom embed footer text..." style="width: 100%;">
+                </div>
+                <div class="field full" style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+                  <button class="btn small primary" type="button" data-add-btn><i data-lucide="plus"></i> Add to List</button>
+                </div>
+              </div>
+            </details>
+          </div>
+          ${csvRows.length > 0 ? `
+            <div class="field full">
+              <div class="csv-table-wrap" style="overflow-x: auto; max-width: 100%;">
+                <table class="csv-table" style="width: 100%; border-collapse: collapse; min-width: 900px;">
+                  <thead>
+                    <tr>
+                      <th style="width: 50px;">#</th>
+                      <th style="width: 80px;">DAY</th>
+                      <th style="width: 80px;">QNO</th>
+                      <th style="width: 120px;">TIME</th>
+                      <th style="width: 150px;">SUM</th>
+                      <th>DESCRIPTION</th>
+                      <th>APPROACH</th>
+                      <th>ADVICE</th>
+                      <th>HINT</th>
+                      <th>FOOTER</th>
+                      <th style="width: 50px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${csvRows.map((row, i) => `
+                      <tr>
+                        <td>${i + 1}</td>
+                        <td><small class="muted">${row.day ? escapeHtml(row.day) : "-"}</small></td>
+                        <td><small class="muted">${row.leetcodeQno ? escapeHtml(row.leetcodeQno) : "-"}</small></td>
+                        <td><small class="muted">${row.time ? escapeHtml(row.time) : "-"}</small></td>
+                        <td><code>${escapeHtml(row.slug)}</code></td>
+                        <td><small class="muted" title="${escapeHtml(row.description || "")}">${row.description ? escapeHtml(row.description).slice(0, 30) + (row.description.length > 30 ? "..." : "") : "-"}</small></td>
+                        <td><small class="muted" title="${escapeHtml(row.approach || "")}">${row.approach ? escapeHtml(row.approach).slice(0, 30) + (row.approach.length > 30 ? "..." : "") : "-"}</small></td>
+                        <td><small class="muted" title="${escapeHtml(row.advice || "")}">${row.advice ? escapeHtml(row.advice).slice(0, 30) + (row.advice.length > 30 ? "..." : "") : "-"}</small></td>
+                        <td><small class="muted" title="${escapeHtml(row.hint || "")}">${row.hint ? `||${escapeHtml(row.hint).slice(0, 20)}...||` : "-"}</small></td>
+                        <td><small class="muted" title="${escapeHtml(row.footer || "")}">${row.footer ? escapeHtml(row.footer).slice(0, 30) + (row.footer.length > 30 ? "..." : "") : "-"}</small></td>
+                        <td><button class="btn-icon danger" type="button" data-csv-remove="${i}" title="Remove"><i data-lucide="x"></i></button></td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+              <small>${csvRows.length} question(s) loaded. Bot picks next unposted slug each cycle.</small>
+            </div>
+          ` : `
+            <div class="field full">
+              <small class="muted">No CSV data loaded. Upload a CSV file with <code>DAY</code>, <code>LEETCODE QNO</code>, <code>SUM</code>, <code>DESCRIPTION</code>, <code>APPROACH</code>, <code>ADVICE</code>, <code>HINT</code>, <code>FOOTER</code>, and <code>TIME</code> columns.</small>
+            </div>
+          `}
         </div>
       </div>
     </section>
@@ -2320,6 +2527,243 @@ function bindGlobalActions() {
       renderShell();
     });
   });
+
+  // CSV question bank bindings
+  app.querySelector("[data-csv-upload]")?.addEventListener("click", () => {
+    app.querySelector("[data-csv-file]")?.click();
+  });
+  app.querySelector("[data-csv-file]")?.addEventListener("change", (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    event.target.value = "";
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = reader.result;
+      
+      // Helper function to parse RFC 4180 CSV
+      function parseCSV(csvText) {
+        const lines = [];
+        let row = [""];
+        let inQuotes = false;
+        
+        for (let i = 0; i < csvText.length; i++) {
+          const char = csvText[i];
+          const nextChar = csvText[i + 1];
+          
+          if (inQuotes) {
+            if (char === '"') {
+              if (nextChar === '"') {
+                row[row.length - 1] += '"';
+                i++; // Skip next quote
+              } else {
+                inQuotes = false;
+              }
+            } else {
+              row[row.length - 1] += char;
+            }
+          } else {
+            if (char === '"') {
+              inQuotes = true;
+            } else if (char === ',') {
+              row.push("");
+            } else if (char === '\r' || char === '\n') {
+              if (char === '\r' && nextChar === '\n') {
+                i++;
+              }
+              // Only push non-empty rows
+              if (row.length > 1 || row[0] !== "") {
+                lines.push(row);
+              }
+              row = [""];
+            } else {
+              row[row.length - 1] += char;
+            }
+          }
+        }
+        if (row.length > 1 || row[0] !== "") {
+          lines.push(row);
+        }
+        return lines;
+      }
+
+      const csvData = parseCSV(text);
+      if (csvData.length === 0) { toast("CSV file is empty", "bad"); return; }
+      
+      const headers = csvData[0].map(h => String(h).trim().toLowerCase());
+      let slugIdx = headers.indexOf("sum");
+      if (slugIdx === -1) slugIdx = headers.indexOf("slug");
+      if (slugIdx === -1) { toast("CSV file must contain a 'SUM' column", "bad"); return; }
+      
+      const dayIdx = headers.indexOf("day");
+      let qnoIdx = headers.indexOf("leetcode qno");
+      if (qnoIdx === -1) qnoIdx = headers.indexOf("leetcode_qno");
+      if (qnoIdx === -1) qnoIdx = headers.indexOf("qno");
+      if (qnoIdx === -1) qnoIdx = headers.indexOf("leetcodeqno");
+
+      const descIdx = headers.indexOf("description");
+      const appIdx = headers.indexOf("approach");
+      const advIdx = headers.indexOf("advice");
+      const hintIdx = headers.indexOf("hint");
+      const footIdx = headers.indexOf("footer");
+      const timeIdx = headers.indexOf("time");
+      
+      const dataRows = csvData.slice(1);
+      const rows = dataRows.map(row => {
+        const slug = row[slugIdx] ? row[slugIdx].trim().replace(/["']/g, "").toLowerCase() : "";
+        if (!slug) return null;
+        
+        let parsedTime = timeIdx !== -1 && row[timeIdx] ? row[timeIdx].trim() : "";
+        if (parsedTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(parsedTime)) {
+          // Normalize e.g. "9:30" to "09:30"
+          const match = parsedTime.match(/^(\d):([0-5]\d)$/);
+          if (match) parsedTime = `0${match[1]}:${match[2]}`;
+          else parsedTime = ""; // invalid format, clear it
+        }
+
+        return {
+          slug,
+          day: dayIdx !== -1 && row[dayIdx] ? row[dayIdx].trim() : "",
+          leetcodeQno: qnoIdx !== -1 && row[qnoIdx] ? row[qnoIdx].trim() : "",
+          description: descIdx !== -1 && row[descIdx] ? row[descIdx].trim() : "",
+          approach: appIdx !== -1 && row[appIdx] ? row[appIdx].trim() : "",
+          advice: advIdx !== -1 && row[advIdx] ? row[advIdx].trim() : "",
+          hint: hintIdx !== -1 && row[hintIdx] ? row[hintIdx].trim() : "",
+          footer: footIdx !== -1 && row[footIdx] ? row[footIdx].trim() : "",
+          time: parsedTime
+        };
+      }).filter(Boolean);
+
+      if (rows.length === 0) { toast("No valid questions found in CSV", "bad"); return; }
+      if (rows.length > 500) { toast("Maximum 500 questions allowed", "bad"); return; }
+      console.log("[DEBUG] CSV parsed rows:", rows);
+      setPath(state.draft, "leetcode.autoPostCsvData", rows);
+      console.log("[DEBUG] Draft state updated with CSV rows. Calling markDirty()...");
+      markDirty();
+      renderShell();
+      toast(`Loaded ${rows.length} question(s) from CSV`, "good");
+    };
+    reader.readAsText(file);
+  });
+  app.querySelector("[data-csv-clear]")?.addEventListener("click", () => {
+    setPath(state.draft, "leetcode.autoPostCsvData", []);
+    markDirty();
+    renderShell();
+    toast("CSV data cleared", "good");
+  });
+  app.querySelector("[data-csv-export]")?.addEventListener("click", () => {
+    const rows = getPath(state.draft, "leetcode.autoPostCsvData") || [];
+    if (rows.length === 0) { toast("No questions to export", "bad"); return; }
+    
+    function escapeCSV(val) {
+      const str = String(val ?? "").trim();
+      if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
+        return `"${str.replaceAll('"', '""')}"`;
+      }
+      return str;
+    }
+
+    const headers = ["DAY", "LEETCODE QNO", "SUM", "DESCRIPTION", "APPROACH", "ADVICE", "HINT", "FOOTER", "TIME"];
+    const csvLines = [headers.join(",")];
+    
+    for (const r of rows) {
+      csvLines.push([
+        escapeCSV(r.day),
+        escapeCSV(r.leetcodeQno),
+        escapeCSV(r.slug),
+        escapeCSV(r.description),
+        escapeCSV(r.approach),
+        escapeCSV(r.advice),
+        escapeCSV(r.hint),
+        escapeCSV(r.footer),
+        escapeCSV(r.time)
+      ].join(","));
+    }
+    
+    const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `leetcode-questions-${state.guildId}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast("CSV exported successfully", "good");
+  });
+  app.querySelector("[data-add-btn]")?.addEventListener("click", () => {
+    const day = String(app.querySelector("[data-add-day]")?.value || "").trim();
+    const qno = String(app.querySelector("[data-add-qno]")?.value || "").trim();
+    const slug = String(app.querySelector("[data-add-slug]")?.value || "").trim().toLowerCase().replace(/["']/g, "");
+    let time = String(app.querySelector("[data-add-time]")?.value || "").trim();
+    const description = String(app.querySelector("[data-add-description]")?.value || "").trim();
+    const approach = String(app.querySelector("[data-add-approach]")?.value || "").trim();
+    const advice = String(app.querySelector("[data-add-advice]")?.value || "").trim();
+    const hint = String(app.querySelector("[data-add-hint]")?.value || "").trim();
+    const footer = String(app.querySelector("[data-add-footer]")?.value || "").trim();
+
+    if (!slug) { toast("SUM (slug) is required", "bad"); return; }
+    
+    if (time) {
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
+        const match = time.match(/^(\d):([0-5]\d)$/);
+        if (match) {
+          time = `0${match[1]}:${match[2]}`;
+        } else {
+          toast("Time must be in HH:MM 24hr format (e.g. 14:30)", "bad");
+          return;
+        }
+      }
+    }
+
+    const rows = getPath(state.draft, "leetcode.autoPostCsvData") || [];
+    if (rows.length >= 500) { toast("Maximum 500 questions allowed", "bad"); return; }
+    
+    rows.push({
+      slug,
+      day,
+      leetcodeQno: qno,
+      time,
+      description,
+      approach,
+      advice,
+      hint,
+      footer
+    });
+    
+    setPath(state.draft, "leetcode.autoPostCsvData", [...rows]);
+    markDirty();
+    renderShell();
+    toast(`Added "${slug}" manually`, "good");
+  });
+  app.querySelectorAll("[data-csv-remove]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const index = Number(btn.dataset.csvRemove);
+      const rows = getPath(state.draft, "leetcode.autoPostCsvData") || [];
+      rows.splice(index, 1);
+      setPath(state.draft, "leetcode.autoPostCsvData", [...rows]);
+      markDirty();
+      renderShell();
+    });
+  });
+
+  app.querySelector("[data-action='start-posting']")?.addEventListener("click", () => {
+    setPath(state.draft, "leetcode.autoPostEnabled", true);
+    markDirty();
+    renderShell();
+    toast("Auto posting enabled", "good");
+  });
+  app.querySelector("[data-action='stop-posting']")?.addEventListener("click", () => {
+    setPath(state.draft, "leetcode.autoPostEnabled", false);
+    markDirty();
+    renderShell();
+    toast("Auto posting disabled", "good");
+  });
+  app.querySelector("[data-action='reset-day']")?.addEventListener("click", () => {
+    setPath(state.draft, "leetcode.autoPostCsvDay", 1);
+    markDirty();
+    renderShell();
+    toast("Day counter reset to 1", "good");
+  });
 }
 
 function filterServerCards() {
@@ -2353,21 +2797,33 @@ function startLiveRefresh() {
 }
 
 async function refreshCurrentGuild() {
-  if (!state.guildId || state.dirty || state.saving || state.refreshing || document.hidden) return;
+  console.log("[DEBUG] refreshCurrentGuild started. state.dirty:", state.dirty, "state.refreshing:", state.refreshing, "document.hidden:", document.hidden, "state.page:", state.page);
+  if (!state.guildId || state.dirty || state.saving || state.refreshing || document.hidden || state.page !== "overview") {
+    console.log("[DEBUG] refreshCurrentGuild aborted early.");
+    return;
+  }
   state.refreshing = true;
   const scrollY = window.scrollY;
 
   try {
+    console.log("[DEBUG] refreshCurrentGuild fetching settings from api...");
     const payload = await api(`/api/guilds/${state.guildId}`);
+    console.log("[DEBUG] refreshCurrentGuild api finished. state.dirty:", state.dirty, "state.saving:", state.saving);
+    if (state.dirty || state.saving) {
+      console.log("[DEBUG] refreshCurrentGuild aborted after fetch because dirty/saving became true.");
+      return;
+    }
+    console.log("[DEBUG] refreshCurrentGuild applying payload...");
     applyGuildPayload(payload);
     renderShell();
     requestAnimationFrame(() => {
       window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
     });
-  } catch {
-    // Background refresh should never interrupt edits or navigation.
+  } catch (err) {
+    console.error("[DEBUG] refreshCurrentGuild failed:", err);
   } finally {
     state.refreshing = false;
+    console.log("[DEBUG] refreshCurrentGuild finished.");
   }
 }
 
@@ -2730,7 +3186,13 @@ async function logout() {
 }
 
 function markDirty() {
-  state.dirty = JSON.stringify(state.draft) !== JSON.stringify(state.data.settings);
+  const draftStr = JSON.stringify(state.draft);
+  const settingsStr = JSON.stringify(state.data.settings);
+  state.dirty = draftStr !== settingsStr;
+  console.log("[DEBUG] markDirty called. state.dirty:", state.dirty);
+  if (state.dirty) {
+    console.log("[DEBUG] draftStr vs settingsStr differs.");
+  }
   updateSavebar();
 }
 
@@ -2969,6 +3431,17 @@ function ensureDraftShape() {
   state.draft.leetcode.pointsMedium = state.draft.leetcode.pointsMedium !== undefined ? Number(state.draft.leetcode.pointsMedium) : 20;
   state.draft.leetcode.pointsHard = state.draft.leetcode.pointsHard !== undefined ? Number(state.draft.leetcode.pointsHard) : 30;
   state.draft.leetcode.shoutoutChannelId ||= "";
+  state.draft.leetcode.autoPostEnabled = Boolean(state.draft.leetcode.autoPostEnabled);
+  state.draft.leetcode.autoPostChannelId ||= "";
+  state.draft.leetcode.autoPostTitle ||= "";
+  state.draft.leetcode.autoPostDescription ||= "";
+  state.draft.leetcode.autoPostFooter ||= "";
+  state.draft.leetcode.autoPostColor ||= "";
+  state.draft.leetcode.autoPostThumbnail ||= "";
+  state.draft.leetcode.autoPostShowThumbnail = Boolean(state.draft.leetcode.autoPostShowThumbnail);
+  state.draft.leetcode.autoPostCsvDay = state.draft.leetcode.autoPostCsvDay !== undefined ? Number(state.draft.leetcode.autoPostCsvDay) : 1;
+  state.draft.leetcode.autoPostSeparator ||= "line";
+  if (!Array.isArray(state.draft.leetcode.autoPostCsvData)) state.draft.leetcode.autoPostCsvData = [];
 }
 
 function initial(text) {

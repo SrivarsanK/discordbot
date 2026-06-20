@@ -44,17 +44,28 @@ module.exports = {
 
     const tags = (qDetails.topicTags || []).map(t => t.name);
 
-    // 3. Save to database
-    await LeetcodePostedQuestions.updateOne(
-      { channelId: targetChannel.id, slug },
-      {
+    // 3. Save to database (using check-and-create due to composite key upsert limitations)
+    const existing = await LeetcodePostedQuestions.findOne({ channelId: targetChannel.id, slug });
+    if (existing) {
+      await LeetcodePostedQuestions.updateOne(
+        { channelId: targetChannel.id, slug },
+        {
+          title: qDetails.title,
+          difficulty: qDetails.difficulty,
+          tags: tags,
+          postedAt: new Date()
+        }
+      );
+    } else {
+      await LeetcodePostedQuestions.create({
+        channelId: targetChannel.id,
+        slug,
         title: qDetails.title,
         difficulty: qDetails.difficulty,
         tags: tags,
         postedAt: new Date()
-      },
-      { upsert: true }
-    );
+      });
+    }
 
     // 4. Send announcement embed to the target channel
     let diffEmoji = "🟢 Easy";

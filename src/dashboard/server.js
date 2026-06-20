@@ -766,6 +766,17 @@ async function loadGuildSettings(client, guild) {
       pointsMedium: Number(leetcodeConfig?.pointsMedium !== undefined ? leetcodeConfig.pointsMedium : 20),
       pointsHard: Number(leetcodeConfig?.pointsHard !== undefined ? leetcodeConfig.pointsHard : 30),
       shoutoutChannelId: leetcodeConfig?.shoutoutChannelId || "",
+      autoPostEnabled: Boolean(leetcodeConfig?.autoPostEnabled),
+      autoPostChannelId: leetcodeConfig?.autoPostChannelId || "",
+      autoPostTitle: leetcodeConfig?.autoPostTitle || "",
+      autoPostDescription: leetcodeConfig?.autoPostDescription || "",
+      autoPostFooter: leetcodeConfig?.autoPostFooter || "",
+      autoPostColor: leetcodeConfig?.autoPostColor || "",
+      autoPostThumbnail: leetcodeConfig?.autoPostThumbnail || "",
+      autoPostShowThumbnail: Boolean(leetcodeConfig?.autoPostShowThumbnail),
+      autoPostCsvDay: Number(leetcodeConfig?.autoPostCsvDay !== undefined ? leetcodeConfig.autoPostCsvDay : 1),
+      autoPostSeparator: leetcodeConfig?.autoPostSeparator || "line",
+      autoPostCsvData: Array.isArray(leetcodeConfig?.autoPostCsvData) ? leetcodeConfig.autoPostCsvData : [],
     },
   };
 }
@@ -886,6 +897,17 @@ async function saveGuildSettings(client, guildId, raw, session) {
         pointsMedium: settings.leetcode.pointsMedium,
         pointsHard: settings.leetcode.pointsHard,
         shoutoutChannelId: settings.leetcode.shoutoutChannelId || null,
+        autoPostEnabled: settings.leetcode.autoPostEnabled,
+        autoPostChannelId: settings.leetcode.autoPostChannelId || null,
+        autoPostTitle: settings.leetcode.autoPostTitle || null,
+        autoPostDescription: settings.leetcode.autoPostDescription || null,
+        autoPostFooter: settings.leetcode.autoPostFooter || null,
+        autoPostColor: settings.leetcode.autoPostColor || null,
+        autoPostThumbnail: settings.leetcode.autoPostThumbnail || null,
+        autoPostShowThumbnail: settings.leetcode.autoPostShowThumbnail,
+        autoPostCsvDay: Number(settings.leetcode.autoPostCsvDay !== undefined ? settings.leetcode.autoPostCsvDay : 1),
+        autoPostSeparator: settings.leetcode.autoPostSeparator || "line",
+        autoPostCsvData: settings.leetcode.autoPostCsvData || [],
       },
       { upsert: true, new: true },
     ).catch((err) => { client.logger?.log(`[Dashboard] LeetcodeServerConfig save failed: ${err.message}`, "error"); throw err; }),
@@ -1049,6 +1071,32 @@ function normalizeSettings(client, raw) {
       pointsMedium: clampNumber(raw.leetcode?.pointsMedium, 0, 1000, 20),
       pointsHard: clampNumber(raw.leetcode?.pointsHard, 0, 1000, 30),
       shoutoutChannelId: snowflakeValue(raw.leetcode?.shoutoutChannelId),
+      autoPostEnabled: Boolean(raw.leetcode?.autoPostEnabled),
+      autoPostChannelId: snowflakeValue(raw.leetcode?.autoPostChannelId),
+      autoPostTitle: String(raw.leetcode?.autoPostTitle || "").slice(0, 256),
+      autoPostDescription: String(raw.leetcode?.autoPostDescription || "").slice(0, 2048),
+      autoPostFooter: String(raw.leetcode?.autoPostFooter || "").slice(0, 256),
+      autoPostColor: /^#[0-9a-fA-F]{6}$/.test(raw.leetcode?.autoPostColor) ? raw.leetcode.autoPostColor : "",
+      autoPostThumbnail: String(raw.leetcode?.autoPostThumbnail || "").slice(0, 512),
+      autoPostShowThumbnail: Boolean(raw.leetcode?.autoPostShowThumbnail),
+      autoPostCsvDay: clampNumber(raw.leetcode?.autoPostCsvDay, 1, 999999, 1),
+      autoPostSeparator: ["line", "blank", "none"].includes(raw.leetcode?.autoPostSeparator) ? raw.leetcode.autoPostSeparator : "line",
+      autoPostCsvData: Array.isArray(raw.leetcode?.autoPostCsvData)
+        ? raw.leetcode.autoPostCsvData
+            .filter(r => r && typeof r.slug === "string" && r.slug.trim().length > 0)
+            .map(r => ({
+              slug: String(r.slug).trim().toLowerCase(),
+              day: r.day ? String(r.day).trim().slice(0, 50) : "",
+              leetcodeQno: r.leetcodeQno ? String(r.leetcodeQno).trim().slice(0, 50) : "",
+              description: r.description ? String(r.description).trim().slice(0, 2048) : "",
+              approach: r.approach ? String(r.approach).trim().slice(0, 1024) : "",
+              advice: r.advice ? String(r.advice).trim().slice(0, 1024) : "",
+              hint: r.hint ? String(r.hint).trim().slice(0, 1024) : "",
+              footer: r.footer ? String(r.footer).trim().slice(0, 256) : "",
+              time: r.time && /^([01]\d|2[0-3]):[0-5]\d$/.test(r.time) ? r.time : ""
+            }))
+            .slice(0, 500)
+        : [],
     },
   };
 }
