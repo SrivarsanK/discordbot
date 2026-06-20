@@ -16,15 +16,16 @@ async function deploySlashCommands(client) {
       "log"
     );
 
-    // 1. Deploy globally
+    // 1. Deploy globally (clear global commands in development to avoid duplicates)
+    const deployGlobal = process.env.DEPLOY_GLOBAL === "true";
     const data = await rest.put(
       Routes.applicationCommands(clientId),
-      { body: client.slashCommandData }
+      { body: deployGlobal ? client.slashCommandData : [] }
     );
 
-    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    console.log(`Successfully reloaded ${data.length} global application (/) commands.`);
     client.logger.log(
-      `Successfully reloaded ${data.length} application (/) commands.`,
+      `Successfully reloaded ${data.length} global application (/) commands.`,
       "ready"
     );
 
