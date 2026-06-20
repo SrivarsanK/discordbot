@@ -68,10 +68,10 @@ module.exports = {
       .setDescription(
         `Please follow these instructions to verify you own the LeetCode profile **${officialUsername}**:\n\n` +
         `1. Go to your [LeetCode Profile Settings](https://leetcode.com/profile/).\n` +
-        `2. Paste the following verification token into your **'Summary / About Me'** field:\n` +
+        `2. Paste the following verification token into your **'README'** section:\n` +
         `   \`\`\`${token}\`\`\`\n` +
         `3. Run **\`${message.prefix || "!"}verify\`** in this channel within 15 minutes to complete the link.\n\n` +
-        `*You can safely remove the token from your profile bio after successful verification.*`
+        `*You can safely remove the token from your profile README after successful verification.*`
       )
       .setColor("#FEE75C")
       .setThumbnail("https://assets.leetcode.com/users/default_avatar.jpg")
