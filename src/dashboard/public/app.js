@@ -12,6 +12,7 @@ const pages = [
   { id: "automod", label: "Auto Moderation", icon: "gavel", group: "Modules", status: "automod.any" },
   { id: "antinuke", label: "Anti Nuke", icon: "bomb", group: "Modules", status: "antinuke.isEnabled" },
   { id: "welcome", label: "Welcome Messages", icon: "user-plus", group: "Modules", status: "welcome.enabled" },
+  { id: "leetcode", label: "LeetCode Tracking", icon: "code", group: "Modules" },
   { id: "roles", label: "Roles", icon: "users", group: "Modules", status: "roles.any" },
   { id: "logging", label: "Logging", icon: "file-text", group: "Modules", status: "antinuke.isEnabled" },
 ];
@@ -350,6 +351,8 @@ function renderPage() {
       return renderAntinuke();
     case "welcome":
       return renderWelcome();
+    case "leetcode":
+      return renderLeetcode();
     case "roles":
       return renderRoles();
     case "logging":
@@ -376,6 +379,7 @@ function renderOverview() {
         ${shortcutCard("Custom prefix", "General Settings", "Update how members call DSC SRM RMP commands.", "general", "Open settings")}
         ${shortcutCard("Auto moderation", "Auto Moderation", "Anti link and anti spam controls for this server.", "automod", "Configure")}
         ${shortcutCard("Welcome messages", "Welcome Messages", "Channel, content, embed fields, and preview.", "welcome", "Edit message")}
+        ${shortcutCard("LeetCode tracking", "LeetCode", "Link accounts, track solves, and award points.", "leetcode", "Configure LeetCode")}
         ${shortcutCard("Music 24/7", "Music", "Keep the player connected to a voice channel.", "music", "Manage music")}
         ${shortcutCard("Leveling", "XP", "Free chat and voice XP for active members.", "leveling", "Configure XP")}
         ${shortcutCard("VC guard", "VC", "Protect selected voice channels with bypass roles.", "vcguard", "Configure guard")}
@@ -717,6 +721,38 @@ function renderMusic() {
         <div class="setting-grid">
           ${selectField("Text channel", "music247.textChannelId", textChannels(), "Select text channel")}
           ${selectField("Voice channel", "music247.voiceChannelId", voiceChannels(), "Select voice channel")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderLeetcode() {
+  return `
+    <section class="page">
+      ${pageHead("code", "LeetCode Tracking", "Link accounts, track solves, and award points.")}
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="award"></i></span>
+            <div><h2>Solve points</h2><p>Configure the points awarded to members based on the question difficulty.</p></div>
+          </div>
+        </div>
+        <div class="setting-grid">
+          ${inputField("Points (Easy)", "leetcode.pointsEasy", "number", { min: 0, max: 1000 })}
+          ${inputField("Points (Medium)", "leetcode.pointsMedium", "number", { min: 0, max: 1000 })}
+          ${inputField("Points (Hard)", "leetcode.pointsHard", "number", { min: 0, max: 1000 })}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="bell"></i></span>
+            <div><h2>Shoutout channel</h2><p>Channel where the bot announces when a user solves a posted question.</p></div>
+          </div>
+        </div>
+        <div class="setting-grid single">
+          ${selectField("Announcement channel", "leetcode.shoutoutChannelId", textChannels(), "Select announcement channel")}
         </div>
       </div>
     </section>
@@ -2927,6 +2963,12 @@ function ensureDraftShape() {
   state.draft.logging.ignorePolls = Boolean(state.draft.logging.ignorePolls);
   state.draft.logging.ignoreSticky = Boolean(state.draft.logging.ignoreSticky);
   state.draft.logging.applyIgnoreToVoice = Boolean(state.draft.logging.applyIgnoreToVoice);
+
+  state.draft.leetcode ||= {};
+  state.draft.leetcode.pointsEasy = state.draft.leetcode.pointsEasy !== undefined ? Number(state.draft.leetcode.pointsEasy) : 10;
+  state.draft.leetcode.pointsMedium = state.draft.leetcode.pointsMedium !== undefined ? Number(state.draft.leetcode.pointsMedium) : 20;
+  state.draft.leetcode.pointsHard = state.draft.leetcode.pointsHard !== undefined ? Number(state.draft.leetcode.pointsHard) : 30;
+  state.draft.leetcode.shoutoutChannelId ||= "";
 }
 
 function initial(text) {

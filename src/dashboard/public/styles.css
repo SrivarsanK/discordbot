@@ -27,6 +27,7 @@
   --product-vagrant: #1868f2;
   --product-nomad: #00ca8e;
   --product-boundary: #f24c53;
+  --product-leetcode: #ffa116;
   
   /* Semantic Colors */
   --success: #00ca8e;
@@ -584,6 +585,10 @@ h4 {
 
 .nav-item[data-nav="welcome"].active {
   box-shadow: inset 3px 0 0 var(--product-waypoint) !important;
+}
+
+.nav-item[data-nav="leetcode"].active {
+  box-shadow: inset 3px 0 0 var(--product-leetcode) !important;
 }
 
 .nav-item[data-nav="premium"].active {
@@ -2073,6 +2078,21 @@ input[type="color"].input::-moz-color-swatch {
 .card:has(button[data-nav="automod"]) .btn:hover,
 .card:has(button[data-nav="antinuke"]) .btn:hover {
   background: #ff3c30;
+}
+
+.card:has(button[data-nav="leetcode"]) {
+  border-color: var(--product-leetcode);
+}
+.card:has(button[data-nav="leetcode"]):hover {
+  background: linear-gradient(135deg, var(--surface-1), rgba(255, 161, 22, 0.12));
+}
+.card:has(button[data-nav="leetcode"]) .btn {
+  background: var(--product-leetcode);
+  color: var(--primary);
+  border-color: var(--product-leetcode);
+}
+.card:has(button[data-nav="leetcode"]) .btn:hover {
+  background: #ffb84d;
 }
 
 /* Responsive Overrides */

@@ -18,6 +18,7 @@ const AutoReconnect = require("../schema/247");
 const WelcomeSettings = require("../schema/welcomesystem");
 const PremiumSettings = require("../schema/premiumSettings");
 const Logging = require("../schema/logging");
+const LeetcodeServerConfig = require("../schema/leetcodeServerConfig");
 const {
   clearPremiumSettingsCache,
 } = require("../utils/premiumFeatures");
@@ -631,6 +632,7 @@ async function loadGuildSettings(client, guild) {
     welcome,
     premiumSettings,
     logging,
+    leetcodeConfig,
   ] = await Promise.all([
     Prefix.findOne({ guildId }).lean(),
     AntiNuke.findOne({ guildId }).lean(),
@@ -648,6 +650,11 @@ async function loadGuildSettings(client, guild) {
       { upsert: true, new: true, setDefaultsOnInsert: true },
     ).lean(),
     Logging.findOneAndUpdate(
+      { guildId },
+      { $setOnInsert: { guildId } },
+      { upsert: true, new: true, setDefaultsOnInsert: true },
+    ).lean(),
+    LeetcodeServerConfig.findOneAndUpdate(
       { guildId },
       { $setOnInsert: { guildId } },
       { upsert: true, new: true, setDefaultsOnInsert: true },
@@ -753,6 +760,12 @@ async function loadGuildSettings(client, guild) {
       ignorePolls: Boolean(logging?.ignorePolls),
       ignoreSticky: Boolean(logging?.ignoreSticky),
       applyIgnoreToVoice: Boolean(logging?.applyIgnoreToVoice),
+    },
+    leetcode: {
+      pointsEasy: Number(leetcodeConfig?.pointsEasy !== undefined ? leetcodeConfig.pointsEasy : 10),
+      pointsMedium: Number(leetcodeConfig?.pointsMedium !== undefined ? leetcodeConfig.pointsMedium : 20),
+      pointsHard: Number(leetcodeConfig?.pointsHard !== undefined ? leetcodeConfig.pointsHard : 30),
+      shoutoutChannelId: leetcodeConfig?.shoutoutChannelId || "",
     },
   };
 }
@@ -865,6 +878,17 @@ async function saveGuildSettings(client, guildId, raw, session) {
       { guildId, ...settings.logging },
       { upsert: true, new: true },
     ).catch((err) => { client.logger?.log(`[Dashboard] Logging save failed: ${err.message}`, "error"); throw err; }),
+    LeetcodeServerConfig.findOneAndUpdate(
+      { guildId },
+      {
+        guildId,
+        pointsEasy: settings.leetcode.pointsEasy,
+        pointsMedium: settings.leetcode.pointsMedium,
+        pointsHard: settings.leetcode.pointsHard,
+        shoutoutChannelId: settings.leetcode.shoutoutChannelId || null,
+      },
+      { upsert: true, new: true },
+    ).catch((err) => { client.logger?.log(`[Dashboard] LeetcodeServerConfig save failed: ${err.message}`, "error"); throw err; }),
   ]);
 
   const failures = saveResults.filter((r) => r.status === "rejected");
@@ -1019,6 +1043,12 @@ function normalizeSettings(client, raw) {
       ignorePolls: Boolean(raw.logging?.ignorePolls),
       ignoreSticky: Boolean(raw.logging?.ignoreSticky),
       applyIgnoreToVoice: Boolean(raw.logging?.applyIgnoreToVoice),
+    },
+    leetcode: {
+      pointsEasy: clampNumber(raw.leetcode?.pointsEasy, 0, 1000, 10),
+      pointsMedium: clampNumber(raw.leetcode?.pointsMedium, 0, 1000, 20),
+      pointsHard: clampNumber(raw.leetcode?.pointsHard, 0, 1000, 30),
+      shoutoutChannelId: snowflakeValue(raw.leetcode?.shoutoutChannelId),
     },
   };
 }
