@@ -4,6 +4,7 @@ const { ActivityType, Events } = require("discord.js");
 const deploySlashCommands = require("../../utils/deploySlashCommands");
 const { refreshApplicationOwners } = require("../../utils/owners");
 const { startLeetcodeInterval } = require("../../utils/leetcode");
+const { startServerStatsInterval } = require("../../utils/serverStatsService");
 
 module.exports = {
   name: Events.ClientReady,
@@ -24,6 +25,14 @@ module.exports = {
     } catch (err) {
       client.logger.log(`[LeetCode Tracker] Startup failed: ${err.message}`, "error");
     }
+
+    // Start Live Server Stats tracking service
+    try {
+      startServerStatsInterval(client);
+    } catch (err) {
+      client.logger.log(`[Server Stats Tracker] Startup failed: ${err.message}`, "error");
+    }
+
 
     if (client.config.slashCommands?.deployOnReady) {
       client.logger.log("Deploying slash commands to Discord...", "cmd");

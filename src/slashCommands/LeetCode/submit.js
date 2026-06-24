@@ -109,6 +109,20 @@ module.exports = {
     }
     const activeQuestion = questions.sort((a, b) => b.postedAt - a.postedAt)[0];
 
+    // 4.5 Check point availability (must be within 24 hours)
+    const postedTimeMs = new Date(activeQuestion.postedAt).getTime();
+    const nowMs = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    if (nowMs - postedTimeMs > oneDayMs) {
+      return interaction.editReply(v2({
+        embeds: [
+          new EmbedBuilder()
+            .setDescription(`❌ Point availability expired. You can only get points if the challenge is solved within **24 hours** of posting. (Posted at: <t:${Math.floor(postedTimeMs / 1000)}:f>)`)
+            .setColor("#ED4245")
+        ]
+      }));
+    }
+
     // 5. Check if already solved
     const alreadySolved = await LeetcodeSolves.findOne({
       guildId: interaction.guildId,

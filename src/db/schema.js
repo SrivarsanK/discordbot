@@ -317,6 +317,15 @@ const leetcodeServerConfig = pgTable("leetcode_server_config", {
   autoPostCsvData: jsonb("auto_post_csv_data").default([]),
 });
 
+// ── server_stats ─────────────────────────────────────────────────────────────
+const serverStats = pgTable("server_stats", {
+  guildId: text("guild_id").primaryKey(),
+  isEnabled: boolean("is_enabled").default(true),
+  categoryChannelId: text("category_channel_id"),
+  channels: jsonb("channels").default([]), // Array of { channelId: string, template: string }
+  lastUpdated: timestamp("last_updated"),
+});
+
 module.exports = {
   afk,
   alwaysOn,
@@ -352,4 +361,6 @@ module.exports = {
   leetcodePostedQuestions,
   leetcodeSolves,
   leetcodeServerConfig,
+  serverStats,
 };
+

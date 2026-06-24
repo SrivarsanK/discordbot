@@ -160,10 +160,10 @@ module.exports = (client) => {
         if (prefixCommand.player && !player) {
           return interaction.reply({ content: `I'm not in any voice channel!`, ephemeral: true });
         }
-        if (prefixCommand.inVoiceChannel && !interaction.member.voice.channelId) {
+        if (prefixCommand.inVoiceChannel && !interaction.member?.voice?.channelId) {
           return interaction.reply({ content: `You must be in a voice channel!`, ephemeral: true });
         }
-        if (prefixCommand.sameVoiceChannel && player && interaction.member.voice.channelId !== player.voiceId) {
+        if (prefixCommand.sameVoiceChannel && player && interaction.member?.voice?.channelId !== player.voiceId) {
           return interaction.reply({ content: `You must be in the same voice channel as the bot!`, ephemeral: true });
         }
 

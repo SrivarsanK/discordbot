@@ -113,10 +113,17 @@ async function sendNowPlaying(client, player, track, presetType) {
 
     case 4: {
       const letn = Math.round((Date.now() + total) / 1000);
+      const requesterAvatar = track.requester && typeof track.requester.displayAvatarURL === "function" 
+        ? track.requester.displayAvatarURL() 
+        : client.user.displayAvatarURL();
+      const requesterName = track.requester && track.requester.displayName 
+        ? track.requester.displayName 
+        : (track.requester ? String(track.requester) : "Unknown");
+
       const embed = new EmbedBuilder()
-        .setAuthor({ name: `${client.user.username} Is Playing`, iconURL: track.requester.displayAvatarURL() })
+        .setAuthor({ name: `${client.user.username} Is Playing`, iconURL: requesterAvatar })
         .setDescription(
-          `${client.emoji.playing} ${trackLink(song, title)}\n\n> Ends <t:${letn}:R>\n> Author ${auth}\n> Requester ${track.requester.displayName}`
+          `${client.emoji.playing} ${trackLink(song, title)}\n\n> Ends <t:${letn}:R>\n> Author ${auth}\n> Requester ${requesterName}`
         )
         ;
 
@@ -144,11 +151,14 @@ async function sendNowPlaying(client, player, track, presetType) {
     }
 
     default: {
+      const requesterAvatar = track.requester && typeof track.requester.displayAvatarURL === "function" 
+        ? track.requester.displayAvatarURL() 
+        : client.user.displayAvatarURL();
       return channel.send(v2({
         embeds: [
           new EmbedBuilder()
             .setThumbnail(thumb)
-            .setAuthor({ name: `| Started Playing`, iconURL: track.requester.displayAvatarURL() })
+            .setAuthor({ name: `| Started Playing`, iconURL: requesterAvatar })
             .setDescription(`${client.emoji.playing} ${trackLink(song, title)}`)
             ,
         ],
@@ -170,7 +180,7 @@ module.exports = {
         new EmbedBuilder()
           
           .setAuthor({ name: `Player Started`, iconURL: client.user.displayAvatarURL() })
-          .setDescription(`**Server ID:** ${player.guildId}\n**Server Name:** ${guild.name}\n**Req:** ${track.requester}`),
+          .setDescription(`**Server ID:** ${player.guildId}\n**Server Name:** ${guild.name}\n**Req:** ${track.requester ? track.requester : "Unknown"}`),
       ],
     }, "player start");
 

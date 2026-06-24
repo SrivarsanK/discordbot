@@ -83,7 +83,7 @@ module.exports = {
             .catch(() => {});
         }
       }
-      if (command.inVoiceChannel && !interaction.member.voice.channel) {
+      if (command.inVoiceChannel && !interaction.member?.voice?.channel) {
         if (interaction.replied) {
           return await interaction
             .editReply(v2({
@@ -112,7 +112,7 @@ module.exports = {
         }
 
         const botVoiceChannel = interaction.guild.members.me.voice.channel;
-        const userVoiceChannel = interaction.member.voice.channel;
+        const userVoiceChannel = interaction.member?.voice?.channel;
 
         // Check if the bot is in a voice channel
         if (botVoiceChannel) {

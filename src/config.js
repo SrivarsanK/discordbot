@@ -103,6 +103,36 @@ const config = {
       auth: env("NODE_AUTH"),
       secure: envBool("NODE_SECURE"),
     },
+    {
+      url: "sg1-nodelink.nyxbot.app:3000",
+      name: "NyxBot-SG-1",
+      auth: "nyxbot.app/support",
+      secure: false,
+    },
+    {
+      url: "lava-v4.millohost.my.id:443",
+      name: "MilloHost-MY-1",
+      auth: "https://discord.gg/mjS5J2K3ep",
+      secure: true,
+    },
+    {
+      url: "lavalink.jirayu.net:443",
+      name: "Jirayu-TH-1",
+      auth: "youshallnotpass",
+      secure: true,
+    },
+    {
+      url: "lavav4.minecuta.com:2333",
+      name: "Minecuta-Asia-1",
+      auth: "discord.gg/gKuXdHs",
+      secure: false,
+    },
+    {
+      url: "lava2.kasawa.pro:2334",
+      name: "Kasawa-Asia-1",
+      auth: "youshallnotpass",
+      secure: false,
+    },
   ],
 
   Webhooks: {
