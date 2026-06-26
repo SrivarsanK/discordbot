@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phantom Dashboard - Button Roles</title>
+  
+  <!-- Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ----------------------------------------------------
+       DESIGN SYSTEM & CSS VARIABLES
+       ---------------------------------------------------- */
+    :root {
+      --bg-radial: radial-gradient(circle at 50% 50%, #0f0f1a 0%, #1a0f2e 60%, #2a1a1a 100%);
+      --accent-purple: #7c3aed;
+      --accent-purple-hover: #6d28d9;
+      --accent-purple-glow: rgba(124, 58, 237, 0.4);
+      --accent-teal: #06b6d4;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(0, 0, 0, 0.25);
+      
+      --text-white: #ffffff;
+      --text-gray: #9ca3af;
+      --text-muted: #6b7280;
+      
+      --sidebar-width: 240px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    body {
+      background: var(--bg-radial);
+      color: var(--text-white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* ----------------------------------------------------
+       LEFT SIDEBAR
+       ---------------------------------------------------- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: rgba(10, 10, 18, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 10;
+      padding: 24px 16px;
+      justify-content: space-between;
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-wrapper {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #0f0f18;
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
+    }
+
+    .brand-logo {
+      width: 24px;
+      height: 24px;
+      fill: var(--accent-purple);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    /* Dropdown Selector (Blue Shark) */
+    .guild-selector {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .guild-selector:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .guild-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .guild-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #4f46e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .guild-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .selector-arrow {
+      color: var(--text-muted);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Navigation Links */
+    .nav-group {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      padding-left: 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-gray);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover {
+      color: var(--text-white);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+    }
+
+    .nav-item:hover svg {
+      color: var(--text-white);
+    }
+
+    .nav-item.active {
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--text-white);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .nav-item.active svg {
+      color: var(--accent-purple);
+    }
+
+    /* Collapsible utility menu */
+    .submenu-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-left: 28px;
+      margin-top: 2px;
+    }
+
+    .submenu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .submenu-item:hover {
+      color: var(--text-white);
+    }
+
+    .submenu-item.active {
+      color: var(--accent-purple);
+      font-weight: 600;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.06);
+      margin: 16px 0;
+    }
+
+    /* Custom Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 32px;
+      height: 18px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .2s;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-purple);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(14px);
+    }
+
+    /* Teal Active Toggle Indicator */
+    input[data-indicator="teal"]:checked + .slider {
+      background-color: var(--accent-teal);
+    }
+
+    /* Upgrade Now Card */
+    .upgrade-card {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .upgrade-card::before {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      filter: blur(40px);
+      opacity: 0.15;
+      top: -30px;
+      left: -30px;
+    }
+
+    .upgrade-illustration {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .upgrade-btn {
+      width: 100%;
+      background: var(--accent-teal);
+      color: #0f0f18;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .upgrade-btn:hover {
+      background: #0ea5e9;
+      transform: translateY(-1px);
+    }
+
+    /* ----------------------------------------------------
+       CONTENT AREA WRAPPER & TOP BAR
+       ---------------------------------------------------- */
+    .content-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 70px;
+      border-bottom: 1px solid var(--card-border);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 15, 26, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .topbar-left {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .user-profile-menu {
+      position: relative;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .user-pill:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 28px;
+      height: 28px;
+    }
+
+    .user-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--accent-purple);
+    }
+
+    .status-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      border: 1.5px solid #0f0f1a;
+      bottom: 0;
+      right: 0;
+    }
+
+    .username {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .user-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-teal);
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .profile-chevron {
+      color: var(--text-muted);
+      width: 14px;
+      height: 14px;
+    }
+
+    /* User Profile Dropdown Menu */
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 180px;
+      background: #12121e;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 100;
+    }
+
+    .profile-dropdown.open {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-gray);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(255,255,255,0.03);
+      color: var(--text-white);
+    }
+
+    .dropdown-item.logout {
+      color: var(--accent-red);
+      font-weight: 600;
+    }
+
+    .dropdown-item.logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--accent-red);
+    }
+
+    /* ----------------------------------------------------
+       MAIN SCROLLABLE PANEL
+       ---------------------------------------------------- */
+    .main-panel {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+
+    .header-text h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+
+    .header-text p {
+      font-size: 0.95rem;
+      color: var(--text-gray);
+    }
+
+    /* Discard Button */
+    .discard-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-white);
+      border-radius: 9999px;
+      padding: 10px 24px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .discard-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Cards Side-by-Side Layout Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+
+    .card-section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .card-section-title h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .card-section-title .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chevron-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-gray);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chevron-btn svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s ease;
+    }
+
+    .collapsed svg {
+      transform: rotate(-90deg);
+    }
+
+    .collapsible-content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .collapsible-content.hidden {
+      display: none;
+    }
+
+    /* Form Fields Styling */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      outline: none;
+      transition: border-color 0.2s ease;
+      font-family: inherit;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-purple);
+    }
+
+    .input-field::placeholder {
+      color: var(--text-muted);
+    }
+
+    .row-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Custom Dropdown Fields */
+    .custom-dropdown-container {
+      position: relative;
+    }
+
+    .dropdown-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .dropdown-options-box {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      background: #12121e;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      z-index: 50;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .dropdown-options-box.open {
+      display: block;
+    }
+
+    .dropdown-option {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--text-gray);
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-option:hover {
+      background: rgba(255,255,255,0.03);
+      color: var(--text-white);
+    }
+
+    /* Multi-role select element mockup */
+    .role-input-box {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .green-badge-btn {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 6px;
+      color: var(--accent-green);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .green-badge-btn:hover {
+      background: rgba(16, 185, 129, 0.2);
+    }
+
+    /* Button Builder Rows */
+    .button-builder-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .row-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .remove-link {
+      font-size: 0.8rem;
+      color: var(--accent-red);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .remove-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Color Swatch Row Styles */
+    .color-pill-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .color-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .color-pill.blurple { border-color: #5865F2; color: #5865F2; }
+    .color-pill.blurple.active { background: #5865F2; color: white; }
+    
+    .color-pill.grey { border-color: #4f545c; color: #b9bbbe; }
+    .color-pill.grey.active { background: #4f545c; color: white; }
+    
+    .color-pill.green { border-color: #248046; color: #3ba55d; }
+    .color-pill.green.active { background: #248046; color: white; }
+    
+    .color-pill.red { border-color: #da373c; color: #ed4245; }
+    .color-pill.red.active { background: #da373c; color: white; }
+
+    /* Character Counter */
+    .textarea-container {
+      position: relative;
+    }
+
+    .textarea-field {
+      width: 100%;
+      height: 100px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      outline: none;
+      resize: none;
+      font-family: inherit;
+    }
+
+    .textarea-field:focus {
+      border-color: var(--accent-purple);
+    }
+
+    .char-counter {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Color Swatch Circles */
+    .color-picker-palette {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .color-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .color-circle:hover {
+      transform: scale(1.15);
+    }
+
+    .color-circle.active {
+      border-color: white;
+      box-shadow: 0 0 8px rgba(255,255,255,0.4);
+    }
+
+    /* ----------------------------------------------------
+       MOCK DISCORD MESSAGE PREVIEW
+       ---------------------------------------------------- */
+    .mock-message-container {
+      background: #313338;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      display: flex;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .mock-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      flex-shrink: 0;
+    }
+
+    .mock-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .mock-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+    }
+
+    .mock-username {
+      font-weight: 600;
+      color: #f2f3f5;
+    }
+
+    .mock-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: #5865F2;
+      color: white;
+      padding: 1px 4px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .mock-timestamp {
+      font-size: 0.75rem;
+      color: #949ba4;
+    }
+
+    .mock-body {
+      font-size: 0.95rem;
+      color: #dbdee1;
+      margin-bottom: 8px;
+      line-height: 1.375;
+    }
+
+    .mock-body strong {
+      color: white;
+    }
+
+    /* Mock Embed Box */
+    .mock-embed {
+      background: #2b2d31;
+      border-left: 4px solid var(--accent-purple);
+      border-radius: 4px;
+      padding: 8px 16px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 520px;
+    }
+
+    .mock-embed-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .mock-embed-desc {
+      font-size: 0.85rem;
+      color: #dbdee1;
+      line-height: 1.25;
+    }
+
+    .mock-embed-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: #949ba4;
+      margin-top: 4px;
+    }
+
+    .mock-embed-footer-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+    }
+
+    /* Mock Role Pills list */
+    .mock-role-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .mock-role-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: transparent;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    /* Button Mockups */
+    .mock-button-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mock-button {
+      background: #4e5058;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mock-button.blurple { background: #5865F2; }
+    .mock-button.grey { background: #4f545c; }
+    .mock-button.green { background: #248046; }
+    .mock-button.red { background: #da373c; }
+
+    /* Custom Fields in Card 3 */
+    .added-image-box {
+      border: 1px dashed var(--card-border);
+      border-radius: 10px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .added-image-box:hover {
+      background: rgba(255,255,255,0.02);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .upload-btn-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      color: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .inline-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-gray);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      
+      <!-- Brand Logo / Phantom -->
+      <div class="brand-container">
+        <div class="brand-logo-wrapper">
+          <svg class="brand-logo" viewBox="0 0 100 100">
+            <path d="M50,10 L80,25 L80,55 L50,90 L20,55 L20,25 Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/>
+            <polygon points="50,30 38,48 48,48 44,70 62,45 52,45" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">Phantom</div>
+        </div>
+      </div>
+      
+      <!-- Dropdown select for Guild (Blue Shark) -->
+      <div class="guild-selector" id="guild-trigger">
+        <div class="guild-info">
+          <div class="guild-avatar">BS</div>
+          <span class="guild-name">Blue Shark</span>
+        </div>
+        <i data-lucide="chevron-down" class="selector-arrow"></i>
+      </div>
+
+      <!-- Navigation links (Group 1) -->
+      <nav class="nav-group">
+        <button class="nav-item">
+          <span class="nav-item-left"><i data-lucide="layout-dashboard"></i> Dashboard</span>
+        </button>
+        <button class="nav-item">
+          <span class="nav-item-left"><i data-lucide="server"></i> Servers</span>
+        </button>
+        <button class="nav-item">
+          <span class="nav-item-left"><i data-lucide="message-square"></i> Support</span>
+        </button>
+        <button class="nav-item">
+          <span class="nav-item-left"><i data-lucide="star"></i> Premium</span>
+        </button>
+      </nav>
+
+      <div class="divider"></div>
+
+      <!-- Navigation links (Group 2) -->
+      <nav class="nav-group">
+        <div class="nav-title">Modules</div>
+        
+        <div class="nav-item">
+          <span class="nav-item-left"><i data-lucide="settings-2"></i> Bot Settings</span>
+          <label class="toggle-switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+        
+        <div class="nav-item active">
+          <span class="nav-item-left"><i data-lucide="tag"></i> Button Roles</span>
+          <label class="toggle-switch">
+            <input type="checkbox" checked data-indicator="teal">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-item-left"><i data-lucide="user-plus"></i> Verification/Greetings</span>
+          <label class="toggle-switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Collapsible submenu: Utilities -->
+        <div>
+          <button class="nav-item" id="utilities-trigger">
+            <span class="nav-item-left"><i data-lucide="tool"></i> Utilities</span>
+            <i data-lucide="chevron-down" class="selector-arrow" id="utilities-chevron" style="transform: rotate(0deg); transition: transform 0.2s;"></i>
+          </button>
+          <div class="submenu-container" id="utilities-submenu">
+            <div class="submenu-item">
+              <span>Custom Commands</span>
+              <label class="toggle-switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="submenu-item">
+              <span>Timed Messages</span>
+              <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-item-left"><i data-lucide="shield"></i> Command Moderation</span>
+          <label class="toggle-switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-item-left"><i data-lucide="gavel"></i> Auto Moderation</span>
+          <label class="toggle-switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <button class="nav-item">
+          <span class="nav-item-left"><i data-lucide="file-text"></i> Audit Logging</span>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- Upgrade Card -->
+    <div class="upgrade-card">
+      <div class="upgrade-illustration">
+        <i data-lucide="rocket" style="width: 32px; height: 32px; color: var(--accent-teal);"></i>
+      </div>
+      <button class="upgrade-btn">
+        Upgrade Now
+        <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENT CONTAINER -->
+  <div class="content-wrapper">
+    
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        Phantom
+      </div>
+      
+      <!-- User Profile Menu -->
+      <div class="user-profile-menu">
+        <div class="user-pill" id="user-trigger">
+          <div class="avatar-wrapper">
+            <div class="user-avatar"></div>
+            <span class="status-dot"></span>
+          </div>
+          <span class="username">DARKIE_</span>
+          <span class="user-badge">Upgrade</span>
+          <i data-lucide="chevron-down" class="profile-chevron"></i>
+        </div>
+        <div class="profile-dropdown" id="user-dropdown">
+          <div class="dropdown-item">Billing</div>
+          <div class="dropdown-item">Lorem Ipsum</div>
+          <div class="dropdown-item">Lorem Ipsum</div>
+          <div class="dropdown-item">Lorem Ipsum</div>
+          <div class="divider" style="margin: 6px 0;"></div>
+          <div class="dropdown-item logout">Log Out</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN SCROLLABLE PANEL -->
+    <main class="main-panel">
+      
+      <div class="main-header">
+        <div class="header-text">
+          <h1>Button Roles</h1>
+          <p>Distribute roles within your server using awesome buttons</p>
+        </div>
+        <button class="discard-btn" id="discard-btn">Discard</button>
+      </div>
+
+      <!-- CARDS GRID -->
+      <div class="cards-grid">
+        
+        <!-- CARD 1: Settings + Button Builder -->
+        <div class="card">
+          
+          <!-- Section 1: Settings -->
+          <div class="card-section-title">
+            <h2>Settings</h2>
+          </div>
+          
+          <div class="collapsible-content">
+            <div class="form-group">
+              <label>Message name</label>
+              <input class="input-field" type="text" placeholder="Message name">
+            </div>
+
+            <div class="row-grid">
+              <div class="form-group">
+                <label>Channel</label>
+                <div class="custom-dropdown-container">
+                  <div class="dropdown-trigger" id="channel-trigger">
+                    <span id="selected-channel">General</span>
+                    <i data-lucide="chevron-down" style="width: 14px; height:14px; color: var(--text-muted);"></i>
+                  </div>
+                  <div class="dropdown-options-box" id="channel-options">
+                    <div class="dropdown-option">General</div>
+                    <div class="dropdown-option">announcements</div>
+                    <div class="dropdown-option">bot-commands</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Role type</label>
+                <div class="custom-dropdown-container">
+                  <div class="dropdown-trigger" id="role-trigger">
+                    <span id="selected-role">Verify</span>
+                    <i data-lucide="chevron-down" style="width: 14px; height:14px; color: var(--text-muted);"></i>
+                  </div>
+                  <!-- RENDERED OPEN BY DEFAULT to match the reference screenshot -->
+                  <div class="dropdown-options-box open" id="role-options" style="position: absolute;">
+                    <div class="dropdown-option">Lorem Ipsum</div>
+                    <div class="dropdown-option">Lorem Ipsum</div>
+                    <div class="dropdown-option">Lorem Ipsum</div>
+                    <div class="dropdown-option">Lorem Ipsum</div>
+                    <div class="dropdown-option">Lorem Ipsum</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Allowed roles</label>
+              <div class="role-input-box">
+                Choose role
+                <i data-lucide="chevron-down" style="width:14px; height:14px; color:var(--text-muted);"></i>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Banned roles</label>
+              <div class="role-input-box">
+                Choose role
+                <i data-lucide="chevron-down" style="width:14px; height:14px; color:var(--text-muted);"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 2: Button Builder -->
+          <div class="card-section-title" id="btn-builder-header">
+            <h2>Button Builder</h2>
+            <div class="actions">
+              <button class="green-badge-btn" id="add-btn-action">
+                <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                Button
+              </button>
+              <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+            </div>
+          </div>
+
+          <div class="collapsible-content" id="btn-builder-content">
+            <p class="muted" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: -10px;">Buttons require a message to be used.</p>
+            
+            <div class="button-builder-row">
+              <div class="row-left">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+                <span>Button #1</span>
+              </div>
+              <span class="remove-link">Remove</span>
+            </div>
+
+            <div class="form-group">
+              <label>Button color</label>
+              <div class="color-pill-row">
+                <div class="color-pill blurple active" data-color="blurple">Blurple</div>
+                <div class="color-pill grey" data-color="grey">Grey</div>
+                <div class="color-pill green" data-color="green">Green</div>
+                <div class="color-pill red" data-color="red">Red</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Button text</label>
+              <input class="input-field" type="text" value="Enter button text" id="btn-text-input">
+            </div>
+
+            <div class="form-group">
+              <label>Choose to role</label>
+              <div class="role-input-box" id="role-select-trigger">
+                Choose button role
+                <i data-lucide="chevron-down" style="width:14px; height:14px; color:var(--text-muted);"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CARD 2: Embed Builder -->
+        <div class="card">
+          
+          <!-- Section 1: Embed Builder Header -->
+          <div class="card-section-title" id="embed-builder-header">
+            <h2>Embed Builder</h2>
+            <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+          </div>
+
+          <div class="collapsible-content" id="embed-builder-content">
+            <div class="form-group">
+              <label style="display:flex; align-items:center; gap:6px;">
+                <i data-lucide="align-left" style="width:14px; height:14px;"></i>
+                Message contents
+              </label>
+              <textarea class="textarea-field" placeholder="Main content of the message" id="message-content-input"></textarea>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 2: Embed Sub-Panel -->
+          <div class="card-section-title" id="embed-header">
+            <h2>Embed</h2>
+            <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+          </div>
+
+          <div class="collapsible-content" id="embed-content">
+            <div class="form-group">
+              <label style="display:flex; align-items:center; gap:6px;">
+                <i data-lucide="type" style="width:14px; height:14px;"></i>
+                Embed title
+              </label>
+              <input class="input-field" type="text" value="DARKIE_" id="embed-title-input">
+            </div>
+
+            <div class="form-group">
+              <label style="display:flex; align-items:center; gap:6px;">
+                <i data-lucide="align-left" style="width:14px; height:14px;"></i>
+                Embed description
+              </label>
+              <div class="textarea-container">
+                <textarea class="textarea-field" id="embed-desc-input" maxlength="100">It is a long established fact that a reader</textarea>
+                <div class="char-counter">
+                  <i data-lucide="text" style="width:10px; height:10px;"></i>
+                  <span id="char-count-val">35</span>/100
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Embed color</label>
+              <div class="color-picker-palette" id="color-palette">
+                <div class="color-circle" style="background:#10b981;" data-hex="#10b981"></div>
+                <div class="color-circle" style="background:#7c3aed;" data-hex="#7c3aed"></div>
+                <div class="color-circle" style="background:#ec4899;" data-hex="#ec4899"></div>
+                <div class="color-circle" style="background:#3b82f6;" data-hex="#3b82f6"></div>
+                <div class="color-circle" style="background:#06b6d4;" data-hex="#06b6d4"></div>
+                <div class="color-circle" style="background:#ef4444;" data-hex="#ef4444"></div>
+                <div class="color-circle" style="background:#f97316;" data-hex="#f97316"></div>
+                <div class="color-circle active" style="background:#eab308;" data-hex="#eab308"></div>
+                <!-- Palette arrow -->
+                <i data-lucide="chevron-right" style="width:16px; height:16px; color:var(--text-muted); cursor:pointer;"></i>
+              </div>
+              <div class="row-grid" style="margin-top:10px; align-items:center;">
+                <label style="font-size:0.75rem; color:var(--text-muted);">Default color</label>
+                <input class="input-field" type="text" value="#000000" id="hex-color-input" style="font-family:monospace; text-align:center;">
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 3: Author & Thumbnail -->
+          <div class="card-section-title" id="author-header">
+            <h2>Author & Thumbnail</h2>
+            <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+          </div>
+
+          <div class="collapsible-content" id="author-content">
+            <div class="form-group">
+              <label>Author</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <div class="user-avatar" style="width:36px; height:36px;"></div>
+                <input class="input-field" type="text" value="DARKIE_" id="author-name-input">
+                <button class="chevron-btn" style="padding:10px; background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:8px;"><i data-lucide="lock" style="width:16px; height:16px;"></i></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>URL</label>
+              <div style="position:relative;">
+                <input class="input-field" type="text" placeholder="http://   Paste your url" style="padding-right:36px;">
+                <i data-lucide="external-link" style="position:absolute; right:12px; top:12px; width:16px; height:16px; color:var(--text-muted);"></i>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Value</label>
+              <input class="input-field" type="text" placeholder="Value to of the embed field">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CARD 3: Illustration + Field + Image -->
+        <div class="card">
+          
+          <div class="card-section-title">
+            <h2>Illustration</h2>
+          </div>
+
+          <!-- Mock Discord Message Preview -->
+          <div class="mock-message-container">
+            <!-- Discord user avatar mockup -->
+            <div class="mock-avatar"></div>
+            
+            <div class="mock-content">
+              
+              <div class="mock-header">
+                <span class="mock-username">Phantom</span>
+                <span class="mock-badge">
+                  BOT
+                  <i data-lucide="check" style="width:10px; height:10px; stroke-width:3;"></i>
+                </span>
+                <span class="mock-timestamp">Today at 6:30am</span>
+              </div>
+              
+              <div class="mock-body" id="preview-msg-content">Get your roles! <br>-# below with the click of a button!</div>
+              
+              <!-- Embed Box -->
+              <div class="mock-embed" id="preview-embed-box">
+                <div class="mock-embed-title" id="preview-embed-title">DARKIE_</div>
+                <div class="mock-embed-desc" id="preview-embed-desc">It is a long established fact that a reader</div>
+                
+                <!-- Role Pills inside mock embed -->
+                <div class="mock-role-list">
+                  <span class="mock-role-pill" style="border-color:#3b82f6; color:#3b82f6;">Master Chief</span>
+                  <span class="mock-role-pill" style="border-color:#06b6d4; color:#06b6d4;">Forerunner</span>
+                  <span class="mock-role-pill" style="border-color:#10b981; color:#10b981;">Huragok</span>
+                </div>
+
+                <div class="mock-embed-footer">
+                  <div class="mock-embed-footer-icon"></div>
+                  Phantom
+                </div>
+              </div>
+
+              <!-- Button Mockup rows -->
+              <div class="mock-button-row" id="preview-button-row">
+                <button class="mock-button blurple" id="preview-interactive-btn">
+                  Enter button text
+                </button>
+              </div>
+
+              <div class="mock-button-row" style="margin-top: 8px;">
+                <button class="mock-button" style="background:#2b2d31; color:#dbdee1; padding: 4px 10px; font-size: 0.8rem;">👍 upvote</button>
+                <button class="mock-button" style="background:#2b2d31; color:#dbdee1; padding: 4px 10px; font-size: 0.8rem;">👎 downvote</button>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 2: Fields list -->
+          <div class="card-section-title" id="field-header">
+            <h2>Field</h2>
+            <div class="actions">
+              <button class="green-badge-btn" style="background:rgba(6, 182, 212, 0.1); border-color:rgba(6, 182, 212, 0.25); color:var(--accent-teal);" id="add-field-action">
+                <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                Fields
+              </button>
+              <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+            </div>
+          </div>
+
+          <div class="collapsible-content" id="field-content">
+            <div class="button-builder-row">
+              <div class="row-left">
+                <span>Field #1</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="inline-checkbox-row">
+                  <span>Inline</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <span class="remove-link">Remove</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Name</label>
+              <input class="input-field" type="text" placeholder="Name of your embed field">
+            </div>
+
+            <div class="form-group">
+              <label>Value</label>
+              <input class="input-field" type="text" placeholder="Value to of the embed field">
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 3: Image -->
+          <div class="card-section-title" id="image-header">
+            <h2>Image</h2>
+            <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+          </div>
+
+          <div class="collapsible-content" id="image-content">
+            <label style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Added Image</label>
+            <div class="added-image-box">
+              <div class="upload-btn-circle">
+                <i data-lucide="upload" style="width:18px; height:18px;"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // ----------------------------------------------------
+    // ACCORDIONS / COLLAPSIBLE SECTIONS
+    // ----------------------------------------------------
+    function setupCollapsible(headerId, contentId) {
+      const header = document.getElementById(headerId);
+      const content = document.getElementById(contentId);
+      if (header && content) {
+        header.addEventListener("click", (e) => {
+          // Prevent collapse if clicking buttons inside the header
+          if (e.target.closest("button") && !e.target.closest(".chevron-btn")) return;
+          header.classList.toggle("collapsed");
+          content.classList.toggle("hidden");
+        });
+      }
+    }
+
+    setupCollapsible("btn-builder-header", "btn-builder-content");
+    setupCollapsible("embed-builder-header", "embed-builder-content");
+    setupCollapsible("embed-header", "embed-content");
+    setupCollapsible("author-header", "author-content");
+    setupCollapsible("field-header", "field-content");
+    setupCollapsible("image-header", "image-content");
+
+    // Utilities menu collapsible
+    const utilsTrigger = document.getElementById("utilities-trigger");
+    const utilsSubmenu = document.getElementById("utilities-submenu");
+    const utilsChevron = document.getElementById("utilities-chevron");
+    if (utilsTrigger && utilsSubmenu && utilsChevron) {
+      utilsTrigger.addEventListener("click", () => {
+        const isHidden = utilsSubmenu.style.display === "none";
+        utilsSubmenu.style.display = isHidden ? "flex" : "none";
+        utilsChevron.style.transform = isHidden ? "rotate(0deg)" : "rotate(-90deg)";
+      });
+    }
+
+    // ----------------------------------------------------
+    // DROPDOWNS OPEN/CLOSE (Guild, User Profile, Channels, Roles)
+    // ----------------------------------------------------
+    function setupDropdown(triggerId, optionsId, selectCallback) {
+      const trigger = document.getElementById(triggerId);
+      const optionsBox = document.getElementById(optionsId);
+      if (trigger && optionsBox) {
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          optionsBox.classList.toggle("open");
+        });
+
+        const options = optionsBox.querySelectorAll(".dropdown-option");
+        options.forEach(opt => {
+          opt.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (selectCallback) selectCallback(opt.textContent);
+            optionsBox.classList.remove("open");
+          });
+        });
+      }
+    }
+
+    setupDropdown("guild-trigger", "guild-trigger", null); // Just toggle
+    setupDropdown("user-trigger", "user-dropdown", null);
+
+    setupDropdown("channel-trigger", "channel-options", (val) => {
+      document.getElementById("selected-channel").textContent = val;
+    });
+
+    setupDropdown("role-trigger", "role-options", (val) => {
+      document.getElementById("selected-role").textContent = val;
+    });
+
+    // Close open dropdowns when clicking anywhere outside
+    document.addEventListener("click", () => {
+      document.getElementById("user-dropdown")?.classList.remove("open");
+      document.getElementById("channel-options")?.classList.remove("open");
+      document.getElementById("role-options")?.classList.remove("open");
+    });
+
+    // ----------------------------------------------------
+    // REAL-TIME PREVIEWS & INTERACTION
+    // ----------------------------------------------------
+    const msgContentInput = document.getElementById("message-content-input");
+    const previewMsgContent = document.getElementById("preview-msg-content");
+    
+    if (msgContentInput && previewMsgContent) {
+      msgContentInput.addEventListener("input", () => {
+        const val = msgContentInput.value.trim();
+        previewMsgContent.innerHTML = val ? val.replace(/\n/g, "<br>") : "Get your roles! <br>-# below with the click of a button!";
+      });
+    }
+
+    const embedTitleInput = document.getElementById("embed-title-input");
+    const previewEmbedTitle = document.getElementById("preview-embed-title");
+    
+    if (embedTitleInput && previewEmbedTitle) {
+      embedTitleInput.addEventListener("input", () => {
+        previewEmbedTitle.textContent = embedTitleInput.value || "DARKIE_";
+      });
+    }
+
+    const embedDescInput = document.getElementById("embed-desc-input");
+    const previewEmbedDesc = document.getElementById("preview-embed-desc");
+    const charCountVal = document.getElementById("char-count-val");
+    
+    if (embedDescInput && previewEmbedDesc && charCountVal) {
+      embedDescInput.addEventListener("input", () => {
+        const val = embedDescInput.value;
+        previewEmbedDesc.textContent = val || "It is a long established fact that a reader";
+        charCountVal.textContent = val.length;
+      });
+    }
+
+    // Embed Color Palette selector
+    const colorCircles = document.querySelectorAll(".color-circle");
+    const previewEmbedBox = document.getElementById("preview-embed-box");
+    const hexColorInput = document.getElementById("hex-color-input");
+
+    colorCircles.forEach(circle => {
+      circle.addEventListener("click", () => {
+        colorCircles.forEach(c => c.classList.remove("active"));
+        circle.classList.add("active");
+        
+        const hex = circle.dataset.hex;
+        previewEmbedBox.style.borderColor = hex;
+        hexColorInput.value = hex;
+      });
+    });
+
+    if (hexColorInput) {
+      hexColorInput.addEventListener("input", () => {
+        const val = hexColorInput.value;
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+          previewEmbedBox.style.borderColor = val;
+        }
+      });
+    }
+
+    // Button text preview & color selector
+    const btnTextInput = document.getElementById("btn-text-input");
+    const previewInteractiveBtn = document.getElementById("preview-interactive-btn");
+
+    if (btnTextInput && previewInteractiveBtn) {
+      btnTextInput.addEventListener("input", () => {
+        previewInteractiveBtn.textContent = btnTextInput.value || "Enter button text";
+      });
+    }
+
+    const colorPills = document.querySelectorAll(".color-pill");
+    colorPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        colorPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        
+        const color = pill.dataset.color;
+        // Reset classes
+        previewInteractiveBtn.className = "mock-button " + color;
+      });
+    });
+
+    // Mock Actions
+    document.getElementById("discard-btn")?.addEventListener("click", () => {
+      alert("Mockup: Discarded settings changes!");
+    });
+  </script>
+</body>
+</html>
