@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSC SRM RMP Bot - Power Up Your Server</title>
+  
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ----------------------------------------------------
+       DESIGN SYSTEM & VARIABLES
+       ---------------------------------------------------- */
+    :root {
+      --bg-color: #0a0a0f;
+      --accent-purple: #7c3aed;
+      --accent-purple-glow: rgba(124, 58, 237, 0.4);
+      --accent-pink: #a855f7;
+      --accent-cyan: #06b6d4;
+      --text-white: #ffffff;
+      --text-gray: #9ca3af;
+      --card-bg: rgba(15, 15, 25, 0.5);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --glass-blur: blur(16px);
+      
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-white);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient background glows */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, var(--accent-purple-glow) 0%, rgba(10,10,15,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      bottom: 10%;
+      right: -200px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(10,10,15,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ----------------------------------------------------
+       HEADER / NAVIGATION
+       ---------------------------------------------------- */
+    header {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      color: var(--text-white);
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      fill: var(--accent-purple);
+      filter: drop-shadow(0 0 8px var(--accent-purple-glow));
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    nav a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-gray);
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover {
+      color: var(--text-white);
+    }
+
+    .cta-btn {
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-pink) 100%);
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+      border: none;
+      cursor: pointer;
+      color: var(--text-white);
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+    }
+
+    /* ----------------------------------------------------
+       HERO SECTION (SECTION 1)
+       ---------------------------------------------------- */
+    .hero-section {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 20px 120px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: calc(100vh - 88px);
+      z-index: 5;
+    }
+
+    .hero-center {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      margin: 40px 0;
+    }
+
+    .hero-tag {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: -10px;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 6.5rem;
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -2px;
+      color: var(--text-white);
+      text-transform: uppercase;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Central 3D Abstract Shape */
+    .hero-3d-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 480px;
+      height: 480px;
+      z-index: 1;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-shape-glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(10,10,15,0) 70%);
+      filter: blur(20px);
+      animation: pulseGlow 4s infinite alternate ease-in-out;
+    }
+
+    .bolt-svg {
+      width: 240px;
+      height: 240px;
+      animation: floatLogo 6s infinite ease-in-out;
+      filter: drop-shadow(0 0 15px rgba(124, 58, 237, 0.5)) drop-shadow(0 0 30px rgba(6, 182, 212, 0.3));
+    }
+
+    /* Floating Feature Cards Layout */
+    .floating-cards-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .float-card {
+      position: absolute;
+      width: 280px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      pointer-events: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.05);
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+      cursor: pointer;
+    }
+
+    .float-card:hover {
+      transform: scale(1.05) rotate(0deg) !important;
+      box-shadow: 0 15px 40px rgba(124, 58, 237, 0.25);
+      border-color: rgba(124, 58, 237, 0.3);
+    }
+
+    /* Tilted positions for each card */
+    .card-top-left {
+      top: 15%;
+      left: 8%;
+      transform: rotate(-4deg);
+    }
+    
+    .card-top-right {
+      top: 18%;
+      right: 8%;
+      transform: rotate(4deg);
+    }
+
+    .card-bottom-left {
+      bottom: 15%;
+      left: 6%;
+      transform: rotate(-3deg);
+    }
+
+    .card-bottom-right {
+      bottom: 12%;
+      right: 7%;
+      transform: rotate(5deg);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon-wrapper {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-pink);
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: 0.3px;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: var(--text-gray);
+      margin-bottom: 16px;
+    }
+
+    /* Small action element inside cards */
+    .card-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .action-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-gray);
+    }
+
+    .action-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-white);
+      cursor: pointer;
+    }
+
+    .action-badge svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 32px;
+      height: 18px;
+    }
+
+    .switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255,255,255,0.1);
+      transition: .3s;
+      border-radius: 34px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-purple);
+      box-shadow: 0 0 8px var(--accent-purple-glow);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(14px);
+    }
+
+    /* Plus Action */
+    .action-plus {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-white);
+      cursor: pointer;
+    }
+
+    /* ----------------------------------------------------
+       ONE-LINER PITCH (SECTION 2)
+       ---------------------------------------------------- */
+    .pitch-section {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 100px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 5;
+    }
+
+    .divider-line-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
+      margin: 40px 0;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(124, 58, 237, 0) 0%, rgba(255,255,255,0.1) 50%, rgba(124, 58, 237, 0) 100%);
+    }
+
+    .divider-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--accent-purple);
+      filter: drop-shadow(0 0 5px var(--accent-purple-glow));
+    }
+
+    .pitch-text {
+      font-size: 2.2rem;
+      font-weight: 500;
+      line-height: 1.4;
+      max-width: 800px;
+      margin: 0 auto;
+      letter-spacing: -0.5px;
+      color: #e5e7eb;
+    }
+
+    .pitch-text strong {
+      color: var(--text-white);
+      font-weight: 700;
+    }
+
+    .pitch-highlight-purple {
+      color: var(--accent-pink);
+      font-weight: 700;
+      background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+    }
+
+    /* ----------------------------------------------------
+       CTA & ANALYTICS PREVIEW (SECTION 3)
+       ---------------------------------------------------- */
+    .cta-analytics-section {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5;
+      position: relative;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: -1px;
+    }
+
+    .section-title span {
+      background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-gray);
+      text-align: center;
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+
+    /* Pill buttons row */
+    .pills-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 28px;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .pill-primary {
+      background: var(--accent-purple);
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      color: var(--text-white);
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+    }
+
+    .pill-primary:hover {
+      background: #6d28d9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+    }
+
+    .pill-secondary {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--card-border);
+      color: #e5e7eb;
+    }
+
+    .pill-secondary:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.15);
+      color: var(--text-white);
+      transform: translateY(-2px);
+    }
+
+    /* Dashboard Mockup Preview Card */
+    .dashboard-preview-card {
+      width: 100%;
+      max-width: 1000px;
+      background: #06060a;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 20px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 100px rgba(124, 58, 237, 0.05);
+      overflow: hidden;
+      display: flex;
+      aspect-ratio: 16 / 9;
+      position: relative;
+    }
+
+    /* Sidebar mockup */
+    .db-sidebar {
+      width: 220px;
+      border-right: 1px solid rgba(255,255,255,0.04);
+      background: #030305;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .db-sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      padding-left: 8px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-item-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-item svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .sidebar-item.active {
+      background: rgba(124, 58, 237, 0.1);
+      color: var(--text-white);
+      border: 1px solid rgba(124, 58, 237, 0.15);
+    }
+
+    .sidebar-item:hover:not(.active) {
+      color: var(--text-white);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .sidebar-badge {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      color: var(--accent-pink);
+    }
+
+    /* Main Area Mockup */
+    .db-main {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: #06060a;
+    }
+
+    .db-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .db-user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .db-user-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+    }
+
+    .db-header-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .db-search-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+    }
+
+    .db-search-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .db-add-btn {
+      background: var(--accent-purple);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .db-add-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Grid layout for stats cards */
+    .db-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      flex: 1;
+    }
+
+    .db-card {
+      background: #09090f;
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .db-card-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .db-card-value {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-white);
+      margin-bottom: auto;
+    }
+
+    /* Stats header selectors */
+    .db-card-selectors {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .selector-item {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      cursor: pointer;
+    }
+
+    .selector-item.active {
+      background: rgba(124, 58, 237, 0.15);
+      border-color: rgba(124, 58, 237, 0.3);
+      color: var(--text-white);
+    }
+
+    /* Chart SVG overlays */
+    .chart-container {
+      width: 100%;
+      height: 70px;
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .chart-path {
+      fill: none;
+      stroke: var(--accent-purple);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 2px 6px rgba(124, 58, 237, 0.3));
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: drawLine 2.5s forwards ease-in-out;
+    }
+
+    .chart-area {
+      fill: url(#purple-gradient);
+      opacity: 0.15;
+    }
+
+    /* Bar chart representation */
+    .bar-chart-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      height: 60px;
+      margin-top: 16px;
+      padding: 0 4px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      background: linear-gradient(to top, rgba(124, 58, 237, 0.2) 0%, var(--accent-purple) 100%);
+      transition: height 1s ease;
+      height: 0;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.1);
+    }
+
+    /* ----------------------------------------------------
+       FOOTER
+       ---------------------------------------------------- */
+    footer {
+      width: 100%;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      background: #040407;
+      padding: 40px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text-white);
+    }
+
+    .footer-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--accent-purple);
+    }
+
+    .footer-text {
+      font-size: 0.85rem;
+      color: var(--text-gray);
+    }
+
+    /* ----------------------------------------------------
+       KEYFRAMES / ANIMATIONS
+       ---------------------------------------------------- */
+    @keyframes floatLogo {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    @keyframes pulseGlow {
+      0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ----------------------------------------------------
+       RESPONSIVE MEDIA QUERIES
+       ---------------------------------------------------- */
+    @media (max-width: 1024px) {
+      .hero-title {
+        font-size: 5rem;
+      }
+      .bolt-svg {
+        width: 180px;
+        height: 180px;
+      }
+      .hero-3d-container {
+        width: 360px;
+        height: 360px;
+      }
+      .float-card {
+        position: relative;
+        transform: none !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 100%;
+        max-width: 340px;
+        margin: 10px;
+        pointer-events: auto;
+      }
+      .floating-cards-container {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+        height: auto;
+        padding-top: 40px;
+        margin-top: 20px;
+      }
+      .hero-section {
+        min-height: auto;
+        padding-bottom: 40px;
+      }
+      .dashboard-preview-card {
+        aspect-ratio: auto;
+        flex-direction: column;
+      }
+      .db-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 12px;
+        padding: 12px 20px;
+      }
+      .db-sidebar-logo {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .sidebar-section {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+      }
+      .sidebar-section-title {
+        display: none;
+      }
+      .db-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+      .hero-title {
+        font-size: 3.5rem;
+      }
+      .hero-tag {
+        font-size: 1.5rem;
+      }
+      .pitch-text {
+        font-size: 1.6rem;
+      }
+      .section-title {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <svg class="logo-icon" viewBox="0 0 100 100">
+        <path d="M50,10 L80,25 L80,55 L50,90 L20,55 L20,25 Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/>
+        <path d="M50,22 L72,34 L72,52 L50,78 L28,52 L28,34 Z" fill="currentColor"/>
+        <polygon points="50,30 38,48 48,48 44,70 62,45 52,45" fill="#ffffff"/>
+      </svg>
+      DSC SRM RMP
+    </div>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#pitch">About</a>
+      <a href="#cta">Invite</a>
+      <a href="https://discord.gg/mjS5J2K3ep" target="_blank">Docs</a>
+    </nav>
+    <a href="/login" class="cta-btn">
+      <i data-lucide="compass"></i>
+      Launch App
+    </a>
+  </header>
+
+  <!-- HERO SECTION (SECTION 1) -->
+  <section class="hero-section" id="features">
+    
+    <!-- Central SVG 3D Abstract Shape -->
+    <div class="hero-3d-container">
+      <div class="hero-shape-glow"></div>
+      <svg class="bolt-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background Glowing X -->
+        <path d="M40 40 L160 160 M160 40 L40 160" stroke="url(#x-gradient)" stroke-width="12" stroke-linecap="round" opacity="0.3"/>
+        <path d="M40 40 L160 160 M160 40 L40 160" stroke="url(#x-gradient)" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+        
+        <!-- Glowing Core Circle -->
+        <circle cx="100" cy="100" r="50" fill="url(#core-gradient)" opacity="0.15" />
+        <circle cx="100" cy="100" r="40" stroke="url(#ring-gradient)" stroke-width="2" opacity="0.6" />
+        
+        <!-- Metallic 3D Lightning Bolt -->
+        <g filter="url(#shadow-filter)">
+          <path d="M110 25 L65 105 L100 105 L85 175 L145 90 L110 90 Z" fill="url(#bolt-metallic)" stroke="url(#bolt-stroke)" stroke-width="2" stroke-linejoin="round"/>
+        </g>
+        
+        <!-- Gradients Definitions -->
+        <defs>
+          <linearGradient id="x-gradient" x1="40" y1="40" x2="160" y2="160">
+            <stop offset="0%" stop-color="#06b6d4" />
+            <stop offset="50%" stop-color="#7c3aed" />
+            <stop offset="100%" stop-color="#a855f7" />
+          </linearGradient>
+          <radialGradient id="core-gradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#a855f7" />
+            <stop offset="100%" stop-color="#0a0a0f" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="ring-gradient" x1="60" y1="60" x2="140" y2="140">
+            <stop offset="0%" stop-color="#06b6d4" />
+            <stop offset="100%" stop-color="#7c3aed" />
+          </linearGradient>
+          <linearGradient id="bolt-metallic" x1="110" y1="25" x2="105" y2="175">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="35%" stop-color="#a855f7" />
+            <stop offset="70%" stop-color="#7c3aed" />
+            <stop offset="100%" stop-color="#1e1b4b" />
+          </linearGradient>
+          <linearGradient id="bolt-stroke" x1="110" y1="25" x2="85" y2="175">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+            <stop offset="50%" stop-color="#c084fc" stop-opacity="0.8" />
+            <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.5" />
+          </linearGradient>
+          <filter id="shadow-filter" x="-10%" y="-10%" width="130%" height="130%">
+            <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#7c3aed" flood-opacity="0.4"/>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Centered Headlines -->
+    <div class="hero-center">
+      <div class="hero-tag">Power Up Your</div>
+      <h1 class="hero-title">Server</h1>
+    </div>
+
+    <!-- Floating Feature Cards Container -->
+    <div class="floating-cards-container">
+      
+      <!-- Card 1: Music (Top Left) -->
+      <div class="float-card card-top-left">
+        <div class="card-header">
+          <div class="card-icon-wrapper">
+            <i data-lucide="music-4"></i>
+          </div>
+          <div class="card-title">Lavalink Music</div>
+        </div>
+        <p class="card-desc">Stream high-quality audio seamlessly from YouTube and Spotify into your voice channels.</p>
+        <div class="card-action">
+          <span class="action-label">Player settings</span>
+          <div class="action-badge">
+            Lavalink v4
+            <i data-lucide="chevron-down"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: LeetCode (Top Right) -->
+      <div class="float-card card-top-right">
+        <div class="card-header">
+          <div class="card-icon-wrapper">
+            <i data-lucide="code-2"></i>
+          </div>
+          <div class="card-title">LeetCode Sync</div>
+        </div>
+        <p class="card-desc">Sync profiles, track solved problems, and auto-post daily questions with a server leaderboard.</p>
+        <div class="card-action">
+          <span class="action-label">Create a task</span>
+          <div class="action-plus">
+            <i data-lucide="plus" style="width:12px; height:12px;"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Security & Antinuke (Bottom Left) -->
+      <div class="float-card card-bottom-left">
+        <div class="card-header">
+          <div class="card-icon-wrapper">
+            <i data-lucide="shield-alert"></i>
+          </div>
+          <div class="card-title">Antinuke Security</div>
+        </div>
+        <p class="card-desc">Protect your server with robust anti-raid, anti-spam, and automated moderation rules.</p>
+        <div class="card-action">
+          <span class="action-label">Whitelisting</span>
+          <div class="action-badge">
+            Configured
+            <i data-lucide="chevron-down"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Server Stats (Bottom Right) -->
+      <div class="float-card card-bottom-right">
+        <div class="card-header">
+          <div class="card-icon-wrapper">
+            <i data-lucide="bar-chart-3"></i>
+          </div>
+          <div class="card-title">Live Server Stats</div>
+        </div>
+        <p class="card-desc">Create dynamic, real-time stats channels tracking members, bots, and online status.</p>
+        <div class="card-action">
+          <span class="action-label">Activate Stats</span>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ONE-LINER PITCH (SECTION 2) -->
+  <section class="pitch-section" id="pitch">
+    
+    <div class="divider-line-container">
+      <div class="divider-line"></div>
+      <i data-lucide="shield" class="divider-icon"></i>
+      <div class="divider-line"></div>
+    </div>
+    
+    <h2 class="pitch-text">
+      <strong>DSC SRM RMP</strong> is an <strong>AI Agent</strong> in charge of automating, securing, and entertaining 
+      <span class="pitch-highlight-purple">on Discord.</span>
+    </h2>
+
+    <div class="divider-line-container">
+      <div class="divider-line"></div>
+      <i data-lucide="music" class="divider-icon"></i>
+      <div class="divider-line"></div>
+    </div>
+
+  </section>
+
+  <!-- CTA & ANALYTICS PREVIEW (SECTION 3) -->
+  <section class="cta-analytics-section" id="cta">
+    
+    <h2 class="section-title">Quick Ways To Invite <span>DSC SRM RMP</span></h2>
+    <p class="section-subtitle">A professional Discord management and music assistant. Invite it to your server now or explore the control dashboard.</p>
+
+    <!-- Pill button row -->
+    <div class="pills-container">
+      <a href="https://discord.com/oauth2/authorize?client_id=1234567890&permissions=824671333721&scope=bot%20applications.commands" class="pill-btn pill-primary" target="_blank">
+        <i data-lucide="plus-circle"></i>
+        Invite Bot
+      </a>
+      <a href="/login" class="pill-btn pill-secondary">
+        <i data-lucide="layout-dashboard"></i>
+        Dashboard
+      </a>
+      <a href="https://discord.gg/mjS5J2K3ep" class="pill-btn pill-secondary" target="_blank">
+        <i data-lucide="help-circle"></i>
+        Support Guild
+      </a>
+      <a href="https://github.com/dsc-srmrmp/newdiscordbot" class="pill-btn pill-secondary" target="_blank">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+        GitHub Repo
+      </a>
+    </div>
+
+    <!-- Interactive Dashboard Preview Card -->
+    <div class="dashboard-preview-card">
+      
+      <!-- Mockup Sidebar -->
+      <div class="db-sidebar">
+        <div class="db-sidebar-logo">
+          <i data-lucide="bot" style="color: var(--accent-purple); width: 18px; height: 18px;"></i>
+          DSC SRM RMP
+        </div>
+        
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Main</div>
+          <div class="sidebar-item active">
+            <div class="sidebar-item-left">
+              <i data-lucide="layout-dashboard"></i>
+              Dashboard
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-left">
+              <i data-lucide="settings-2"></i>
+              Quick Setup
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-left">
+              <i data-lucide="fingerprint"></i>
+              Verification
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-left">
+              <i data-lucide="ticket"></i>
+              Ticket System
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-left">
+              <i data-lucide="volume-2"></i>
+              Music Player
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Systems</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-left">
+              <i data-lucide="shield-check"></i>
+              Antinuke
+            </div>
+            <span class="sidebar-badge">ON</span>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-left">
+              <i data-lucide="trophy"></i>
+              LeetCode
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-left">
+              <i data-lucide="bar-chart-2"></i>
+              Server Stats
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup Main Panel -->
+      <div class="db-main">
+        <div class="db-header">
+          <div class="db-user-pill">
+            <div class="db-user-avatar"></div>
+            SrivarsanK#0001
+          </div>
+          <div class="db-header-search">
+            <div class="db-search-btn">
+              <i data-lucide="search"></i>
+            </div>
+            <button class="db-add-btn">
+              <i data-lucide="plus"></i>
+              Add to server
+            </button>
+          </div>
+        </div>
+
+        <!-- Telemetry Data Cards -->
+        <div class="db-grid">
+          
+          <!-- Card 1: Total Messages -->
+          <div class="db-card">
+            <span class="db-card-label">Total Messages</span>
+            <div class="db-card-value" id="stats-messages">16,839</div>
+            
+            <div class="db-card-selectors">
+              <span class="selector-item">D</span>
+              <span class="selector-item">W</span>
+              <span class="selector-item active">M</span>
+            </div>
+
+            <div class="chart-container">
+              <svg class="chart-svg">
+                <defs>
+                  <linearGradient id="purple-gradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.4"/>
+                    <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path class="chart-area" d="M 0 70 Q 30 20, 60 50 T 120 15 T 180 40 T 240 10 T 300 30 L 300 70 Z" />
+                <path class="chart-path" d="M 0 70 Q 30 20, 60 50 T 120 15 T 180 40 T 240 10 T 300 30" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 2: Total Members -->
+          <div class="db-card">
+            <span class="db-card-label">Total Members</span>
+            <div class="db-card-value" id="stats-members">3,423</div>
+            
+            <div class="db-card-selectors">
+              <span class="selector-item">S</span>
+              <span class="selector-item">V</span>
+              <span class="selector-item active">M</span>
+            </div>
+
+            <div class="chart-container">
+              <svg class="chart-svg">
+                <path class="chart-area" d="M 0 70 Q 40 40, 80 60 T 160 20 T 240 30 T 300 10 L 300 70 Z" />
+                <path class="chart-path" d="M 0 70 Q 40 40, 80 60 T 160 20 T 240 30 T 300 10" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 3: Joins -->
+          <div class="db-card">
+            <span class="db-card-label">Joins</span>
+            <div class="db-card-value" id="stats-joins">580</div>
+            
+            <div class="bar-chart-container" id="joins-bars">
+              <div class="chart-bar" style="height: 40%"></div>
+              <div class="chart-bar" style="height: 60%"></div>
+              <div class="chart-bar" style="height: 45%"></div>
+              <div class="chart-bar" style="height: 80%"></div>
+              <div class="chart-bar" style="height: 35%"></div>
+              <div class="chart-bar" style="height: 90%"></div>
+              <div class="chart-bar" style="height: 70%"></div>
+              <div class="chart-bar" style="height: 85%"></div>
+              <div class="chart-bar" style="height: 60%"></div>
+              <div class="chart-bar" style="height: 95%"></div>
+            </div>
+          </div>
+
+          <!-- Card 4: Leaves -->
+          <div class="db-card">
+            <span class="db-card-label">Leaves</span>
+            <div class="db-card-value" id="stats-leaves">44</div>
+            
+            <div class="bar-chart-container" id="leaves-bars">
+              <div class="chart-bar" style="height: 20%"></div>
+              <div class="chart-bar" style="height: 10%"></div>
+              <div class="chart-bar" style="height: 35%"></div>
+              <div class="chart-bar" style="height: 15%"></div>
+              <div class="chart-bar" style="height: 40%"></div>
+              <div class="chart-bar" style="height: 30%"></div>
+              <div class="chart-bar" style="height: 25%"></div>
+              <div class="chart-bar" style="height: 18%"></div>
+              <div class="chart-bar" style="height: 12%"></div>
+              <div class="chart-bar" style="height: 5%"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <svg viewBox="0 0 100 100">
+          <path d="M50,10 L80,25 L80,55 L50,90 L20,55 L20,25 Z" fill="none" stroke="currentColor" stroke-width="6"/>
+          <polygon points="50,30 38,48 48,48 44,70 62,45 52,45" fill="currentColor"/>
+        </svg>
+        DSC SRM RMP
+      </div>
+      <p class="footer-text">&copy; 2026 DSC SRM RMP. Built for Discord efficiency, music entertainment, and anti-nuke protection. Modified by SrivarsanK.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Trigger bar chart animation on scroll/enter
+    document.addEventListener("DOMContentLoaded", () => {
+      const bars = document.querySelectorAll(".chart-bar");
+      
+      const animateCharts = () => {
+        bars.forEach(bar => {
+          const targetHeight = bar.style.height;
+          bar.style.height = '0';
+          setTimeout(() => {
+            bar.style.height = targetHeight;
+          }, 100);
+        });
+      };
+
+      // Set up intersection observer for preview card
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateCharts();
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      observer.observe(document.querySelector(".dashboard-preview-card"));
+    });
+  </script>
+
+</body>
+</html>
