@@ -109,6 +109,10 @@ async function handleRequest(client, req, res) {
     return serveStatic(res, path.join(PUBLIC_DIR, url.pathname.replace(/^\/assets\//, "")));
   }
 
+  if (req.method === "GET" && (url.pathname === "/v2" || url.pathname.startsWith("/v2/"))) {
+    return serveStatic(res, path.join(PUBLIC_DIR, "dashboard.html"));
+  }
+
   if (req.method === "GET") {
     return serveStatic(res, path.join(PUBLIC_DIR, "index.html"));
   }
