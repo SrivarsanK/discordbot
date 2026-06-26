@@ -7,9 +7,10 @@ const { ChannelType } = require("discord.js");
  * @param {string} template The template pattern.
  * @param {import("discord.js").Guild} guild The guild object.
  * @param {import("discord.js").Collection} [members] Optional fetched member collection.
+ * @param {boolean} [includeBots=false] Whether to count bots in online stats.
  * @returns {string} The formatted channel name.
  */
-function parseTemplate(template, guild, members = null) {
+function parseTemplate(template, guild, members = null, includeBots = false) {
   const memberList = members || guild.members.cache;
   const total = guild.memberCount || memberList.size || 0;
   
@@ -17,8 +18,12 @@ function parseTemplate(template, guild, members = null) {
   const bots = memberList.filter((m) => m.user?.bot).size || 0;
   const humans = Math.max(0, total - bots);
   
-  // Calculate online members from presence cache
-  const online = memberList.filter((m) => m.presence && m.presence.status !== "offline").size || 0;
+  // Calculate online members from presence cache (filter out bots if includeBots is false)
+  const online = memberList.filter((m) => {
+    if (!includeBots && m.user?.bot) return false;
+    return m.presence && m.presence.status !== "offline";
+  }).size || 0;
+  
   const offline = Math.max(0, total - online);
   
   const channels = guild.channels.cache.size || 0;
@@ -89,6 +94,8 @@ async function updateGuildStats(client, guildId) {
     const guild = client.guilds.cache.get(guildId) || await client.guilds.fetch(guildId).catch(() => null);
     if (!guild) return;
 
+    const includeBots = settings.includeBots || false;
+
     // Fetch members to ensure caching and presences are as accurate as possible
     const members = await guild.members.fetch({ withPresences: true }).catch(() => guild.members.cache);
 
@@ -106,7 +113,7 @@ async function updateGuildStats(client, guildId) {
 
       channelsToKeep.push(chanConfig);
 
-      const expectedName = parseTemplate(chanConfig.template, guild, members);
+      const expectedName = parseTemplate(chanConfig.template, guild, members, includeBots);
       if (channel.name !== expectedName) {
         try {
           await channel.setName(expectedName, "Live Server Stats Update");

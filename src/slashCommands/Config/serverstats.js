@@ -62,6 +62,19 @@ module.exports = {
       description: "Force update live server stats.",
       type: ApplicationCommandOptionType.Subcommand,
     },
+    {
+      name: "include-bots",
+      description: "Configure whether to count bots in online stats.",
+      type: ApplicationCommandOptionType.Subcommand,
+      options: [
+        {
+          name: "enable",
+          description: "True to count bots, false to count only humans.",
+          type: ApplicationCommandOptionType.Boolean,
+          required: true,
+        }
+      ]
+    },
   ],
 
   run: async (client, interaction) => {
@@ -211,6 +224,14 @@ module.exports = {
     if (subcommand === "update") {
       await updateGuildStats(client, guild.id);
       return interaction.editReply(v2("✅ Live stats update triggered successfully. Note: Channel renames are subject to rate limiting by Discord."));
+    }
+
+    if (subcommand === "include-bots") {
+      const enable = interaction.options.getBoolean("enable");
+      settings.includeBots = enable;
+      await settings.save();
+      await updateGuildStats(client, guild.id);
+      return interaction.editReply(v2(`✅ Bots will **${enable ? "now" : "no longer"}** be counted in the online stats.`));
     }
   },
 };
