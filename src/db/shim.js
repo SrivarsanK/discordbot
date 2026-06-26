@@ -394,6 +394,13 @@ class ShimModel {
     this.table = table;
     this.customDocMethods = customDocMethods;
     
+    const tableName = getTableName(table);
+    const shouldCache = ["prefix", "blacklist", "noprefix", "ignore_channel", "vote_bypass"].includes(tableName);
+    if (shouldCache) {
+      this._cache = new Map();
+      this._cacheTTL = 60000;
+    }
+
     const self = this;
     function Model(data) {
       return new Document(self, data, true);
@@ -416,8 +423,28 @@ class ShimModel {
     
     return Model;
   }
+
+  _clearCache() {
+    if (this._cache) {
+      this._cache.clear();
+    }
+  }
   
   findOne(query) {
+    const tableName = getTableName(this.table);
+    const shouldCache = ["prefix", "blacklist", "noprefix", "ignore_channel", "vote_bypass"].includes(tableName);
+    const cacheKey = shouldCache && this._cache ? `findOne:${JSON.stringify(query)}` : null;
+
+    if (cacheKey) {
+      const cached = this._cache.get(cacheKey);
+      if (cached && (Date.now() - cached.timestamp < this._cacheTTL)) {
+        const doc = cached.data ? new Document(this, cached.data, false) : null;
+        const cachedPromise = Promise.resolve(doc);
+        cachedPromise.lean = () => Promise.resolve(cached.data);
+        return cachedPromise;
+      }
+    }
+
     const promise = (async () => {
       const db = getDb();
       const whereClause = buildDrizzleWhere(this.table, query);
@@ -426,7 +453,16 @@ class ShimModel {
         queryBuilder.where(whereClause);
       }
       const rows = await queryBuilder.limit(1);
-      return rows[0] ? new Document(this, rows[0], false) : null;
+      const doc = rows[0] ? new Document(this, rows[0], false) : null;
+
+      if (cacheKey && this._cache) {
+        this._cache.set(cacheKey, {
+          data: doc ? { ...doc._data } : null,
+          timestamp: Date.now()
+        });
+      }
+
+      return doc;
     })();
     
     promise.lean = () => {
@@ -437,6 +473,20 @@ class ShimModel {
   }
   
   find(query) {
+    const tableName = getTableName(this.table);
+    const shouldCache = ["prefix", "blacklist", "noprefix", "ignore_channel", "vote_bypass"].includes(tableName);
+    const cacheKey = shouldCache && this._cache ? `find:${JSON.stringify(query)}` : null;
+
+    if (cacheKey) {
+      const cached = this._cache.get(cacheKey);
+      if (cached && (Date.now() - cached.timestamp < this._cacheTTL)) {
+        const docs = cached.data ? cached.data.map(row => new Document(this, row, false)) : [];
+        const cachedPromise = Promise.resolve(docs);
+        cachedPromise.lean = () => Promise.resolve(cached.data || []);
+        return cachedPromise;
+      }
+    }
+
     const promise = (async () => {
       const db = getDb();
       const whereClause = buildDrizzleWhere(this.table, query);
@@ -445,7 +495,16 @@ class ShimModel {
         queryBuilder.where(whereClause);
       }
       const rows = await queryBuilder;
-      return rows.map(row => new Document(this, row, false));
+      const docs = rows.map(row => new Document(this, row, false));
+
+      if (cacheKey && this._cache) {
+        this._cache.set(cacheKey, {
+          data: rows.map(row => ({ ...row })),
+          timestamp: Date.now()
+        });
+      }
+
+      return docs;
     })();
     
     promise.lean = () => {
@@ -456,6 +515,7 @@ class ShimModel {
   }
   
   async deleteOne(query) {
+    this._clearCache();
     const db = getDb();
     const whereClause = buildDrizzleWhere(this.table, query);
     const queryBuilder = db.delete(this.table);
@@ -470,6 +530,7 @@ class ShimModel {
   }
 
   async deleteMany(query) {
+    this._clearCache();
     const db = getDb();
     const whereClause = buildDrizzleWhere(this.table, query);
     const queryBuilder = db.delete(this.table);
@@ -497,6 +558,7 @@ class ShimModel {
   }
   
   async updateOne(query, update, options = {}) {
+    this._clearCache();
     const db = getDb();
     const whereClause = buildDrizzleWhere(this.table, query);
     
@@ -594,6 +656,7 @@ class ShimModel {
   }
   
   async create(data) {
+    this._clearCache();
     const db = getDb();
     const mappedData = {};
     for (const [k, v] of Object.entries(data)) {
@@ -612,6 +675,7 @@ class ShimModel {
   }
 
   async insertMany(arr, options = {}) {
+    this._clearCache();
     if (!Array.isArray(arr) || arr.length === 0) return [];
     
     const db = getDb();
@@ -636,6 +700,7 @@ class ShimModel {
   }
   
   async saveDocument(doc) {
+    this._clearCache();
     const db = getDb();
     const pkCol = Object.keys(this.table).find(col => this.table[col].primary || this.table[col].isPrimaryKey);
     if (!pkCol) throw new Error("No primary key found for table");
@@ -663,6 +728,7 @@ class ShimModel {
   }
   
   async deleteDocument(doc) {
+    this._clearCache();
     const db = getDb();
     const pkCol = Object.keys(this.table).find(col => this.table[col].primary || this.table[col].isPrimaryKey);
     if (!pkCol) throw new Error("No primary key found for table");
