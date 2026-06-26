@@ -5,6 +5,7 @@ const MAX_IMAGE_SOURCE_LENGTH = 8 * 1024 * 1024;
 const pages = [
   { id: "overview", label: "Home", icon: "home", group: "Main" },
   { id: "general", label: "General Settings", icon: "settings", group: "Main" },
+  { id: "prefix", label: "Prefix Setup", icon: "key", group: "Main" },
   { id: "music", label: "Music", icon: "music", group: "Modules", status: "music247.enabled" },
   { id: "leveling", label: "Leveling", icon: "award", group: "Modules", status: "premium.leveling.enabled" },
   { id: "vcguard", label: "VC Guard", icon: "shield", group: "Modules", status: "premium.vcGuard.enabled" },
@@ -337,6 +338,8 @@ function renderPage() {
   switch (state.page) {
     case "general":
       return renderGeneral();
+    case "prefix":
+      return renderPrefixSetup();
     case "leveling":
       return renderLeveling();
     case "vcguard":
@@ -406,6 +409,42 @@ function renderGeneral() {
         <div class="setting-grid">
           ${inputField("Prefix", "prefix", "text", { max: 5 })}
           ${multiSelectField("Ignored channels", "ignoreChannels", textChannels())}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderPrefixSetup() {
+  const settings = state.draft;
+  const currentPrefix = settings.prefix || "!";
+  return `
+    <section class="page">
+      ${pageHead("key", "Prefix Setup", "Customize the command prefix for your server.")}
+      
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="mini-icon"><i data-lucide="terminal"></i></span>
+            <div>
+              <h2>Command Prefix</h2>
+              <p>Choose a unique character or short string to trigger prefix commands.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="setting-grid">
+          ${inputField("Current Prefix", "prefix", "text", { max: 5 })}
+        </div>
+        
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <h3>Command Usage Preview</h3>
+          <p class="muted" style="margin-bottom: 12px; font-size: 0.85rem;">This is how command invocations will look in your server:</p>
+          <div class="preview-box" style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); font-family: monospace; font-size: 0.9rem; line-height: 1.6;">
+            <div><span class="accent" style="color: #a855f7; font-weight: bold;">${escapeHtml(currentPrefix)}</span>help &mdash; <span class="muted" style="color: #9ca3af;">Open help menu</span></div>
+            <div><span class="accent" style="color: #a855f7; font-weight: bold;">${escapeHtml(currentPrefix)}</span>play <span class="muted" style="color: #9ca3af;">https://...</span> &mdash; <span class="muted" style="color: #9ca3af;">Play music</span></div>
+            <div><span class="accent" style="color: #a855f7; font-weight: bold;">${escapeHtml(currentPrefix)}</span>ping &mdash; <span class="muted" style="color: #9ca3af;">Check bot latency</span></div>
+          </div>
         </div>
       </div>
     </section>
