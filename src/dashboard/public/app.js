@@ -15,7 +15,7 @@ const pages = [
   { id: "welcome", label: "Welcome Messages", icon: "user-plus", group: "Modules", status: "welcome.enabled" },
   { id: "leetcode", label: "LeetCode Tracking", icon: "code", group: "Modules" },
   { id: "roles", label: "Roles", icon: "users", group: "Modules", status: "roles.any" },
-  { id: "logging", label: "Logging", icon: "file-text", group: "Modules", status: "antinuke.isEnabled" },
+  { id: "logging", label: "Logging", icon: "file-text", group: "Modules", status: "logging.isEnabled" },
 ];
 
 const antinukeProtections = [

@@ -1216,13 +1216,13 @@ h4 {
 }
 
 .small-toggle.checked {
-  background: var(--on-primary);
-  border-color: var(--on-primary);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
 .small-toggle.checked span {
   transform: translateX(14px);
-  background: var(--primary);
+  background: var(--on-primary);
 }
 
 .card-head-row {
