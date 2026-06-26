@@ -21,7 +21,7 @@
 [![Dashboard Website](https://img.shields.io/badge/Dashboard-up-brightgreen?style=flat-square)](https://bot.developerstudents.club/)
 [![NodeJS Version](https://img.shields.io/badge/node-%3E%3D18.0.0-blue.svg?style=flat-square&logo=node.js)](https://nodejs.org)
 [![Database Neon](https://img.shields.io/badge/database-Neon_Postgres-00e599?style=flat-square&logo=postgresql&logoColor=white)](https://neon.tech)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 
 </div>
 
@@ -242,4 +242,4 @@ chmod +x update-and-start.sh
 
 ## 📄 License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+This project is licensed under the [Apache-2.0 License](https://opensource.org/licenses/Apache-2.0).
