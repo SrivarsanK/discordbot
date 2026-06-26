@@ -30,7 +30,7 @@
     "musicard-quartz": "^1.0.0",
     "shoukaku": "^4.3.0",
     "tesseract.js": "^7.0.0",
-    "undici": "^6.25.0"
+    "undici": "^6.27.0"
   },
   "overrides": {
     "undici": "$undici"
