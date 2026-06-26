@@ -136,7 +136,14 @@ module.exports = {
         if (typeof options === "string") {
           options = { content: options, flags: MessageFlags.Ephemeral };
         } else if (typeof options === "object" && options !== null) {
-          options.flags = (options.flags || 0) | MessageFlags.Ephemeral;
+          const isV2 = (Number(options.flags || 0) & Number(MessageFlags.IsComponentsV2)) === Number(MessageFlags.IsComponentsV2);
+          const hasEphemeralFlag = (Number(options.flags || 0) & Number(MessageFlags.Ephemeral)) === Number(MessageFlags.Ephemeral);
+          
+          if (options.ephemeral === false || (isV2 && !hasEphemeralFlag)) {
+            // Do not force ephemeral
+          } else {
+            options.flags = Number(options.flags || 0) | Number(MessageFlags.Ephemeral);
+          }
           delete options.ephemeral;
         } else if (options === undefined || options === null) {
           options = { flags: MessageFlags.Ephemeral };
