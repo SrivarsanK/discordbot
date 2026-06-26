@@ -138,7 +138,7 @@ async function handleCallback(client, req, res, url) {
   const state = url.searchParams.get("state");
 
   if (!code || !state || !oauthStates.has(state)) {
-    return redirect(res, "/?auth=failed");
+    return redirect(res, "/dashboard?auth=failed");
   }
 
   oauthStates.delete(state);
@@ -198,13 +198,13 @@ async function handleCallback(client, req, res, url) {
     }
 
     res.writeHead(302, {
-      Location: "/?choose=server",
+      Location: "/dashboard?choose=server",
       "Set-Cookie": buildCookie(client, sessionId, req),
     });
     res.end();
   } catch (error) {
     client.logger?.log(`[Dashboard] OAuth failed: ${error.message}`, "warn");
-    redirect(res, "/?auth=failed");
+    redirect(res, "/dashboard?auth=failed");
   }
 }
 
