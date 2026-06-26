@@ -175,7 +175,15 @@ module.exports = (client) => {
           member: interaction.member,
           guild: interaction.guild,
           guildId: interaction.guildId,
-          channel: interaction.channel,
+          channel: Object.assign(Object.create(interaction.channel), {
+            send: async (options) => {
+              if (typeof options === "string") options = { content: options };
+              if (interaction.replied || interaction.deferred) {
+                return interaction.followUp(options);
+              }
+              return interaction.reply({ ...options, fetchReply: true });
+            }
+          }),
           channelId: interaction.channelId,
           content: `>${prefixCommand.name} ${queryOption}`,
           reply: async (options) => {
@@ -183,17 +191,13 @@ module.exports = (client) => {
             if (interaction.replied || interaction.deferred) {
               return interaction.followUp(options);
             }
-            return interaction.reply(options);
+            return interaction.reply({ ...options, fetchReply: true });
           },
-          channel: {
-            ...interaction.channel,
-            send: async (options) => {
-              if (typeof options === "string") options = { content: options };
-              if (interaction.replied || interaction.deferred) {
-                return interaction.followUp(options);
-              }
-              return interaction.reply(options);
-            }
+          delete: async () => {
+            return null;
+          },
+          react: async () => {
+            return null;
           }
         };
 
