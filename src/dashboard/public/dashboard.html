@@ -1094,6 +1094,241 @@
       font-size: 0.8rem;
       color: var(--text-gray);
     }
+
+    /* V2 Dashboard Dynamic Layout Additions */
+    .cards-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      align-items: start;
+      width: 100%;
+    }
+    .cards-grid-1 {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 100%;
+    }
+    .select-field {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      outline: none;
+      transition: border-color 0.2s ease;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .select-field:focus {
+      border-color: var(--accent-purple);
+    }
+    .select-field option {
+      background: #12121e;
+      color: var(--text-white);
+    }
+    .textarea-field {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      outline: none;
+      transition: border-color 0.2s ease;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+    }
+    .textarea-field:focus {
+      border-color: var(--accent-purple);
+    }
+
+    .check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 4px;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      user-select: none;
+      padding: 4px 0;
+    }
+    .check-item input {
+      display: none;
+    }
+    .check-box {
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      position: relative;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.2s ease;
+    }
+    .check-item input:checked + .check-box {
+      background: var(--accent-purple);
+      border-color: var(--accent-purple);
+    }
+    .check-item input:checked + .check-box::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 4px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .check-label {
+      color: var(--text-gray);
+      transition: color 0.2s ease;
+    }
+    .check-item:hover .check-label {
+      color: var(--text-white);
+    }
+    .check-empty {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .security-tile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-gray);
+    }
+    .security-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      box-shadow: 0 0 8px transparent;
+    }
+    .security-dot.on {
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+    .security-dot.off {
+      background: var(--accent-red);
+      box-shadow: 0 0 8px var(--accent-red);
+    }
+    
+    .welcome-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 20px;
+    }
+    .welcome-tabs button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .welcome-tabs button:hover {
+      color: var(--text-white);
+    }
+    .welcome-tabs button.active {
+      color: var(--accent-purple);
+      border-bottom-color: var(--accent-purple);
+    }
+    
+    .csv-table-wrap {
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      margin: 10px 0;
+    }
+    .csv-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.8rem;
+    }
+    .csv-table th, .csv-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .csv-table th {
+      background: rgba(255,255,255,0.02);
+      color: var(--text-white);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .csv-table td {
+      color: var(--text-gray);
+    }
+    
+    .csv-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    
+    /* Toast notifications style */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e1f22;
+      border: 1px solid var(--accent-purple);
+      color: var(--text-white);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 99999;
+      animation: toast-in 0.3s ease forwards;
+    }
+    .toast.good {
+      border-color: var(--accent-green);
+    }
+    .toast.bad {
+      border-color: var(--accent-red);
+    }
+    @keyframes toast-in {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -1126,16 +1361,16 @@
 
       <!-- Navigation links (Group 1) -->
       <nav class="nav-group">
-        <button class="nav-item">
+        <button class="nav-item active" data-nav="overview">
           <span class="nav-item-left"><i data-lucide="layout-dashboard"></i> Dashboard</span>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" data-nav="servers">
           <span class="nav-item-left"><i data-lucide="server"></i> Servers</span>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" onclick="window.open('https://discord.gg/5uyYvpKSJH', '_blank')">
           <span class="nav-item-left"><i data-lucide="message-square"></i> Support</span>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" data-nav="premium">
           <span class="nav-item-left"><i data-lucide="star"></i> Premium</span>
         </button>
       </nav>
@@ -1146,26 +1381,22 @@
       <nav class="nav-group">
         <div class="nav-title">Modules</div>
         
-        <div class="nav-item">
+        <div class="nav-item" data-nav="general">
           <span class="nav-item-left"><i data-lucide="settings-2"></i> Bot Settings</span>
-          <label class="toggle-switch">
-            <input type="checkbox">
-            <span class="slider"></span>
-          </label>
         </div>
         
-        <div class="nav-item active">
+        <div class="nav-item" data-nav="welcome">
           <span class="nav-item-left"><i data-lucide="tag"></i> Button Roles</span>
           <label class="toggle-switch">
-            <input type="checkbox" checked data-indicator="teal">
+            <input type="checkbox" data-sidebar-toggle="welcome.enabled" checked data-indicator="teal">
             <span class="slider"></span>
           </label>
         </div>
 
-        <div class="nav-item">
+        <div class="nav-item" data-nav="roles">
           <span class="nav-item-left"><i data-lucide="user-plus"></i> Verification/Greetings</span>
           <label class="toggle-switch">
-            <input type="checkbox">
+            <input type="checkbox" data-sidebar-toggle="roles.any">
             <span class="slider"></span>
           </label>
         </div>
@@ -1176,43 +1407,68 @@
             <span class="nav-item-left"><i data-lucide="tool"></i> Utilities</span>
             <i data-lucide="chevron-down" class="selector-arrow" id="utilities-chevron" style="transform: rotate(0deg); transition: transform 0.2s;"></i>
           </button>
-          <div class="submenu-container" id="utilities-submenu">
-            <div class="submenu-item">
-              <span>Custom Commands</span>
+          <div class="submenu-container" id="utilities-submenu" style="display: none;">
+            <div class="submenu-item" data-nav="music">
+              <span>Music 24/7</span>
               <label class="toggle-switch">
-                <input type="checkbox">
+                <input type="checkbox" data-sidebar-toggle="music247.enabled">
                 <span class="slider"></span>
               </label>
             </div>
-            <div class="submenu-item">
-              <span>Timed Messages</span>
+            <div class="submenu-item" data-nav="leveling">
+              <span>Leveling XP</span>
               <label class="toggle-switch">
-                <input type="checkbox" checked>
+                <input type="checkbox" data-sidebar-toggle="premium.leveling.enabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="submenu-item" data-nav="vcguard">
+              <span>VC Guard</span>
+              <label class="toggle-switch">
+                <input type="checkbox" data-sidebar-toggle="premium.vcGuard.enabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="submenu-item" data-nav="sticky">
+              <span>Sticky Messages</span>
+              <label class="toggle-switch">
+                <input type="checkbox" data-sidebar-toggle="premium.sticky.enabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="submenu-item" data-nav="leetcode">
+              <span>LeetCode Daily</span>
+              <label class="toggle-switch">
+                <input type="checkbox" data-sidebar-toggle="leetcode.autoPostEnabled">
                 <span class="slider"></span>
               </label>
             </div>
           </div>
         </div>
 
-        <div class="nav-item">
+        <div class="nav-item" data-nav="antinuke">
           <span class="nav-item-left"><i data-lucide="shield"></i> Command Moderation</span>
           <label class="toggle-switch">
-            <input type="checkbox" checked>
+            <input type="checkbox" data-sidebar-toggle="antinuke.isEnabled">
             <span class="slider"></span>
           </label>
         </div>
 
-        <div class="nav-item">
+        <div class="nav-item" data-nav="automod">
           <span class="nav-item-left"><i data-lucide="gavel"></i> Auto Moderation</span>
           <label class="toggle-switch">
-            <input type="checkbox">
+            <input type="checkbox" data-sidebar-toggle="automod.any">
             <span class="slider"></span>
           </label>
         </div>
 
-        <button class="nav-item">
+        <div class="nav-item" data-nav="logging">
           <span class="nav-item-left"><i data-lucide="file-text"></i> Audit Logging</span>
-        </button>
+          <label class="toggle-switch">
+            <input type="checkbox" data-sidebar-toggle="logging.isEnabled">
+            <span class="slider"></span>
+          </label>
+        </div>
       </nav>
 
     </div>
@@ -1268,11 +1524,15 @@
           <h1>Button Roles</h1>
           <p>Distribute roles within your server using awesome buttons</p>
         </div>
-        <button class="discard-btn" id="discard-btn">Discard</button>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="discard-btn" id="discard-btn">Discard</button>
+          <button class="upgrade-btn" id="save-btn" style="background: var(--accent-green); color: #0f0f18; font-weight: 700; width: auto; padding: 10px 24px; border-radius: 9999px;" disabled>Save Changes</button>
+        </div>
       </div>
 
-      <!-- CARDS GRID -->
-      <div class="cards-grid">
+      <!-- CARDS CONTAINER -->
+      <div id="page-content">
+        <div class="cards-grid">
         
         <!-- CARD 1: Settings + Button Builder -->
         <div class="card">
@@ -1617,7 +1877,7 @@
           </div>
 
         </div>
-
+      </div>
       </div>
 
     </main>
@@ -1625,8 +1885,318 @@
   </div>
 
   <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
+    // Global State
+    const state = {
+      me: null,
+      guilds: [],
+      guildId: "",
+      data: null,
+      draft: null,
+      page: localStorage.getItem("dsc:page") || "overview",
+      loggingTab: localStorage.getItem("dsc:loggingTab") || "channels",
+      dirty: false,
+      saving: false,
+      activeVerification: null
+    };
+
+    // Helper functions
+    function clone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
+
+    function cssEscape(value) {
+      if (window.CSS?.escape) return CSS.escape(value);
+      return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    }
+
+    function getPath(object, path) {
+      return path.split(".").reduce((current, key) => current?.[key], object);
+    }
+
+    function setPath(object, path, value) {
+      const keys = path.split(".");
+      const last = keys.pop();
+      const target = keys.reduce((current, key) => {
+        current[key] ||= {};
+        return current[key];
+      }, object);
+      target[last] = value;
+    }
+
+    // API Helper
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        credentials: "same-origin",
+        ...options,
+      });
+      if (response.status === 401) {
+        window.location.href = "/login";
+        throw new Error("Not logged in");
+      }
+      const json = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(json.error || `Request failed (${response.status})`);
+      }
+      return json;
+    }
+
+    // Toast notifications
+    function toast(message, type = "") {
+      const existing = document.querySelector(".toast");
+      existing?.remove();
+      const node = document.createElement("div");
+      node.className = `toast ${type}`;
+      node.textContent = message;
+      document.body.appendChild(node);
+      setTimeout(() => node.remove(), 3600);
+    }
+
+    // Channels lists
+    function textChannels() {
+      const channels = state.data?.channels || [];
+      return channels
+        .filter((channel) => {
+          if (channel.type === 0 || channel.type === 5 || channel.type === 15) return true;
+          if (channel.type === 10 || channel.type === 11 || channel.type === 12) {
+            const parent = channels.find(c => c.id === channel.parentId);
+            if (parent && parent.type === 15) {
+              return false;
+            }
+            return true;
+          }
+          return false;
+        })
+        .map((ch) => {
+          let prefix = "# ";
+          let suffix = "";
+          if (ch.type === 5) {
+            prefix = "📢 ";
+            suffix = " (Announcement)";
+          } else if (ch.type === 15) {
+            prefix = "📁 ";
+            suffix = " (Forum)";
+          } else if (ch.type === 10 || ch.type === 11 || ch.type === 12) {
+            prefix = "🧵 ";
+            suffix = " (Thread)";
+          }
+          return {
+            id: ch.id,
+            name: `${prefix}${ch.name}${suffix}`,
+            label: `${prefix}${ch.name}${suffix}`
+          };
+        });
+    }
+
+    function voiceChannels() {
+      return (state.data?.channels || [])
+        .filter((channel) => channel.type === 2 || channel.type === 13)
+        .map((ch) => {
+          const prefix = ch.type === 13 ? "🎤 " : "🔊 ";
+          const suffix = ch.type === 13 ? " (Stage)" : " (Voice)";
+          return {
+            id: ch.id,
+            name: `${prefix}${ch.name}${suffix}`,
+            label: `${prefix}${ch.name}${suffix}`
+          };
+        });
+    }
+
+    function statusFor(path) {
+      if (!state.draft) return false;
+      if (path === "automod.any") {
+        return Boolean(state.draft.automod?.antilink?.isEnabled || state.draft.automod?.antispam?.isEnabled);
+      }
+      if (path === "roles.any") {
+        const roles = state.draft.roles || {};
+        const autorole = state.draft.autorole || {};
+        return Object.values(roles).some(Boolean)
+          || Boolean(state.draft.voiceRole?.roleId)
+          || Boolean(autorole.humanRoles?.length || autorole.botRoles?.length);
+      }
+      return Boolean(getPath(state.draft, path));
+    }
+
+    function ensureDraftShape() {
+      state.draft ||= {};
+      state.draft.prefix ||= "!";
+      state.draft.ignoreChannels ||= [];
+      state.draft.premium ||= {};
+      state.draft.premium.leveling ||= {
+        enabled: false,
+        chatEnabled: true,
+        voiceEnabled: true,
+        announceChannelId: "",
+        levelUpMessage: "{user} reached level {level}.",
+        chatXpMin: 8,
+        chatXpMax: 16,
+        chatCooldownSeconds: 45,
+        voiceXpPerMinute: 4,
+      };
+      state.draft.premium.vcGuard ||= {
+        enabled: false,
+        protectedChannels: [],
+        bypassRoles: [],
+        logChannelId: "",
+        action: "disconnect",
+        message: "You are not allowed to join this protected voice channel.",
+      };
+      state.draft.premium.sticky ||= { enabled: false, messages: [] };
+      if (!Array.isArray(state.draft.premium.sticky.messages)) {
+        state.draft.premium.sticky.messages = [];
+      }
+      if (!state.draft.premium.sticky.messages.length) {
+        state.draft.premium.sticky.messages.push({
+          channelId: "",
+          content: "",
+          lastMessageId: "",
+          cooldownSeconds: 20,
+        });
+      }
+      state.draft.welcome ||= {};
+      state.draft.welcome.enabled = Boolean(state.draft.welcome.enabled);
+      state.draft.welcome.content ||= "";
+      state.draft.welcome.channel ||= "";
+      state.draft.welcome.embed ||= {};
+      state.draft.welcome.embed.title ||= "";
+      state.draft.welcome.embed.description ||= "";
+      state.draft.welcome.embed.color ||= "#7c3aed";
+      state.draft.welcome.embed.footer ||= "";
+
+      state.draft.logging ||= {};
+      state.draft.logging.isEnabled = Boolean(state.draft.logging.isEnabled);
+      state.draft.logging.eventChannels ||= {};
+      state.draft.logging.ignoredChannels ||= [];
+      state.draft.logging.ignoredRoles ||= [];
+      state.draft.logging.ignoredUsers ||= [];
+      state.draft.logging.ignoreEmbeds = Boolean(state.draft.logging.ignoreEmbeds);
+      state.draft.logging.ignorePolls = Boolean(state.draft.logging.ignorePolls);
+      state.draft.logging.ignoreSticky = Boolean(state.draft.logging.ignoreSticky);
+      state.draft.logging.applyIgnoreToVoice = Boolean(state.draft.logging.applyIgnoreToVoice);
+
+      state.draft.leetcode ||= {};
+      state.draft.leetcode.pointsEasy = state.draft.leetcode.pointsEasy !== undefined ? Number(state.draft.leetcode.pointsEasy) : 10;
+      state.draft.leetcode.pointsMedium = state.draft.leetcode.pointsMedium !== undefined ? Number(state.draft.leetcode.pointsMedium) : 20;
+      state.draft.leetcode.pointsHard = state.draft.leetcode.pointsHard !== undefined ? Number(state.draft.leetcode.pointsHard) : 30;
+      state.draft.leetcode.shoutoutChannelId ||= "";
+      state.draft.leetcode.autoPostEnabled = Boolean(state.draft.leetcode.autoPostEnabled);
+      state.draft.leetcode.autoPostChannelId ||= "";
+      state.draft.leetcode.autoPostTitle ||= "";
+      state.draft.leetcode.autoPostDescription ||= "";
+      state.draft.leetcode.autoPostFooter ||= "";
+      state.draft.leetcode.autoPostColor ||= "";
+      state.draft.leetcode.autoPostThumbnail ||= "";
+      state.draft.leetcode.autoPostShowThumbnail = Boolean(state.draft.leetcode.autoPostShowThumbnail);
+      state.draft.leetcode.autoPostCsvDay = state.draft.leetcode.autoPostCsvDay !== undefined ? Number(state.draft.leetcode.autoPostCsvDay) : 1;
+      state.draft.leetcode.autoPostSeparator ||= "line";
+      if (!Array.isArray(state.draft.leetcode.autoPostCsvData)) state.draft.leetcode.autoPostCsvData = [];
+
+      state.draft.autorole ||= { humanRoles: [], botRoles: [] };
+      state.draft.voiceRole ||= { roleId: "" };
+      state.draft.roles ||= {};
+      state.draft.music247 ||= { enabled: false, textChannelId: "", voiceChannelId: "" };
+      state.draft.antinuke ||= { isEnabled: false, extraOwners: [], whitelistRoles: [], whitelistUsers: [], disabledEvents: [] };
+      state.draft.automod ||= {
+        antilink: { isEnabled: false, whitelistRoles: [], whitelistUsers: [] },
+        antispam: { isEnabled: false, messageThreshold: 5, timeframe: 10, whitelistRoles: [], whitelistUsers: [] }
+      };
+    }
+
+    // HTML Field Generation Helpers
+    function toggleField(path) {
+      const checked = Boolean(getPath(state.draft, path));
+      return `
+        <label class="toggle-switch">
+          <input type="checkbox" data-bind="${path}" ${checked ? "checked" : ""}>
+          <span class="slider"></span>
+        </label>
+      `;
+    }
+
+    function toggleLine(path, label) {
+      return `
+        <div class="button-builder-row">
+          <span>${escapeHtml(label)}</span>
+          ${toggleField(path)}
+        </div>
+      `;
+    }
+
+    function inputField(label, path, type = "text", placeholder = "", extra = "") {
+      const value = getPath(state.draft, path) ?? "";
+      return `
+        <div class="form-group">
+          <label>${escapeHtml(label)}</label>
+          <input class="input-field" type="${type}" data-bind="${path}" value="${escapeAttr(value)}" placeholder="${escapeAttr(placeholder)}" ${extra}>
+        </div>
+      `;
+    }
+
+    function textareaField(label, path, placeholder = "", extra = "") {
+      const value = getPath(state.draft, path) ?? "";
+      const text = Array.isArray(value) ? value.join("\n") : String(value);
+      const isLines = extra.includes("data-lines");
+      return `
+        <div class="form-group">
+          <label>${escapeHtml(label)}</label>
+          <textarea class="textarea-field" data-bind="${path}" placeholder="${escapeAttr(placeholder)}" ${extra}>${escapeHtml(text)}</textarea>
+        </div>
+      `;
+    }
+
+    function selectField(label, path, options, placeholder = "Select option") {
+      const value = getPath(state.draft, path) || "";
+      const emptyPlaceholder = options.length ? placeholder : "No entries available";
+      return `
+        <div class="form-group">
+          <label>${escapeHtml(label)}</label>
+          <select class="select-field" data-bind="${path}">
+            <option value="">${escapeHtml(emptyPlaceholder)}</option>
+            ${options.map((item) => `<option value="${item.id}" ${item.id === value ? "selected" : ""}>${escapeHtml(item.label || item.name)}</option>`).join("")}
+          </select>
+        </div>
+      `;
+    }
+
+    function multiSelectField(label, path, options, emptyText = "No entries available") {
+      const selected = new Set(getPath(state.draft, path) || []);
+      return `
+        <div class="form-group">
+          <label>${escapeHtml(label)}</label>
+          <div class="check-list" data-check-list="${escapeAttr(path)}">
+            ${options.map((item) => `
+              <label class="check-item">
+                <input type="checkbox" data-multi-check="${escapeAttr(path)}" value="${escapeAttr(item.id)}" ${selected.has(item.id) ? "checked" : ""}>
+                <span class="check-box"></span>
+                <span class="check-label">${escapeHtml(item.label || item.name)}</span>
+              </label>
+            `).join("") || `<div class="check-empty">${escapeHtml(emptyText)}</div>`}
+          </div>
+          <small style="color:var(--text-muted);font-size:0.75rem;margin-top:4px;display:block;">Click checkboxes to toggle options.</small>
+        </div>
+      `;
+    }
+
+    // Dropdowns close when clicking outside
+    document.addEventListener("click", () => {
+      document.getElementById("user-dropdown")?.classList.remove("open");
+      document.getElementById("channel-options")?.classList.remove("open");
+      document.getElementById("role-options")?.classList.remove("open");
+      document.getElementById("guild-options-list")?.classList.remove("open");
+    });
 
     // ----------------------------------------------------
     // ACCORDIONS / COLLAPSIBLE SECTIONS
@@ -1636,7 +2206,6 @@
       const content = document.getElementById(contentId);
       if (header && content) {
         header.addEventListener("click", (e) => {
-          // Prevent collapse if clicking buttons inside the header
           if (e.target.closest("button") && !e.target.closest(".chevron-btn")) return;
           header.classList.toggle("collapsed");
           content.classList.toggle("hidden");
@@ -1644,151 +2213,1654 @@
       }
     }
 
-    setupCollapsible("btn-builder-header", "btn-builder-content");
-    setupCollapsible("embed-builder-header", "embed-builder-content");
-    setupCollapsible("embed-header", "embed-content");
-    setupCollapsible("author-header", "author-content");
-    setupCollapsible("field-header", "field-content");
-    setupCollapsible("image-header", "image-content");
+    // ----------------------------------------------------
+    // DYNAMIC INTEGRATION VIA API
+    // ----------------------------------------------------
+    async function init() {
+      try {
+        state.me = await api("/api/me");
+        state.guilds = state.me.guilds || [];
+        
+        updateUserProfile();
+        populateGuildDropdown();
+        
+        const savedGuildId = localStorage.getItem("dsc:guild");
+        const activeGuild = state.guilds.find(g => g.id === savedGuildId && g.installed);
+        const targetGuild = activeGuild || state.guilds.find(g => g.installed);
+        
+        if (targetGuild) {
+          await loadGuild(targetGuild.id);
+        } else {
+          state.page = "servers";
+          renderPage();
+        }
+      } catch (err) {
+        console.error(err);
+        window.location.href = "/login";
+      }
+    }
 
-    // Utilities menu collapsible
-    const utilsTrigger = document.getElementById("utilities-trigger");
-    const utilsSubmenu = document.getElementById("utilities-submenu");
-    const utilsChevron = document.getElementById("utilities-chevron");
-    if (utilsTrigger && utilsSubmenu && utilsChevron) {
-      utilsTrigger.addEventListener("click", () => {
-        const isHidden = utilsSubmenu.style.display === "none";
-        utilsSubmenu.style.display = isHidden ? "flex" : "none";
-        utilsChevron.style.transform = isHidden ? "rotate(0deg)" : "rotate(-90deg)";
+    function updateUserProfile() {
+      const user = state.me.user;
+      const usernameEl = document.querySelector(".username");
+      if (usernameEl) {
+        usernameEl.textContent = user.global_name || user.username;
+      }
+      const avatarEl = document.querySelector(".user-avatar");
+      if (avatarEl && user.avatarCandidates && user.avatarCandidates[0]) {
+        avatarEl.style.backgroundImage = `url('${user.avatarCandidates[0]}')`;
+        avatarEl.style.backgroundSize = "cover";
+      }
+      const topBarAvatar = document.querySelector(".topbar .user-avatar");
+      if (topBarAvatar && user.avatarCandidates && user.avatarCandidates[0]) {
+        topBarAvatar.style.backgroundImage = `url('${user.avatarCandidates[0]}')`;
+        topBarAvatar.style.backgroundSize = "cover";
+      }
+    }
+
+    function populateGuildDropdown() {
+      const trigger = document.getElementById("guild-trigger");
+      
+      let listEl = document.getElementById("guild-options-list");
+      if (!listEl) {
+        listEl = document.createElement("div");
+        listEl.id = "guild-options-list";
+        listEl.className = "dropdown-options-box";
+        listEl.style.position = "absolute";
+        listEl.style.left = "16px";
+        listEl.style.width = "calc(100% - 32px)";
+        listEl.style.maxHeight = "240px";
+        listEl.style.overflowY = "auto";
+        listEl.style.zIndex = "100";
+        listEl.style.top = "90px";
+        trigger.parentNode.insertBefore(listEl, trigger.nextSibling);
+      }
+      
+      listEl.innerHTML = state.guilds
+        .filter(g => g.installed)
+        .map(g => `
+          <div class="dropdown-option" data-guild-id="${g.id}">
+            <div class="guild-info">
+              <div class="guild-avatar">${g.name.split(" ").map(w => w[0]).join("").substring(0,2)}</div>
+              <span class="guild-name">${escapeHtml(g.name)}</span>
+            </div>
+          </div>
+        `).join("");
+        
+      listEl.querySelectorAll(".dropdown-option").forEach(opt => {
+        opt.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const gid = opt.dataset.guildId;
+          listEl.classList.remove("open");
+          await loadGuild(gid);
+        });
+      });
+      
+      trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        listEl.classList.toggle("open");
+      });
+    }
+
+    async function loadGuild(guildId) {
+      state.guildId = guildId;
+      localStorage.setItem("dsc:guild", guildId);
+      state.dirty = false;
+      state.data = null;
+      state.draft = null;
+      updateSaveBtn();
+      
+      const guild = state.guilds.find(g => g.id === guildId);
+      if (guild) {
+        document.querySelector("#guild-trigger .guild-name").textContent = guild.name;
+        document.querySelector("#guild-trigger .guild-avatar").textContent = guild.name.split(" ").map(w => w[0]).join("").substring(0,2);
+      }
+      
+      try {
+        state.data = await api(`/api/guilds/${guildId}`);
+        state.draft = clone(state.data.settings);
+        ensureDraftShape();
+        
+        // Sync toggles in Left Sidebar based on current settings
+        syncSidebarToggles();
+        
+        renderPage();
+      } catch (err) {
+        console.error(err);
+        toast("Could not load server: " + err.message, "bad");
+      }
+    }
+
+    function syncSidebarToggles() {
+      document.querySelectorAll("[data-sidebar-toggle]").forEach(checkbox => {
+        const path = checkbox.dataset.sidebarToggle;
+        let checked = false;
+        if (path === "automod.any") {
+          checked = statusFor("automod.any");
+        } else if (path === "roles.any") {
+          checked = statusFor("roles.any");
+        } else {
+          checked = Boolean(getPath(state.draft, path));
+        }
+        checkbox.checked = checked;
       });
     }
 
     // ----------------------------------------------------
-    // DROPDOWNS OPEN/CLOSE (Guild, User Profile, Channels, Roles)
+    // DYNAMIC PAGE SWITCHING & RENDERING
     // ----------------------------------------------------
-    function setupDropdown(triggerId, optionsId, selectCallback) {
-      const trigger = document.getElementById(triggerId);
-      const optionsBox = document.getElementById(optionsId);
-      if (trigger && optionsBox) {
-        trigger.addEventListener("click", (e) => {
+    function renderPage() {
+      // Highlights active sidebar element
+      document.querySelectorAll("[data-nav]").forEach(item => {
+        item.classList.toggle("active", item.dataset.nav === state.page);
+      });
+
+      const titleEl = document.getElementById("page-title");
+      const subtitleEl = document.getElementById("page-subtitle");
+      const container = document.getElementById("page-content");
+      
+      if (!state.data && state.page !== "servers") {
+        container.innerHTML = `
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Select a Server</h2>
+            </div>
+            <p class="text-gray">Please pick a server from the top-left dropdown or sidebar list to get started.</p>
+          </div>
+        `;
+        titleEl.textContent = "Select Server";
+        subtitleEl.textContent = "Connect to a guild to configure settings.";
+        lucide.createIcons();
+        return;
+      }
+
+      updateSaveBtn();
+
+      switch (state.page) {
+        case "general":
+          titleEl.textContent = "General Settings";
+          subtitleEl.textContent = "Manage command access and ignored channels.";
+          container.innerHTML = renderGeneral();
+          break;
+        case "welcome":
+          titleEl.textContent = "Button Roles";
+          subtitleEl.textContent = "Distribute roles within your server using welcome message buttons.";
+          container.innerHTML = renderWelcome();
+          setupWelcomePageListeners();
+          break;
+        case "music":
+          titleEl.textContent = "Music 24/7";
+          subtitleEl.textContent = "Persist player sessions and auto-reconnect channels.";
+          container.innerHTML = renderMusic();
+          break;
+        case "leveling":
+          titleEl.textContent = "Leveling XP System";
+          subtitleEl.textContent = "Reward chat and voice activity with customizable XP rates.";
+          container.innerHTML = renderLeveling();
+          break;
+        case "vcguard":
+          titleEl.textContent = "VC Guard Security";
+          subtitleEl.textContent = "Protect your voice channels with role whitelists.";
+          container.innerHTML = renderVcGuard();
+          break;
+        case "sticky":
+          titleEl.textContent = "Sticky Messages";
+          subtitleEl.textContent = "Keep important notices pinned to the bottom of text channels.";
+          container.innerHTML = renderSticky();
+          break;
+        case "automod":
+          titleEl.textContent = "Auto Moderation";
+          subtitleEl.textContent = "Anti link and anti spam filters to prevent server raids.";
+          container.innerHTML = renderAutomod();
+          break;
+        case "antinuke":
+          titleEl.textContent = "Anti Nuke Security";
+          subtitleEl.textContent = "System protection whitelists and command moderation.";
+          container.innerHTML = renderAntinuke();
+          break;
+        case "logging":
+          titleEl.textContent = "Audit Logging";
+          subtitleEl.textContent = "Track all staff actions and server events in specified channels.";
+          container.innerHTML = renderLogging();
+          setupLoggingPageListeners();
+          break;
+        case "leetcode":
+          titleEl.textContent = "LeetCode Daily Tracking";
+          subtitleEl.textContent = "Track solved questions, Daily Challenges, and award points.";
+          container.innerHTML = renderLeetcode();
+          setupLeetcodePageListeners();
+          break;
+        case "roles":
+          titleEl.textContent = "Roles Config";
+          subtitleEl.textContent = "Configure Autoroles and Voice Join Roles.";
+          container.innerHTML = renderRoles();
+          break;
+        case "premium":
+          titleEl.textContent = "Phantom Premium";
+          subtitleEl.textContent = "Explore exclusive features and upgrades.";
+          container.innerHTML = renderPremium();
+          break;
+        case "servers":
+          titleEl.textContent = "Select Server";
+          subtitleEl.textContent = "Choose a server to configure or invite Phantom.";
+          container.innerHTML = renderServers();
+          break;
+        default: // overview
+          titleEl.textContent = "Dashboard Overview";
+          subtitleEl.textContent = `Welcome back! Managing ${escapeHtml(state.data?.guild?.name || "Server")}.`;
+          container.innerHTML = renderOverview();
+          setupOverviewPageListeners();
+          break;
+      }
+
+      bindFields();
+      lucide.createIcons();
+    }
+
+    // Bind generic fields
+    function bindFields() {
+      document.querySelectorAll("[data-bind]").forEach((field) => {
+        const eventName = field.tagName === "TEXTAREA" || field.tagName === "INPUT" || field.tagName === "SELECT" ? "input" : "change";
+        
+        // Remove existing listener if bound
+        field.removeEventListener(eventName, field._handler);
+        
+        field._handler = () => {
+          const path = field.dataset.bind;
+          let value;
+
+          if (field.type === "checkbox") {
+            value = field.checked;
+          } else if (field.type === "number") {
+            value = Number(field.value);
+          } else if (field.tagName === "TEXTAREA" && field.placeholder.includes("one per line")) {
+            value = field.value.split(/\n+/).map((item) => item.trim()).filter(Boolean);
+          } else {
+            value = field.value;
+          }
+
+          setPath(state.draft, path, value);
+          markDirty();
+          
+          if (path.startsWith("welcome.")) {
+            updatePreviewCard();
+          }
+        };
+        
+        field.addEventListener(eventName, field._handler);
+      });
+
+      document.querySelectorAll("[data-multi-check]").forEach((field) => {
+        const path = field.dataset.multiCheck;
+        field.removeEventListener("change", field._handler);
+        
+        field._handler = () => {
+          const values = Array.from(document.querySelectorAll(`[data-multi-check="${cssEscape(path)}"]`))
+            .filter((input) => input.checked)
+            .map((input) => input.value)
+            .filter(Boolean);
+          setPath(state.draft, path, values);
+          markDirty();
+        };
+        
+        field.addEventListener("change", field._handler);
+      });
+
+      document.querySelectorAll("[data-event-toggle]").forEach((field) => {
+        field.removeEventListener("change", field._handler);
+        field._handler = () => {
+          const path = field.dataset.eventToggle;
+          const key  = field.dataset.eventKey;
+          const current = new Set(getPath(state.draft, path) || []);
+          if (field.checked) {
+            current.delete(key);
+          } else {
+            current.add(key);
+          }
+          setPath(state.draft, path, Array.from(current));
+          markDirty();
+        };
+        field.addEventListener("change", field._handler);
+      });
+    }
+
+    // ----------------------------------------------------
+    // TEMPLATE STRINGS FOR EACH PAGE
+    // ----------------------------------------------------
+
+    function renderOverview() {
+      const guild = state.data?.guild || {};
+      const bot = state.data?.bot || {};
+      
+      const stats = [
+        { label: "Prefix", val: state.draft.prefix || "!" },
+        { label: "Automod", val: statusFor("automod.any") ? "On" : "Off" },
+        { label: "Antinuke", val: state.draft.antinuke?.isEnabled ? "On" : "Off" },
+        { label: "Welcome Messages", val: state.draft.welcome?.enabled ? "On" : "Off" }
+      ];
+
+      return `
+        <div class="cards-grid-1" style="margin-bottom: 24px;">
+          <div class="card" style="flex-direction:row;justify-content:space-between;align-items:center;">
+            <div>
+              <h3>Server Statistics</h3>
+              <p class="text-gray">${guild.memberCount || 0} members &bull; ${bot.commandCount || 0} prefix commands &bull; ${bot.slashCommandCount || 0} slash commands</p>
+            </div>
+            <div class="green-badge-btn" style="cursor:default;">Active Connection</div>
+          </div>
+        </div>
+
+        <div class="cards-grid-2">
+          ${stats.map(s => `
+            <div class="card" style="padding:20px;text-align:center;">
+              <span class="text-muted" style="text-transform:uppercase;font-size:0.75rem;font-weight:700;">${escapeHtml(s.label)}</span>
+              <h1 style="font-size:2rem;color:var(--accent-purple);margin:10px 0;">${escapeHtml(s.val)}</h1>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="divider"></div>
+        <div class="card-section-title">
+          <h2>Modules Shortcuts</h2>
+        </div>
+
+        <div class="cards-grid">
+          <div class="card" data-shortcut="general" style="cursor:pointer;padding:16px;">
+            <h3>Bot Settings</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Command prefix and channel ignore configurations.</p>
+          </div>
+          <div class="card" data-shortcut="welcome" style="cursor:pointer;padding:16px;">
+            <h3>Button Roles</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Configure custom embeds, buttons, and join welcomes.</p>
+          </div>
+          <div class="card" data-shortcut="music" style="cursor:pointer;padding:16px;">
+            <h3>Music 24/7</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Maintain bot sessions inside voice channels.</p>
+          </div>
+          <div class="card" data-shortcut="leveling" style="cursor:pointer;padding:16px;">
+            <h3>Leveling XP</h3>
+            <p class="text-gray" style="font-size:0.8rem;">XP levels for user chat and voice activities.</p>
+          </div>
+          <div class="card" data-shortcut="vcguard" style="cursor:pointer;padding:16px;">
+            <h3>VC Guard</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Lock voice channels to whitelisted users.</p>
+          </div>
+          <div class="card" data-shortcut="sticky" style="cursor:pointer;padding:16px;">
+            <h3>Sticky Messages</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Keep important text messages pinned at the bottom.</p>
+          </div>
+          <div class="card" data-shortcut="automod" style="cursor:pointer;padding:16px;">
+            <h3>Auto Moderation</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Spam and invite link filters.</p>
+          </div>
+          <div class="card" data-shortcut="antinuke" style="cursor:pointer;padding:16px;">
+            <h3>Anti Nuke</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Secure actions from webhook and staff abuses.</p>
+          </div>
+          <div class="card" data-shortcut="logging" style="cursor:pointer;padding:16px;">
+            <h3>Audit Logging</h3>
+            <p class="text-gray" style="font-size:0.8rem;">Detailed logging channels for events.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function setupOverviewPageListeners() {
+      document.querySelectorAll("[data-shortcut]").forEach(card => {
+        card.addEventListener("click", () => {
+          state.page = card.dataset.shortcut;
+          localStorage.setItem("dsc:page", state.page);
+          renderPage();
+        });
+      });
+    }
+
+    function renderGeneral() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Command Access</h2>
+            </div>
+            ${inputField("Command Prefix", "prefix", "text", "!", "maxlength=\"5\"")}
+            ${multiSelectField("Ignored Channels", "ignoreChannels", textChannels())}
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Command Preview</h2>
+            </div>
+            <p class="text-gray" style="font-size:0.85rem;margin-bottom:12px;">This is how command invocations look in Discord chat:</p>
+            <div style="background:rgba(0,0,0,0.2);padding:16px;border-radius:8px;border:1px solid var(--card-border);font-family:monospace;font-size:0.85rem;line-height:1.6;">
+              <div><span style="color:#a855f7;font-weight:bold;">${escapeHtml(state.draft.prefix || "!")}</span>help &mdash; <span style="color:var(--text-gray);">Open help menu</span></div>
+              <div><span style="color:#a855f7;font-weight:bold;">${escapeHtml(state.draft.prefix || "!")}</span>play <span style="color:var(--text-muted);">https://...</span> &mdash; <span style="color:var(--text-gray);">Play music</span></div>
+              <div><span style="color:#a855f7;font-weight:bold;">${escapeHtml(state.draft.prefix || "!")}</span>ping &mdash; <span style="color:var(--text-gray);">Check bot latency</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderWelcome() {
+      const activeChannelId = state.draft.welcome?.channel || "";
+      const selectedChannel = textChannels().find(c => c.id === activeChannelId)?.name || "Select channel";
+
+      return `
+        <div class="cards-grid">
+          <!-- CARD 1: Settings + Button Builder -->
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Settings</h2>
+            </div>
+            
+            <div class="collapsible-content">
+              <div class="form-group">
+                <label>Message name</label>
+                <input class="input-field" type="text" placeholder="Message name" value="Welcome greetings">
+              </div>
+
+              <div class="row-grid">
+                <div class="form-group">
+                  <label>Channel</label>
+                  <div class="custom-dropdown-container">
+                    <div class="dropdown-trigger" id="channel-trigger">
+                      <span id="selected-channel" data-value="${escapeAttr(activeChannelId)}">${escapeHtml(selectedChannel)}</span>
+                      <i data-lucide="chevron-down" style="width: 14px; height:14px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="dropdown-options-box" id="channel-options">
+                      <!-- Channels options rendered dynamically -->
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Role type</label>
+                  <div class="custom-dropdown-container">
+                    <div class="dropdown-trigger" id="role-trigger">
+                      <span id="selected-role">Verify</span>
+                      <i data-lucide="chevron-down" style="width: 14px; height:14px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="dropdown-options-box" id="role-options">
+                      <!-- Roles rendered dynamically -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Allowed roles</label>
+                <div class="role-input-box" id="role-select-trigger">
+                  Choose role
+                  <i data-lucide="chevron-down" style="width:14px; height:14px; color:var(--text-muted);"></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Banned roles</label>
+                <div class="role-input-box">
+                  Choose role
+                  <i data-lucide="chevron-down" style="width:14px; height:14px; color:var(--text-muted);"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card-section-title" id="btn-builder-header">
+              <h2>Button Builder</h2>
+              <div class="actions">
+                <button class="green-badge-btn" id="add-btn-action">
+                  <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                  Button
+                </button>
+                <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+              </div>
+            </div>
+
+            <div class="collapsible-content" id="btn-builder-content">
+              <p class="muted" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: -10px;">Buttons require a message to be used.</p>
+              
+              <div class="button-builder-row">
+                <div class="row-left">
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                  </label>
+                  <span>Button #1</span>
+                </div>
+                <span class="remove-link">Remove</span>
+              </div>
+
+              <div class="form-group">
+                <label>Button color</label>
+                <div class="color-pill-row">
+                  <div class="color-pill blurple active" data-color="blurple">Blurple</div>
+                  <div class="color-pill grey" data-color="grey">Grey</div>
+                  <div class="color-pill green" data-color="green">Green</div>
+                  <div class="color-pill red" data-color="red">Red</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Button text</label>
+                <input class="input-field" type="text" value="Verify me!" id="btn-text-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 2: Embed Builder -->
+          <div class="card">
+            <div class="card-section-title" id="embed-builder-header">
+              <h2>Embed Builder</h2>
+              <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+            </div>
+
+            <div class="collapsible-content" id="embed-builder-content">
+              <div class="form-group">
+                <label style="display:flex; align-items:center; gap:6px;">
+                  <i data-lucide="align-left" style="width:14px; height:14px;"></i>
+                  Message contents
+                </label>
+                <textarea class="textarea-field" placeholder="Main content of the message" id="message-content-input"></textarea>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card-section-title" id="embed-header">
+              <h2>Embed</h2>
+              <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+            </div>
+
+            <div class="collapsible-content" id="embed-content">
+              <div class="form-group">
+                <label style="display:flex; align-items:center; gap:6px;">
+                  <i data-lucide="type" style="width:14px; height:14px;"></i>
+                  Embed title
+                </label>
+                <input class="input-field" type="text" value="" id="embed-title-input">
+              </div>
+
+              <div class="form-group">
+                <label style="display:flex; align-items:center; gap:6px;">
+                  <i data-lucide="align-left" style="width:14px; height:14px;"></i>
+                  Embed description
+                </label>
+                <div class="textarea-container">
+                  <textarea class="textarea-field" id="embed-desc-input" maxlength="256"></textarea>
+                  <div class="char-counter">
+                    <i data-lucide="text" style="width:10px; height:10px;"></i>
+                    <span id="char-count-val">0</span>/256
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Embed color</label>
+                <div class="color-picker-palette" id="color-palette">
+                  <div class="color-circle" style="background:#10b981;" data-hex="#10b981"></div>
+                  <div class="color-circle" style="background:#7c3aed;" data-hex="#7c3aed"></div>
+                  <div class="color-circle" style="background:#ec4899;" data-hex="#ec4899"></div>
+                  <div class="color-circle" style="background:#3b82f6;" data-hex="#3b82f6"></div>
+                  <div class="color-circle" style="background:#06b6d4;" data-hex="#06b6d4"></div>
+                  <div class="color-circle" style="background:#ef4444;" data-hex="#ef4444"></div>
+                  <div class="color-circle" style="background:#f97316;" data-hex="#f97316"></div>
+                  <div class="color-circle active" style="background:#eab308;" data-hex="#eab308"></div>
+                </div>
+                <div class="row-grid" style="margin-top:10px; align-items:center;">
+                  <label style="font-size:0.75rem; color:var(--text-muted);">Default color</label>
+                  <input class="input-field" type="text" value="#7c3aed" id="hex-color-input" style="font-family:monospace; text-align:center;">
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card-section-title" id="author-header">
+              <h2>Author & Thumbnail</h2>
+              <button class="chevron-btn"><i data-lucide="chevron-down"></i></button>
+            </div>
+
+            <div class="collapsible-content" id="author-content">
+              <div class="form-group">
+                <label>Author</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <div class="user-avatar" style="width:36px; height:36px;"></div>
+                  <input class="input-field" type="text" value="" id="author-name-input">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 3: Illustration + Preview -->
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Illustration Preview</h2>
+            </div>
+
+            <div class="mock-message-container">
+              <div class="mock-avatar"></div>
+              <div class="mock-content">
+                <div class="mock-header">
+                  <span class="mock-username">${escapeHtml(state.data?.bot?.name || "Phantom")}</span>
+                  <span class="mock-badge">
+                    BOT
+                    <i data-lucide="check" style="width:10px; height:10px; stroke-width:3;"></i>
+                  </span>
+                  <span class="mock-timestamp">Today at 6:30am</span>
+                </div>
+                <div class="mock-body" id="preview-msg-content">Welcome to the server!</div>
+                
+                <div class="mock-embed" id="preview-embed-box" style="border-left:4px solid var(--accent-purple);">
+                  <div class="mock-embed-title" id="preview-embed-title">Welcome!</div>
+                  <div class="mock-embed-desc" id="preview-embed-desc">Greetings! Select roles below to access channels.</div>
+                  <div class="mock-embed-footer">Phantom Greetings</div>
+                </div>
+
+                <div class="mock-button-row" id="preview-button-row">
+                  <button class="mock-button blurple" id="preview-interactive-btn">
+                    Verify me!
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setupWelcomePageListeners() {
+      setupCollapsible("btn-builder-header", "btn-builder-content");
+      setupCollapsible("embed-builder-header", "embed-builder-content");
+      setupCollapsible("embed-header", "embed-content");
+      setupCollapsible("author-header", "author-content");
+
+      // Custom dropdowns
+      const channelTrigger = document.getElementById("channel-trigger");
+      const channelOptions = document.getElementById("channel-options");
+      if (channelTrigger && channelOptions) {
+        channelOptions.innerHTML = textChannels().map(c => `
+          <div class="dropdown-option" data-value="${c.id}">${escapeHtml(c.name)}</div>
+        `).join("");
+
+        channelTrigger.addEventListener("click", (e) => {
           e.stopPropagation();
-          optionsBox.classList.toggle("open");
+          channelOptions.classList.toggle("open");
         });
 
-        const options = optionsBox.querySelectorAll(".dropdown-option");
-        options.forEach(opt => {
-          opt.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (selectCallback) selectCallback(opt.textContent);
-            optionsBox.classList.remove("open");
+        channelOptions.querySelectorAll(".dropdown-option").forEach(opt => {
+          opt.addEventListener("click", () => {
+            document.getElementById("selected-channel").textContent = opt.textContent;
+            document.getElementById("selected-channel").dataset.value = opt.dataset.value;
+            state.draft.welcome.channel = opt.dataset.value;
+            markDirty();
+            channelOptions.classList.remove("open");
           });
+        });
+      }
+
+      const roleTrigger = document.getElementById("role-trigger");
+      const roleOptions = document.getElementById("role-options");
+      if (roleTrigger && roleOptions) {
+        const roles = state.data?.roles || [];
+        roleOptions.innerHTML = roles.map(r => `
+          <div class="dropdown-option" data-value="${r.id}">${escapeHtml(r.name)}</div>
+        `).join("");
+
+        roleTrigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          roleOptions.classList.toggle("open");
+        });
+
+        roleOptions.querySelectorAll(".dropdown-option").forEach(opt => {
+          opt.addEventListener("click", () => {
+            document.getElementById("selected-role").textContent = opt.textContent;
+            document.getElementById("selected-role").dataset.value = opt.dataset.value;
+            roleOptions.classList.remove("open");
+          });
+        });
+      }
+
+      // Sync form inputs
+      const welcome = state.draft.welcome || {};
+      document.getElementById("message-content-input").value = welcome.content || "";
+      document.getElementById("embed-title-input").value = welcome.embed?.title || "";
+      document.getElementById("embed-desc-input").value = welcome.embed?.description || "";
+      document.getElementById("char-count-val").textContent = (welcome.embed?.description || "").length;
+      document.getElementById("hex-color-input").value = welcome.embed?.color || "#7c3aed";
+      document.getElementById("author-name-input").value = welcome.embed?.footer || "";
+
+      // Bind input events for live preview updates
+      document.getElementById("message-content-input").addEventListener("input", (e) => {
+        state.draft.welcome.content = e.target.value;
+        updatePreviewCard();
+        markDirty();
+      });
+
+      document.getElementById("embed-title-input").addEventListener("input", (e) => {
+        if (!state.draft.welcome.embed) state.draft.welcome.embed = {};
+        state.draft.welcome.embed.title = e.target.value;
+        updatePreviewCard();
+        markDirty();
+      });
+
+      document.getElementById("embed-desc-input").addEventListener("input", (e) => {
+        if (!state.draft.welcome.embed) state.draft.welcome.embed = {};
+        state.draft.welcome.embed.description = e.target.value;
+        document.getElementById("char-count-val").textContent = e.target.value.length;
+        updatePreviewCard();
+        markDirty();
+      });
+
+      document.getElementById("hex-color-input").addEventListener("input", (e) => {
+        const val = e.target.value;
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+          if (!state.draft.welcome.embed) state.draft.welcome.embed = {};
+          state.draft.welcome.embed.color = val;
+          updatePreviewCard();
+          markDirty();
+        }
+      });
+
+      document.getElementById("author-name-input").addEventListener("input", (e) => {
+        if (!state.draft.welcome.embed) state.draft.welcome.embed = {};
+        state.draft.welcome.embed.footer = e.target.value;
+        updatePreviewCard();
+        markDirty();
+      });
+
+      document.querySelectorAll(".color-circle").forEach(circle => {
+        circle.addEventListener("click", () => {
+          document.querySelectorAll(".color-circle").forEach(c => c.classList.remove("active"));
+          circle.classList.add("active");
+          const hex = circle.dataset.hex;
+          if (!state.draft.welcome.embed) state.draft.welcome.embed = {};
+          state.draft.welcome.embed.color = hex;
+          document.getElementById("hex-color-input").value = hex;
+          updatePreviewCard();
+          markDirty();
+        });
+      });
+
+      const btnTextInput = document.getElementById("btn-text-input");
+      const previewInteractiveBtn = document.getElementById("preview-interactive-btn");
+      if (btnTextInput && previewInteractiveBtn) {
+        btnTextInput.addEventListener("input", () => {
+          previewInteractiveBtn.textContent = btnTextInput.value || "Verify me!";
+        });
+      }
+
+      const colorPills = document.querySelectorAll(".color-pill");
+      colorPills.forEach(pill => {
+        pill.addEventListener("click", () => {
+          colorPills.forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          const color = pill.dataset.color;
+          previewInteractiveBtn.className = "mock-button " + color;
+        });
+      });
+
+      updatePreviewCard();
+    }
+
+    function updatePreviewCard() {
+      const welcome = state.draft?.welcome || {};
+      const previewMsgContent = document.getElementById("preview-msg-content");
+      if (previewMsgContent) {
+        previewMsgContent.innerHTML = escapeHtml(welcome.content || "Welcome to the server!").replace(/\n/g, "<br>");
+      }
+      
+      const previewEmbedTitle = document.getElementById("preview-embed-title");
+      if (previewEmbedTitle) {
+        previewEmbedTitle.textContent = welcome.embed?.title || "Welcome!";
+      }
+      
+      const previewEmbedDesc = document.getElementById("preview-embed-desc");
+      if (previewEmbedDesc) {
+        previewEmbedDesc.textContent = welcome.embed?.description || "Greetings! Select roles below to access channels.";
+      }
+      
+      const previewEmbedBox = document.getElementById("preview-embed-box");
+      if (previewEmbedBox) {
+        previewEmbedBox.style.borderColor = welcome.embed?.color || "#7c3aed";
+      }
+    }
+
+    function renderMusic() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Reconnection Session Settings</h2>
+            </div>
+            ${toggleLine("music247.enabled", "Enable Music 24/7")}
+            ${selectField("Default Text Channel", "music247.textChannelId", textChannels())}
+            ${selectField("Default Voice Channel", "music247.voiceChannelId", voiceChannels())}
+          </div>
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Module Info</h2>
+            </div>
+            <p class="text-gray" style="font-size:0.85rem;line-height:1.6;">
+              When **Music 24/7** is enabled, Phantom stays permanently connected to the selected Voice channel. 
+              If the bot is restarted or disconnected due to network latency, it automatically reconnects and binds commands to the default text channel.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLeveling() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Status & Announcements</h2>
+            </div>
+            ${toggleLine("premium.leveling.enabled", "Enable Leveling System")}
+            ${selectField("Announce Level Ups In", "premium.leveling.announceChannelId", textChannels())}
+            ${inputField("Custom Level Up Message", "premium.leveling.levelUpMessage", "text", "{user} reached level {level}!")}
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>XP Formula Config</h2>
+            </div>
+            <div class="row-grid">
+              ${inputField("Chat XP Min (per msg)", "premium.leveling.chatXpMin", "number")}
+              ${inputField("Chat XP Max (per msg)", "premium.leveling.chatXpMax", "number")}
+            </div>
+            <div class="row-grid" style="margin-top:10px;">
+              ${inputField("Voice XP (per min)", "premium.leveling.voiceXpPerMinute", "number")}
+              ${inputField("Chat Cooldown (seconds)", "premium.leveling.chatCooldownSeconds", "number")}
+            </div>
+            <div class="divider"></div>
+            ${toggleLine("premium.leveling.chatEnabled", "Earn Chat XP")}
+            ${toggleLine("premium.leveling.voiceEnabled", "Earn Voice XP")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderVcGuard() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>VC Protection Settings</h2>
+            </div>
+            ${toggleLine("premium.vcGuard.enabled", "Enable VC Guard")}
+            ${multiSelectField("Protected Voice Channels", "premium.vcGuard.protectedChannels", voiceChannels())}
+            ${multiSelectField("Bypass Roles", "premium.vcGuard.bypassRoles", state.data.roles)}
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Security Actions</h2>
+            </div>
+            ${selectField("Logging Channel", "premium.vcGuard.logChannelId", textChannels())}
+            ${textareaField("Disconnect Notification DM Message", "premium.vcGuard.message", "Enter DM notification content...")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSticky() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Config Settings</h2>
+            </div>
+            ${toggleLine("premium.sticky.enabled", "Enable Sticky Messages")}
+            ${selectField("Target Channel", "premium.sticky.messages.0.channelId", textChannels())}
+            ${inputField("Bypass Cooldown (seconds)", "premium.sticky.messages.0.cooldownSeconds", "number")}
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Sticky Message Content</h2>
+            </div>
+            ${textareaField("Message Body", "premium.sticky.messages.0.content", "Keep this message at the bottom of the channel...")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAutomod() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Anti Invite / URL Links</h2>
+            </div>
+            ${toggleLine("automod.antilink.isEnabled", "Enable Anti Link")}
+            ${multiSelectField("Whitelist Bypass Roles", "automod.antilink.whitelistRoles", state.data.roles)}
+            ${textareaField("Whitelist User IDs (one per line)", "automod.antilink.whitelistUsers", "1234567890\n9876543210", "data-lines=\"true\"")}
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Anti Message Flooding (Spam)</h2>
+            </div>
+            ${toggleLine("automod.antispam.isEnabled", "Enable Anti Spam")}
+            <div class="row-grid">
+              ${inputField("Flooding Threshold (messages)", "automod.antispam.messageThreshold", "number")}
+              ${inputField("Cooldown Timeframe (seconds)", "automod.antispam.timeframe", "number")}
+            </div>
+            <div style="margin-top:15px;">
+              ${multiSelectField("Whitelist Bypass Roles", "automod.antispam.whitelistRoles", state.data.roles)}
+            </div>
+            ${textareaField("Whitelist User IDs (one per line)", "automod.antispam.whitelistUsers", "1234567890", "data-lines=\"true\"")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAntinuke() {
+      const protections = [
+        { key: "antiBan", label: "Anti ban" },
+        { key: "antiKick", label: "Anti kick" },
+        { key: "antiUnban", label: "Anti unban" },
+        { key: "antiRole", label: "Anti role create/delete/update" },
+        { key: "antiChannel", label: "Anti channel create/delete/update" },
+        { key: "antiWebhook", label: "Anti webhook create/update/delete" },
+        { key: "antiSticker", label: "Anti sticker create/delete/update" },
+        { key: "antiEmoji", label: "Anti emoji create/update/delete" },
+        { key: "antiEveryone", label: "Anti everyone/here" },
+        { key: "antiServer", label: "Anti server update" },
+        { key: "antiBot", label: "Anti bot add" }
+      ];
+
+      const disabledEvents = new Set(state.draft.antinuke?.disabledEvents || []);
+      const isSystemOn = state.draft.antinuke?.isEnabled;
+
+      return `
+        <div class="cards-grid-1" style="margin-bottom: 24px;">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>System Security Status</h2>
+            </div>
+            ${toggleLine("antinuke.isEnabled", "System Protection Online")}
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Active Protections</h2>
+            </div>
+            <div class="security-grid" style="grid-template-columns: 1fr;">
+              ${protections.map(p => {
+                const on = isSystemOn && !disabledEvents.has(p.key);
+                return `
+                  <div class="security-tile" style="justify-content:space-between;padding:12px 16px;">
+                    <span>${escapeHtml(p.label)}</span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" data-event-toggle="antinuke.disabledEvents" data-event-key="${p.key}" ${!disabledEvents.has(p.key) ? "checked" : ""}>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>System Configuration</h2>
+            </div>
+            ${selectField("Security Log Channel", "antinuke.logChannelId", textChannels())}
+            ${textareaField("Extra Owner IDs (one per line)", "antinuke.extraOwners", "Enter discord user IDs...", "data-lines=\"true\"")}
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Bypass Access Whitelists</h2>
+            </div>
+            ${multiSelectField("Bypass Whitelist Roles", "antinuke.whitelistRoles", state.data.roles)}
+            ${textareaField("Bypass Whitelist User IDs", "antinuke.whitelistUsers", "User IDs bypass security limitations...", "data-lines=\"true\"")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLogging() {
+      state.loggingTab ||= "channels";
+      
+      const tabs = [
+        { id: "channels", label: "Log Channels" },
+        { id: "ignores", label: "Ignore Settings" }
+      ];
+
+      const tabHeader = `
+        <div class="welcome-tabs" role="tablist">
+          ${tabs.map(t => `
+            <button class="${state.loggingTab === t.id ? "active" : ""}" type="button" data-logging-tab="${t.id}">${escapeHtml(t.label)}</button>
+          `).join("")}
+        </div>
+      `;
+
+      if (state.loggingTab === "ignores") {
+        return `
+          <div class="cards-grid-1" style="margin-bottom:20px;">
+            <div class="card">
+              <div class="card-section-title">
+                <h2>Logging Master Switch</h2>
+              </div>
+              ${toggleLine("logging.isEnabled", "Global Logging Active")}
+            </div>
+            ${tabHeader}
+          </div>
+
+          <div class="cards-grid-2">
+            <div class="card">
+              <div class="card-section-title">
+                <h2>Events Ignore Config</h2>
+              </div>
+              ${toggleLine("logging.ignoreEmbeds", "Ignore Embed Messages")}
+              ${toggleLine("logging.ignorePolls", "Ignore Poll Deletions")}
+              ${toggleLine("logging.ignoreSticky", "Ignore Sticky Messages")}
+              ${toggleLine("logging.applyIgnoreToVoice", "Apply Ignores to Voice Events")}
+            </div>
+
+            <div class="card">
+              <div class="card-section-title">
+                <h2>Bypass Logging Channels / Roles / Users</h2>
+              </div>
+              ${multiSelectField("Ignored Roles", "logging.ignoredRoles", state.data.roles)}
+              ${textareaField("Ignored Channel IDs (one per line)", "logging.ignoredChannels", "Ignored channel logs...", "data-lines=\"true\"")}
+              ${textareaField("Ignored User IDs (one per line)", "logging.ignoredUsers", "Ignored user logs...", "data-lines=\"true\"")}
+            </div>
+          </div>
+        `;
+      }
+
+      // Channels setup tab
+      const categories = [
+        {
+          id: "messages",
+          name: "Messages Logs",
+          events: [
+            { key: "messageDelete", label: "Message Delete" },
+            { key: "messageUpdate", label: "Message Edit" }
+          ]
+        },
+        {
+          id: "channels",
+          name: "Channels Logs",
+          events: [
+            { key: "channelCreate", label: "Channel Create" },
+            { key: "channelDelete", label: "Channel Delete" },
+            { key: "channelUpdate", label: "Channel Update" }
+          ]
+        },
+        {
+          id: "roles",
+          name: "Roles Logs",
+          events: [
+            { key: "roleCreate", label: "Role Create" },
+            { key: "roleDelete", label: "Role Delete" },
+            { key: "roleUpdate", label: "Role Update" }
+          ]
+        },
+        {
+          id: "members",
+          name: "Members Logs",
+          events: [
+            { key: "guildMemberAdd", label: "Member Join" },
+            { key: "guildMemberRemove", label: "Member Leave" },
+            { key: "guildMemberUpdate", label: "Member Update" }
+          ]
+        },
+        {
+          id: "moderation",
+          name: "Moderation Logs",
+          events: [
+            { key: "guildBanAdd", label: "Member Ban" },
+            { key: "guildBanRemove", label: "Member Unban" },
+            { key: "guildMemberKick", label: "Member Kick" },
+            { key: "guildMemberTimeout", label: "Member Timeout" }
+          ]
+        }
+      ];
+
+      const verificationModal = state.activeVerification ? `
+        <div class="verification-modal-overlay">
+          <div class="verification-modal">
+            <h3>Verify Forum/Thread Channel</h3>
+            <p style="margin-top:10px;">Setup log verification code for <strong>${state.activeVerification.eventKey}</strong>.</p>
+            <div class="verification-code-box" style="background:#0f0f18;padding:12px;border-radius:6px;display:flex;justify-content:space-between;margin:15px 0;">
+              <code>!verify-log ${state.activeVerification.token}</code>
+              <button class="discard-btn" id="copy-verify-token-btn" style="padding:6px 12px;font-size:0.8rem;">Copy</button>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-gray);">Paste this code into the target thread or forum channel to complete setup.</p>
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+              <button class="upgrade-btn" id="check-verification-btn" style="width:auto;background:var(--accent-green);">Check Verification</button>
+              <button class="discard-btn" id="close-verification-btn">Close</button>
+            </div>
+          </div>
+        </div>
+      ` : "";
+
+      return `
+        <div class="cards-grid-1" style="margin-bottom:20px;">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Logging Master Switch</h2>
+            </div>
+            ${toggleLine("logging.isEnabled", "Global Logging Active")}
+          </div>
+          ${tabHeader}
+        </div>
+
+        <div class="cards-grid-2">
+          ${categories.map(cat => `
+            <div class="card" style="padding:20px;">
+              <div class="card-section-title" style="margin-bottom:12px;">
+                <h2>${escapeHtml(cat.name)}</h2>
+                <div style="min-width:140px;">
+                  <select class="select-field" data-category-mass-select="${cat.id}">
+                    <option value="">Set category...</option>
+                    ${textChannels().map(ch => `<option value="${ch.id}">${escapeHtml(ch.label)}</option>`).join("")}
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:15px;">
+                ${cat.events.map(evt => {
+                  const currentChan = state.draft.logging.eventChannels?.[evt.key] || "";
+                  return `
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);padding-bottom:10px;">
+                      <span>${escapeHtml(evt.label)}</span>
+                      <div style="display:flex;gap:10px;align-items:center;">
+                        <select class="select-field" data-bind="logging.eventChannels.${evt.key}" style="min-width:140px;">
+                          <option value="">Disabled</option>
+                          ${textChannels().map(ch => `<option value="${ch.id}" ${ch.id === currentChan ? "selected" : ""}>${escapeHtml(ch.label)}</option>`).join("")}
+                        </select>
+                        <button class="discard-btn" data-verify-thread="${evt.key}" style="padding:6px;height:38px;"><i data-lucide="hash" style="width:16px;height:16px;"></i></button>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+
+        ${verificationModal}
+      `;
+    }
+
+    function setupLoggingPageListeners() {
+      document.querySelectorAll("[data-logging-tab]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.loggingTab = btn.dataset.loggingTab;
+          localStorage.setItem("dsc:loggingTab", state.loggingTab);
+          renderPage();
+        });
+      });
+
+      document.querySelectorAll("[data-category-mass-select]").forEach(select => {
+        select.addEventListener("change", () => {
+          const channelId = select.value;
+          const catId = select.dataset.categoryMassSelect;
+          const categoriesMap = {
+            messages: ["messageDelete", "messageUpdate"],
+            channels: ["channelCreate", "channelDelete", "channelUpdate"],
+            roles: ["roleCreate", "roleDelete", "roleUpdate"],
+            members: ["guildMemberAdd", "guildMemberRemove", "guildMemberUpdate"],
+            moderation: ["guildBanAdd", "guildBanRemove", "guildMemberKick", "guildMemberTimeout"]
+          };
+          const keys = categoriesMap[catId];
+          if (keys) {
+            keys.forEach(k => {
+              setPath(state.draft, `logging.eventChannels.${k}`, channelId);
+            });
+            markDirty();
+            renderPage();
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-verify-thread]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const eventKey = btn.dataset.verifyThread;
+          try {
+            const res = await api(`/api/guilds/${state.guildId}/verify-log-token`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ eventKey })
+            });
+            if (res.token) {
+              state.activeVerification = { token: res.token, eventKey };
+              renderPage();
+            }
+          } catch (err) {
+            toast("Failed to generate token: " + err.message, "bad");
+          }
+        });
+      });
+
+      if (state.activeVerification) {
+        document.getElementById("close-verification-btn")?.addEventListener("click", () => {
+          state.activeVerification = null;
+          renderPage();
+        });
+        
+        document.getElementById("copy-verify-token-btn")?.addEventListener("click", () => {
+          if (state.activeVerification) {
+            navigator.clipboard.writeText(`!verify-log ${state.activeVerification.token}`);
+            toast("Copied verification command!", "good");
+          }
+        });
+
+        document.getElementById("check-verification-btn")?.addEventListener("click", async () => {
+          state.activeVerification = null;
+          await loadGuild(state.guildId);
         });
       }
     }
 
-    setupDropdown("guild-trigger", "guild-trigger", null); // Just toggle
-    setupDropdown("user-trigger", "user-dropdown", null);
+    function renderLeetcode() {
+      const csvRows = state.draft.leetcode?.autoPostCsvData || [];
+      return `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Solve Points Formula</h2>
+            </div>
+            ${inputField("Points (Easy)", "leetcode.pointsEasy", "number")}
+            ${inputField("Points (Medium)", "leetcode.pointsMedium", "number")}
+            ${inputField("Points (Hard)", "leetcode.pointsHard", "number")}
+            <div class="divider"></div>
+            ${selectField("Solved Shoutout Channel", "leetcode.shoutoutChannelId", textChannels())}
+          </div>
 
-    setupDropdown("channel-trigger", "channel-options", (val) => {
-      document.getElementById("selected-channel").textContent = val;
-    });
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Daily Auto-Posting Config</h2>
+            </div>
+            ${toggleLine("leetcode.autoPostEnabled", "Daily challenge active")}
+            ${selectField("Auto-posting Channel", "leetcode.autoPostChannelId", textChannels())}
+            ${inputField("CSV Daily Rotation Counter", "leetcode.autoPostCsvDay", "number")}
+            <div style="display:flex;gap:10px;">
+              <button class="discard-btn" id="leetcode-reset-day" style="width:100%;">Reset Day 1</button>
+            </div>
+          </div>
 
-    setupDropdown("role-trigger", "role-options", (val) => {
-      document.getElementById("selected-role").textContent = val;
-    });
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Daily Embed customizer</h2>
+            </div>
+            ${inputField("Custom Title", "leetcode.autoPostTitle")}
+            ${inputField("Custom Hex Color", "leetcode.autoPostColor")}
+            ${textareaField("Custom Description", "leetcode.autoPostDescription")}
+            ${inputField("Custom Footer", "leetcode.autoPostFooter")}
+            ${inputField("Custom Thumbnail URL", "leetcode.autoPostThumbnail")}
+            ${toggleLine("leetcode.autoPostShowThumbnail", "Show Thumbnail In Embed")}
+          </div>
+        </div>
 
-    // Close open dropdowns when clicking anywhere outside
-    document.addEventListener("click", () => {
-      document.getElementById("user-dropdown")?.classList.remove("open");
-      document.getElementById("channel-options")?.classList.remove("open");
-      document.getElementById("role-options")?.classList.remove("open");
-    });
+        <div class="divider"></div>
 
-    // ----------------------------------------------------
-    // REAL-TIME PREVIEWS & INTERACTION
-    // ----------------------------------------------------
-    const msgContentInput = document.getElementById("message-content-input");
-    const previewMsgContent = document.getElementById("preview-msg-content");
-    
-    if (msgContentInput && previewMsgContent) {
-      msgContentInput.addEventListener("input", () => {
-        const val = msgContentInput.value.trim();
-        previewMsgContent.innerHTML = val ? val.replace(/\n/g, "<br>") : "Get your roles! <br>-# below with the click of a button!";
-      });
+        <div class="cards-grid-1">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>CSV Rotation Problem Bank</h2>
+            </div>
+            <div class="csv-actions">
+              <a class="discard-btn" href="/assets/leetcode-questions-template.csv" download style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="download" style="width:14px;height:14px;"></i> Download template</a>
+              <button class="upgrade-btn" id="csv-upload-btn" style="width:auto;"><i data-lucide="upload" style="width:14px;height:14px;"></i> Upload CSV</button>
+              <button class="discard-btn" id="csv-export-btn" ${csvRows.length === 0 ? "disabled" : ""}><i data-lucide="download-cloud" style="width:14px;height:14px;"></i> Export CSV</button>
+              <button class="discard-btn" id="csv-clear-btn" style="color:var(--accent-red);border-color:rgba(239,68,68,0.25);" ${csvRows.length === 0 ? "disabled" : ""}><i data-lucide="trash-2" style="width:14px;height:14px;"></i> Clear all</button>
+              <input type="file" id="csv-file-input" accept=".csv" style="display:none;">
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
+              <label>Add Question Manually</label>
+              <div class="row-grid">
+                <input class="input-field" type="text" id="manual-csv-day" placeholder="Day (e.g. 1)">
+                <input class="input-field" type="text" id="manual-csv-qno" placeholder="LeetCode QNo (e.g. 1)">
+                <input class="input-field" type="text" id="manual-csv-slug" placeholder="Slug (e.g. two-sum)">
+                <button class="upgrade-btn" id="manual-add-csv-btn" style="width:auto;height:42px;">Add</button>
+              </div>
+            </div>
+
+            ${csvRows.length > 0 ? `
+              <div class="csv-table-wrap">
+                <table class="csv-table">
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>QNo</th>
+                      <th>Slug</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${csvRows.map((row, index) => `
+                      <tr>
+                        <td>Day ${escapeHtml(row.day)}</td>
+                        <td>#${escapeHtml(row.leetcodeQno)}</td>
+                        <td><code>${escapeHtml(row.slug)}</code></td>
+                        <td><button class="discard-btn" data-remove-csv-idx="${index}" style="padding:4px 8px;font-size:0.75rem;">Delete</button></td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            ` : `<p class="text-gray" style="font-size:0.85rem;margin-top:10px;">No problems in CSV bank.</p>`}
+          </div>
+        </div>
+      `;
     }
 
-    const embedTitleInput = document.getElementById("embed-title-input");
-    const previewEmbedTitle = document.getElementById("preview-embed-title");
-    
-    if (embedTitleInput && previewEmbedTitle) {
-      embedTitleInput.addEventListener("input", () => {
-        previewEmbedTitle.textContent = embedTitleInput.value || "DARKIE_";
+    function setupLeetcodePageListeners() {
+      document.getElementById("leetcode-reset-day")?.addEventListener("click", () => {
+        state.draft.leetcode.autoPostCsvDay = 1;
+        markDirty();
+        renderPage();
+        toast("Day rotation reset to 1!", "good");
       });
-    }
 
-    const embedDescInput = document.getElementById("embed-desc-input");
-    const previewEmbedDesc = document.getElementById("preview-embed-desc");
-    const charCountVal = document.getElementById("char-count-val");
-    
-    if (embedDescInput && previewEmbedDesc && charCountVal) {
-      embedDescInput.addEventListener("input", () => {
-        const val = embedDescInput.value;
-        previewEmbedDesc.textContent = val || "It is a long established fact that a reader";
-        charCountVal.textContent = val.length;
+      // CSV upload/export
+      const csvInput = document.getElementById("csv-file-input");
+      document.getElementById("csv-upload-btn")?.addEventListener("click", () => csvInput?.click());
+
+      csvInput?.addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          const text = reader.result;
+          const rows = [];
+          const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+          if (lines.length > 1) {
+            const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+            const slugIdx = headers.indexOf("sum") !== -1 ? headers.indexOf("sum") : headers.indexOf("slug");
+            const dayIdx = headers.indexOf("day");
+            const qnoIdx = headers.indexOf("leetcode qno") !== -1 ? headers.indexOf("leetcode qno") : headers.indexOf("qno");
+            
+            if (slugIdx !== -1) {
+              for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(",").map(c => c.trim().replace(/^"|"$/g, ""));
+                if (cols[slugIdx]) {
+                  rows.push({
+                    slug: cols[slugIdx].toLowerCase(),
+                    day: dayIdx !== -1 ? cols[dayIdx] : String(i),
+                    leetcodeQno: qnoIdx !== -1 ? cols[qnoIdx] : ""
+                  });
+                }
+              }
+            }
+          }
+          if (rows.length) {
+            state.draft.leetcode.autoPostCsvData = rows;
+            markDirty();
+            renderPage();
+            toast(`Loaded ${rows.length} questions from CSV!`, "good");
+          } else {
+            toast("No valid questions found in CSV", "bad");
+          }
+        };
+        reader.readAsText(file);
       });
-    }
 
-    // Embed Color Palette selector
-    const colorCircles = document.querySelectorAll(".color-circle");
-    const previewEmbedBox = document.getElementById("preview-embed-box");
-    const hexColorInput = document.getElementById("hex-color-input");
-
-    colorCircles.forEach(circle => {
-      circle.addEventListener("click", () => {
-        colorCircles.forEach(c => c.classList.remove("active"));
-        circle.classList.add("active");
-        
-        const hex = circle.dataset.hex;
-        previewEmbedBox.style.borderColor = hex;
-        hexColorInput.value = hex;
+      document.getElementById("csv-clear-btn")?.addEventListener("click", () => {
+        state.draft.leetcode.autoPostCsvData = [];
+        markDirty();
+        renderPage();
+        toast("Cleared all CSV questions!", "good");
       });
-    });
 
-    if (hexColorInput) {
-      hexColorInput.addEventListener("input", () => {
-        const val = hexColorInput.value;
-        if (/^#[0-9A-F]{6}$/i.test(val)) {
-          previewEmbedBox.style.borderColor = val;
+      document.getElementById("csv-export-btn")?.addEventListener("click", () => {
+        const data = state.draft.leetcode.autoPostCsvData || [];
+        const csvLines = ["DAY,LEETCODE QNO,SUM"];
+        data.forEach(r => {
+          csvLines.push(`${r.day},${r.leetcodeQno},${r.slug}`);
+        });
+        const blob = new Blob([csvLines.join("\n")], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `leetcode-questions-${state.guildId}.csv`;
+        a.click();
+      });
+
+      document.getElementById("manual-add-csv-btn")?.addEventListener("click", () => {
+        const day = document.getElementById("manual-csv-day").value.trim();
+        const qno = document.getElementById("manual-csv-qno").value.trim();
+        const slug = document.getElementById("manual-csv-slug").value.trim().toLowerCase();
+        if (!slug) {
+          toast("Problem slug is required!", "bad");
+          return;
         }
+        state.draft.leetcode.autoPostCsvData.push({ day, leetcodeQno: qno, slug });
+        markDirty();
+        renderPage();
+        toast(`Added ${slug} to question bank!`, "good");
+      });
+
+      document.querySelectorAll("[data-remove-csv-idx]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const idx = Number(btn.dataset.removeCsvIdx);
+          state.draft.leetcode.autoPostCsvData.splice(idx, 1);
+          markDirty();
+          renderPage();
+        });
       });
     }
 
-    // Button text preview & color selector
-    const btnTextInput = document.getElementById("btn-text-input");
-    const previewInteractiveBtn = document.getElementById("preview-interactive-btn");
+    function renderRoles() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Join Autoroles</h2>
+            </div>
+            ${multiSelectField("Autoroles for Human Users", "autorole.humanRoles", state.data.roles)}
+            ${multiSelectField("Autoroles for Bot Clients", "autorole.botRoles", state.data.roles)}
+          </div>
 
-    if (btnTextInput && previewInteractiveBtn) {
-      btnTextInput.addEventListener("input", () => {
-        previewInteractiveBtn.textContent = btnTextInput.value || "Enter button text";
-      });
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Voice Join Role</h2>
+            </div>
+            ${selectField("Role to assign when entering VC", "voiceRole.roleId", state.data.roles)}
+          </div>
+        </div>
+      `;
     }
 
-    const colorPills = document.querySelectorAll(".color-pill");
-    colorPills.forEach(pill => {
-      pill.addEventListener("click", () => {
-        colorPills.forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-        
-        const color = pill.dataset.color;
-        // Reset classes
-        previewInteractiveBtn.className = "mock-button " + color;
+    function renderPremium() {
+      return `
+        <div class="cards-grid-1">
+          <div class="card" style="text-align:center;padding:40px 20px;">
+            <div class="upload-btn-circle" style="margin:0 auto 20px auto;width:60px;height:60px;">
+              <i data-lucide="star" style="width:28px;height:28px;color:var(--accent-teal);"></i>
+            </div>
+            <h2>Premium Dashboard Benefits</h2>
+            <p class="text-gray" style="max-width:500px;margin:15px auto;line-height:1.6;">
+              Upgrade to Premium today to unlock advanced Leveling custom formulae, VC protected whitelists, sticky announcements, and high-performance server audit logging!
+            </p>
+            <button class="upgrade-btn" style="margin:20px auto 0 auto;width:auto;padding:12px 30px;">Upgrade Server Subscription</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderServers() {
+      const installed = state.guilds.filter(g => g.installed);
+      const missing = state.guilds.filter(g => !g.installed);
+
+      return `
+        <div class="card-section-title" style="margin-bottom:15px;">
+          <h2>Servers Ready to Manage (${installed.length})</h2>
+        </div>
+        <div class="cards-grid">
+          ${installed.map(g => `
+            <div class="card" style="padding:20px;justify-content:space-between;min-height:150px;">
+              <div class="guild-info">
+                <div class="guild-avatar" style="width:36px;height:36px;border-radius:8px;">${g.name.split(" ").map(w => w[0]).join("").substring(0,2)}</div>
+                <div>
+                  <h3 style="font-size:1rem;">${escapeHtml(g.name)}</h3>
+                  <p class="text-gray" style="font-size:0.75rem;">Premium is inactive</p>
+                </div>
+              </div>
+              <button class="upgrade-btn" data-select-guild-id="${g.id}" style="width:100%;margin-top:15px;">Configure Settings</button>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="divider" style="margin:30px 0;"></div>
+
+        <div class="card-section-title" style="margin-bottom:15px;">
+          <h2>Invite Phantom to Servers (${missing.length})</h2>
+        </div>
+        <div class="cards-grid">
+          ${missing.map(g => `
+            <div class="card" style="padding:20px;justify-content:space-between;min-height:150px;opacity:0.8;">
+              <div class="guild-info">
+                <div class="guild-avatar" style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.05);">${g.name.split(" ").map(w => w[0]).join("").substring(0,2)}</div>
+                <div>
+                  <h3 style="font-size:1rem;">${escapeHtml(g.name)}</h3>
+                  <p class="text-gray" style="font-size:0.75rem;">Bot missing</p>
+                </div>
+              </div>
+              <button class="discard-btn" onclick="window.open('${g.inviteUrl || 'https://discord.com'}', '_blank')" style="width:100%;margin-top:15px;">Invite Bot</button>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    // ----------------------------------------------------
+    // NAVIGATION LINK CLICK HANDLERS
+    // ----------------------------------------------------
+    function setupNavigationListeners() {
+      // Sidebar page buttons
+      document.querySelectorAll("[data-nav]").forEach(item => {
+        item.addEventListener("click", () => {
+          const navTarget = item.dataset.nav;
+          if (navTarget === "servers") {
+            state.page = "servers";
+            localStorage.setItem("dsc:page", state.page);
+            renderPage();
+            return;
+          }
+
+          if (state.dirty) {
+            if (!confirm("Discard unsaved changes and leave page?")) return;
+          }
+
+          state.page = navTarget;
+          localStorage.setItem("dsc:page", state.page);
+          state.dirty = false;
+          renderPage();
+        });
       });
+
+      // Sidebar checkbox toggles
+      document.querySelectorAll("[data-sidebar-toggle]").forEach(toggle => {
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const path = toggle.dataset.sidebarToggle;
+          const val = toggle.checked;
+
+          if (path === "automod.any") {
+            setPath(state.draft, "automod.antilink.isEnabled", val);
+            setPath(state.draft, "automod.antispam.isEnabled", val);
+          } else if (path === "roles.any") {
+            // Read-only status indicator in sidebar
+            toggle.checked = statusFor("roles.any");
+            return;
+          } else {
+            setPath(state.draft, path, val);
+          }
+          
+          markDirty();
+          renderPage();
+        });
+      });
+      
+      // Home page shortcuts
+      setupOverviewPageListeners();
+    }
+
+    // Save/Discard button event listeners
+    function markDirty() {
+      const draftStr = JSON.stringify(state.draft);
+      const settingsStr = JSON.stringify(state.data?.settings || {});
+      state.dirty = draftStr !== settingsStr;
+      updateSaveBtn();
+    }
+
+    function updateSaveBtn() {
+      const saveBtn = document.getElementById("save-btn");
+      if (saveBtn) {
+        saveBtn.disabled = !state.dirty;
+        saveBtn.style.opacity = state.dirty ? "1" : "0.6";
+      }
+    }
+
+    document.getElementById("save-btn")?.addEventListener("click", async () => {
+      if (!state.dirty || state.saving) return;
+      state.saving = true;
+      
+      try {
+        const payload = await api(`/api/guilds/${state.guildId}/settings`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(state.draft),
+        });
+        state.data = payload;
+        state.draft = clone(payload.settings);
+        state.dirty = false;
+        updateSaveBtn();
+        syncSidebarToggles();
+        toast("Settings saved successfully!", "good");
+      } catch (err) {
+        toast("Save failed: " + err.message, "bad");
+      } finally {
+        state.saving = false;
+      }
     });
 
-    // Mock Actions
     document.getElementById("discard-btn")?.addEventListener("click", () => {
-      alert("Mockup: Discarded settings changes!");
+      if (state.dirty) {
+        if (confirm("Are you sure you want to discard your changes?")) {
+          loadGuild(state.guildId);
+        }
+      } else {
+        toast("No unsaved changes.", "");
+      }
     });
+
+    // User profile menu toggle
+    const userTrigger = document.getElementById("user-trigger");
+    const userDropdown = document.getElementById("user-dropdown");
+    if (userTrigger && userDropdown) {
+      userTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle("open");
+      });
+    }
+
+    // Log Out link
+    document.querySelector(".dropdown-item.logout")?.addEventListener("click", async () => {
+      try {
+        await fetch("/logout", { method: "POST" });
+        window.location.href = "/";
+      } catch {
+        window.location.href = "/";
+      }
+    });
+
+    // Set up initial navigation bindings
+    setupNavigationListeners();
+
+    // Trigger initialization
+    init();
   </script>
 </body>
 </html>
