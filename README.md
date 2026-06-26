@@ -17,8 +17,8 @@
 [![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://javascript.info/)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://github.com/dsc-srmrmp/newdiscordbot)
 <br />
-[![Discord Support](https://img.shields.io/discord/5uyYvpKSJH?color=5865F2&label=Support%20Server&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/5uyYvpKSJH)
-[![Dashboard Website](https://img.shields.io/website-up-down-green-red/https/bot.developerstudents.club.svg?style=flat-square&label=Dashboard)](https://bot.developerstudents.club/)
+[![Discord Support](https://img.shields.io/badge/Support_Server-valid-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/5uyYvpKSJH)
+[![Dashboard Website](https://img.shields.io/badge/Dashboard-up-brightgreen?style=flat-square)](https://bot.developerstudents.club/)
 [![NodeJS Version](https://img.shields.io/badge/node-%3E%3D18.0.0-blue.svg?style=flat-square&logo=node.js)](https://nodejs.org)
 [![Database Neon](https://img.shields.io/badge/database-Neon_Postgres-00e599?style=flat-square&logo=postgresql&logoColor=white)](https://neon.tech)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
