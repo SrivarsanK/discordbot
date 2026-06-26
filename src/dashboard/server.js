@@ -161,24 +161,35 @@ async function handleCallback(client, req, res, url) {
       touchedAt: Date.now(),
     };
 
+    // Strip OAuth tokens before persisting to DB — tokens are not needed
+    // server-side after the initial user/guild fetch.  Keeping them in the DB
+    // would expose them if the database is ever read by a third party.
+    const sessionDataForDb = {
+      user: sessionData.user,
+      guilds: sessionData.guilds,
+      expiresAt: sessionData.expiresAt,
+      createdAt: sessionData.createdAt,
+      touchedAt: sessionData.touchedAt,
+    };
+
     // Persist session to DB so it survives restarts
     try {
       const db = getDb();
       await db.insert(dashboardSessions).values({
         sessionId,
         userId: user.id,
-        data: sessionData,
+        data: sessionDataForDb,
         expiresAt: new Date(sessionData.expiresAt),
         touchedAt: new Date(sessionData.touchedAt),
       }).onConflictDoUpdate({
         target: dashboardSessions.sessionId,
         set: {
-          data: sessionData,
+          data: sessionDataForDb,
           expiresAt: new Date(sessionData.expiresAt),
           touchedAt: new Date(sessionData.touchedAt),
         },
       });
-      // Warm the in-memory cache
+      // Warm the in-memory cache with the full session (tokens kept in memory only)
       sessionCache.set(sessionId, { data: sessionData, cachedAt: Date.now() });
     } catch (dbErr) {
       client.logger?.log(`[Dashboard] Session DB write failed: ${dbErr.message}`, "warn");
@@ -1473,7 +1484,11 @@ async function readJsonBody(req) {
     chunks.push(chunk);
   }
   if (!chunks.length) return {};
-  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  } catch {
+    throw new Error("Invalid JSON body");
+  }
 }
 
 function serveStatic(res, filePath) {
