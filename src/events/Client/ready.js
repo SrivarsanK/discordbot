@@ -39,14 +39,24 @@ module.exports = {
       await deploySlashCommands(client);
     }
 
-    const statuses = client.config.app?.statuses || [];
-    if (!statuses.length) return;
+    const statuses = [
+      "/help | bot.developerstudents.club",
+      "{servers} servers!",
+      "/help",
+      "bot.developerstudents.club",
+      "by K Srivarsan",
+      "theiqsweat | Discord"
+    ];
 
-    const intervalMs = client.config.app?.statusIntervalMs;
+    let index = 0;
     setInterval(function () {
-      const status = statuses[Math.floor(Math.random() * statuses.length)]
+      const serverCount = client.guilds.cache.size || 0;
+      const statusText = statuses[index]
+        .replace("{servers}", serverCount)
         .replace("{users}", client.numb(user));
-      client.user.setActivity(status, { type: ActivityType.Listening });
-    }, intervalMs);
+
+      client.user.setActivity(statusText, { type: ActivityType.Listening });
+      index = (index + 1) % statuses.length;
+    }, 5000);
   },
 };
