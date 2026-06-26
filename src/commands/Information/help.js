@@ -26,7 +26,6 @@ const CATEGORY_ORDER = [
   "Music",
   "Playlist",
   "Profile",
-  "Pfp",
   "Image",
   "Fun",
   "Extra",
@@ -46,7 +45,6 @@ const CATEGORY_META = {
   music: ["music", "Play, queue, filters, controls"],
   playlist: ["playlist", "Saved playlists and sharing"],
   profile: ["profile", "Bio and profile cards"],
-  pfp: ["pfp", "Profile picture packs"],
   image: ["image", "Image and avatar actions"],
   fun: ["fun", "Games and fun commands"],
   extra: ["extra", "Small automation helpers"],
@@ -64,7 +62,7 @@ const HOME_SECTIONS = [
   },
   {
     title: "Music & Identity",
-    categories: ["music", "playlist", "profile", "pfp", "image"],
+    categories: ["music", "playlist", "profile", "image"],
   },
   {
     title: "Community Tools",

@@ -98,10 +98,9 @@ A highly unique, automated coding challenge tracker featuring dual-gate validati
 - **Bulk Voice Actions:** Bulk deafen, mute, unmute, or undeafen members in your current channel.
 - **Voice Management:** Move all members in a channel to a target channel (`!vcmoveall`), or kick members from a voice session (`!vckick`, `!vckickall`).
 
-### 🖼️ Profile Customizer & PFP Utilities
+### 👤 Profile Customizer
 - **Custom User Profiles:** Customize bios, descriptions, and social media links via `!bioset` and display them via `!bioshow`.
 - **Badge Systems:** Award and display special custom badges on member profiles.
-- **Avatar Finder:** Fetch random high-quality anime profile pictures (`!animes`), anime banners (`!banners`), boys avatars (`!boys`), couple avatar matching icons (`!couples`), or girls avatars (`!girls`).
 
 ### 😊 Emoji Manager
 - **Standalone Dashboard:** Connects to your configured emoji manager panel.
@@ -145,7 +144,6 @@ A highly unique, automated coding challenge tracker featuring dual-gate validati
 │   │   ├── Image/             # Image manipulation (achievement, instagram, meeting, ship)
 │   │   ├── LeetCode/          # Solve tracking, question posting, leaderboards
 │   │   ├── Music/             # Lavalink audio playback and filters
-│   │   ├── Pfps/              # Anime/Boys/Couples/Girls avatar generators
 │   │   ├── Playlist/          # Private playlist saving and loading
 │   │   ├── Profile/           # User bios and customized socials
 │   │   ├── Role/              # Auto-roles, custom roles, and voice roles

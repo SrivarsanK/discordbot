@@ -43,7 +43,6 @@ module.exports = {
 > ${client.emoji.information} \`:\` **Information**
 > ${client.emoji.moderation} \`:\` **Moderation**
 > ${client.emoji.music} \`:\` **Music**
-> ${client.emoji.pfp} \`:\` **Pfps**
 > ${client.emoji.playlist} \`:\` **Playlists**
 > ${client.emoji.profile} \`:\` **Profile**
 > ${client.emoji.role} \`:\` **Role**
@@ -102,12 +101,6 @@ module.exports = {
         value: "music",
         description: "Get all Music commands",
         emoji: client.emoji.music,
-      },
-      {
-        label: "Pfp",
-        value: "pfp",
-        description: "Get all Pfps commands",
-        emoji: client.emoji.pfp,
       },
       {
         label: "Playlist",
