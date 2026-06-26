@@ -19,6 +19,16 @@ module.exports = {
     const owners = await refreshApplicationOwners(client);
     client.logger.log(`[Owners] Loaded ${owners.length} owner access ID(s).`, "ready");
 
+    // Attempt to set application description (About Me bio) programmatically
+    try {
+      await client.application.edit({
+        description: "Premium Discord bot featuring high-fidelity music, active anti-nuke security, and automated LeetCode OCR solve verification.\n\nwebsite: bot.developerstudents.club\ncontact: @theiqsweat"
+      });
+      client.logger.log("Successfully updated Discord application description/bio.", "ready");
+    } catch (err) {
+      client.logger.log(`Could not update application bio programmatically: ${err.message}`, "warn");
+    }
+
     // Start LeetCode solver tracking background service
     try {
       startLeetcodeInterval(client);
