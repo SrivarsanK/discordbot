@@ -22,7 +22,7 @@ class MusicBot extends Client {
       makeCache: Options.cacheWithLimits({
         MessageManager: { maxSize: 50 },
         GuildMemberManager: { maxSize: 200, keepOverLimit: (m) => m.id === m.client.user?.id },
-        PresenceManager: 0,
+        PresenceManager: { maxSize: 1000 },
         ReactionManager: 0,
         ReactionUserManager: 0,
         GuildEmojiManager: 0,
