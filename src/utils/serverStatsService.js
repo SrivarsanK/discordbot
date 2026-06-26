@@ -6,15 +6,19 @@ const { ChannelType } = require("discord.js");
  * Replaces placeholders in a template string with actual guild stats.
  * @param {string} template The template pattern.
  * @param {import("discord.js").Guild} guild The guild object.
+ * @param {import("discord.js").Collection} [members] Optional fetched member collection.
  * @returns {string} The formatted channel name.
  */
-function parseTemplate(template, guild) {
-  const total = guild.memberCount || 0;
-  const bots = guild.members.cache.filter((m) => m.user.bot).size || 0;
+function parseTemplate(template, guild, members = null) {
+  const memberList = members || guild.members.cache;
+  const total = guild.memberCount || memberList.size || 0;
+  
+  // Distinguish bot and human
+  const bots = memberList.filter((m) => m.user?.bot).size || 0;
   const humans = Math.max(0, total - bots);
   
   // Calculate online members from presence cache
-  const online = guild.members.cache.filter((m) => m.presence && m.presence.status !== "offline").size || 0;
+  const online = memberList.filter((m) => m.presence && m.presence.status !== "offline").size || 0;
   const offline = Math.max(0, total - online);
   
   const channels = guild.channels.cache.size || 0;
@@ -35,6 +39,43 @@ function parseTemplate(template, guild) {
     .replace(/{tier}/g, tier);
 }
 
+// In-memory cooldowns and timers to avoid hitting Discord's channel rename rate limit (2 edits per 10 mins)
+const updateCooldowns = new Map();
+const COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes cooldown per guild
+
+/**
+ * Debounced version of updateGuildStats to avoid rate limit bans.
+ * @param {import("discord.js").Client} client The bot client.
+ * @param {string} guildId The ID of the guild.
+ */
+async function updateGuildStatsDebounced(client, guildId) {
+  const now = Date.now();
+  const lastUpdate = updateCooldowns.get(guildId) || 0;
+
+  if (now - lastUpdate < COOLDOWN_MS) {
+    const timerKey = `${guildId}:timer`;
+    if (!updateCooldowns.has(timerKey)) {
+      const remaining = COOLDOWN_MS - (now - lastUpdate);
+      const timer = setTimeout(() => {
+        updateCooldowns.delete(timerKey);
+        updateGuildStats(client, guildId);
+      }, remaining);
+      updateCooldowns.set(timerKey, timer);
+    }
+    return;
+  }
+
+  updateCooldowns.set(guildId, now);
+  const timerKey = `${guildId}:timer`;
+  const pendingTimer = updateCooldowns.get(timerKey);
+  if (pendingTimer) {
+    clearTimeout(pendingTimer);
+    updateCooldowns.delete(timerKey);
+  }
+
+  await updateGuildStats(client, guildId);
+}
+
 /**
  * Updates all stats channels configured for a guild.
  * @param {import("discord.js").Client} client The bot client.
@@ -48,8 +89,8 @@ async function updateGuildStats(client, guildId) {
     const guild = client.guilds.cache.get(guildId) || await client.guilds.fetch(guildId).catch(() => null);
     if (!guild) return;
 
-    // Fetch members to ensure presence caching is as accurate as possible
-    await guild.members.fetch().catch(() => {});
+    // Fetch members to ensure caching is as accurate as possible
+    const members = await guild.members.fetch().catch(() => guild.members.cache);
 
     const channelsToKeep = [];
     let modified = false;
@@ -65,12 +106,12 @@ async function updateGuildStats(client, guildId) {
 
       channelsToKeep.push(chanConfig);
 
-      const expectedName = parseTemplate(chanConfig.template, guild);
+      const expectedName = parseTemplate(chanConfig.template, guild, members);
       if (channel.name !== expectedName) {
         try {
           await channel.setName(expectedName, "Live Server Stats Update");
         } catch (err) {
-          client.logger.log(`[Server Stats] Failed to update channel name for ${channel.id}: ${err.message}`, "error");
+          client.logger?.log(`[Server Stats] Failed to update channel name for ${channel.id}: ${err.message}`, "error");
         }
       }
     }
@@ -81,7 +122,7 @@ async function updateGuildStats(client, guildId) {
       await settings.save();
     }
   } catch (err) {
-    client.logger.log(`[Server Stats] Error updating guild stats for ${guildId}: ${err.stack || err.message}`, "error");
+    client.logger?.log(`[Server Stats] Error updating guild stats for ${guildId}: ${err.stack || err.message}`, "error");
   }
 }
 
@@ -96,7 +137,7 @@ async function updateAllGuildStats(client) {
       await updateGuildStats(client, settings.guildId);
     }
   } catch (err) {
-    client.logger.log(`[Server Stats] Error in updateAllGuildStats: ${err.message}`, "error");
+    client.logger?.log(`[Server Stats] Error in updateAllGuildStats: ${err.message}`, "error");
   }
 }
 
@@ -110,7 +151,7 @@ function startServerStatsInterval(client) {
     updateAllGuildStats(client);
   }, 10000); // Wait 10 seconds after boot to let shards stabilize
 
-  // Update every 10 minutes (Discord channel rename rate limit is 2 edits per 10 minutes)
+  // Update every 10 minutes
   setInterval(() => {
     updateAllGuildStats(client);
   }, 600000);
@@ -119,6 +160,7 @@ function startServerStatsInterval(client) {
 module.exports = {
   parseTemplate,
   updateGuildStats,
+  updateGuildStatsDebounced,
   updateAllGuildStats,
   startServerStatsInterval,
 };

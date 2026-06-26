@@ -1,18 +1,12 @@
-const { EmbedBuilder } = require("discord.js");
-const { getSettings } = require("../../schema/welcomesystem");
 const { updateGuildStatsDebounced } = require("../../utils/serverStatsService");
 
 module.exports = {
-  name: "guildMemberAdd",
+  name: "guildMemberRemove",
   run: async (client, member) => {
     if (!member || !member.guild) return;
     const { guild } = member;
 
     // Trigger live server stats update
     updateGuildStatsDebounced(client, guild.id).catch(() => {});
-
-    const settings = await getSettings(guild);
-    if (!settings.welcome.enabled) return;
-    client.util.sendWelcome(member, settings);
   },
 };
