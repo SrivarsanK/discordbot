@@ -31,15 +31,17 @@
 
 ---
 
-## 🖼️ Interface Previews
+## 🖼️ App Screenshots
+
+| Server Selection Page | Interactive Configuration Dashboard |
+| :---: | :---: |
+| <img src="./assets/select_server.png" width="400" alt="Server Selection Page"> | <img src="./assets/dashboard.png" width="400" alt="Interactive Configuration Dashboard"> |
+
+<br>
 
 <div align="center">
-  <p align="center">
-    <b>Server Selection Page</b><br>
-    <img src="./assets/select_server.png" width="800" alt="Server Selection Page View" style="border-radius: 8px; border: 1px solid #333;"><br><br>
-    <b>Interactive Configuration Dashboard</b><br>
-    <img src="./assets/dashboard.png" width="800" alt="Configuration Dashboard View" style="border-radius: 8px; border: 1px solid #333;">
-  </p>
+  <b>Landing Page Interface</b><br><br>
+  <img src="./assets/landing_page.png" width="900" alt="Landing Page Interface" style="border-radius: 8px; border: 1px solid #333;">
 </div>
 
 
