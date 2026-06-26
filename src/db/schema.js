@@ -11,6 +11,7 @@ const {
   primaryKey,
   serial,
   uniqueIndex,
+  index,
 } = require("drizzle-orm/pg-core");
 
 // ── antinuke ──────────────────────────────────────────────────────────────────
@@ -171,7 +172,9 @@ const playlists = pgTable("playlists", {
   playlistName: text("playlist_name").notNull(),
   tracks:       jsonb("tracks").default([]),
   createdOn:    integer("created_on").notNull(),
-});
+}, (table) => ({
+  userIdIdx: index("idx_playlists_user_id").on(table.userId),
+}));
 
 // ── premium_level ─────────────────────────────────────────────────────────────
 const premiumLevel = pgTable(
