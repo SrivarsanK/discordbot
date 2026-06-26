@@ -29,7 +29,10 @@ module.exports = {
       }
 
       if (!channel || !voice) {
-        await data.deleteOne().catch(() => null);
+        client.logger.log(
+          `[247] Skipping voice restore for Guild ${data.Guild}: TextChannel ${data.TextId} or VoiceChannel ${data.VoiceId} is missing/inaccessible.`,
+          "warn",
+        );
         continue;
       }
 
@@ -43,10 +46,9 @@ module.exports = {
         .catch(async (error) => {
           const errMsg = error.cause ? `${error.stack || error} | Cause: ${error.cause.stack || error.cause}` : (error.stack || error);
           client.logger.log(
-            `[247] Failed to restore ${data.Guild}: ${errMsg}`,
+            `[247] Failed to restore voice player for Guild ${data.Guild}: ${errMsg}`,
             "error",
           );
-          await data.deleteOne().catch(() => null);
         });
 
       await new Promise((resolve) =>
