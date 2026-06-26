@@ -2,43 +2,53 @@
 
 :root {
   color-scheme: dark;
-  
-  /* HashiCorp Colors */
-  --primary: #000000;
+
+  /* Core Brand */
+  --primary: #7c3aed;          /* electric purple */
+  --primary-bright: #a855f7;   /* lighter purple */
+  --primary-glow: rgba(124, 58, 237, 0.35);
   --on-primary: #ffffff;
-  --accent-blue: #2b89ff;
-  --ink: #ffffff;
-  --ink-muted: #b2b6bd;
-  --ink-subtle: #656a76;
-  --canvas: #000000;
-  --surface-1: #15181e;
-  --surface-2: #1f232b;
-  --surface-3: #3b3d45;
-  --hairline: rgba(178, 182, 189, 0.1);
-  --hairline-soft: rgba(178, 182, 189, 0.05);
-  
-  /* Per-Product Identity Accent Colors */
-  --product-terraform: #7b42bc;
-  --product-terraform-bright: #911ced;
-  --product-vault: #ffcf25;
-  --product-consul: #e62b1e;
-  --product-waypoint: #14c6cb;
-  --product-waypoint-deep: #12b6bb;
-  --product-vagrant: #1868f2;
-  --product-nomad: #00ca8e;
-  --product-boundary: #f24c53;
-  --product-leetcode: #ffa116;
-  
+
+  /* Legacy alias kept for compat */
+  --accent-blue: #a855f7;
+
+  /* Ink (text) */
+  --ink: #f0f0f8;
+  --ink-muted: #9ca3af;
+  --ink-subtle: #6b7280;
+
+  /* Surfaces — deep indigo-grey */
+  --canvas: #0a0a0f;
+  --surface-1: #13131f;
+  --surface-2: #1a1a2e;
+  --surface-3: #252540;
+
+  /* Borders */
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-soft: rgba(255, 255, 255, 0.04);
+
+  /* Per-Module Accent Colors */
+  --product-terraform: #a855f7;    /* purple — General / Roles */
+  --product-terraform-bright: #c084fc;
+  --product-vault: #f59e0b;        /* amber — Premium */
+  --product-consul: #ef4444;       /* red — Antinuke / Automod */
+  --product-waypoint: #06b6d4;     /* teal — Welcome */
+  --product-waypoint-deep: #0891b2;
+  --product-vagrant: #3b82f6;      /* blue — Music */
+  --product-nomad: #10b981;        /* green — Leveling */
+  --product-boundary: #f97316;     /* orange — VC Guard */
+  --product-leetcode: #ffa116;     /* leetcode orange */
+
   /* Semantic Colors */
-  --success: #00ca8e;
-  --warning: #ffcf25;
-  --error: #e62b1e;
-  --visited: #a737ff;
-  
-  /* Fonts Stack */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --visited: #a855f7;
+
+  /* Fonts */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: 'Space Mono', monospace;
-  
+
   /* Spacing Scale */
   --sp-hair: 1px;
   --sp-xxs: 4px;
@@ -62,7 +72,7 @@ body {
   height: 100%;
   min-height: 0;
   margin: 0;
-  background: var(--canvas);
+  background: radial-gradient(ellipse at 30% 20%, #1a0f2e 0%, var(--canvas) 60%);
   color: var(--ink);
   font-family: var(--font-family);
   font-size: 16px;
@@ -567,8 +577,11 @@ h4 {
 
 /* Page specific accents for active navigation items */
 .nav-item[data-nav="general"].active,
-.nav-item[data-nav="roles"].active {
-  box-shadow: inset 3px 0 0 var(--product-terraform) !important;
+.nav-item[data-nav="roles"].active,
+.nav-item[data-nav="prefix"].active,
+.nav-item[data-nav="overview"].active {
+  box-shadow: inset 3px 0 0 var(--primary) !important;
+  background: rgba(124, 58, 237, 0.12) !important;
 }
 
 .nav-item[data-nav="music"].active {
@@ -881,9 +894,10 @@ h4 {
 .input:focus,
 .select:focus,
 .textarea:focus {
-  border-color: var(--accent-blue);
+  border-color: var(--primary);
   background: var(--surface-1);
   outline: none;
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .input:disabled,
@@ -984,11 +998,11 @@ h4 {
 }
 
 .check-item input:checked + .check-box {
-  background: var(--on-primary);
-  border-color: var(--on-primary);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
-/* White checked icon - black checkmark inside white box */
+/* Purple checked icon — white checkmark inside purple box */
 .check-item input:checked + .check-box::after {
   content: "";
   position: absolute;
@@ -996,13 +1010,14 @@ h4 {
   left: 7px;
   width: 4px;
   height: 8px;
-  border: solid var(--primary);
+  border: solid var(--on-primary);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
 .check-item input:focus + .check-box {
-  border-color: var(--accent-blue);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
 }
 
 .check-item input:disabled + .check-box {
@@ -1041,18 +1056,21 @@ h4 {
   transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 
-/* Primary Button (White) */
+/* Primary Button (Electric Purple) */
 .btn.primary {
-  background: var(--on-primary);
-  color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
 }
 
 .btn.primary:hover {
-  background: #e0e0e0;
+  background: var(--primary-bright);
+  border-color: var(--primary-bright);
+  box-shadow: 0 0 16px var(--primary-glow);
 }
 
 .btn.primary:active {
-  background: var(--on-primary);
+  background: var(--primary);
 }
 
 /* Secondary Button (Charcoal surface-2) */
@@ -1150,12 +1168,12 @@ h4 {
 
 .toggle input:checked + span {
   transform: translateX(22px);
-  background: var(--primary);
+  background: var(--on-primary);
 }
 
 .toggle:has(input:checked) {
-  background: var(--on-primary);
-  border-color: var(--on-primary);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
 /* Small Toggles for Cards and Sidebar */
@@ -1270,11 +1288,14 @@ h4 {
   align-items: center;
   gap: var(--sp-md);
   padding: var(--sp-md) var(--sp-lg);
-  border: 1px solid var(--hairline);
-  border-radius: 16px; /* rounded.xl */
-  background: var(--surface-2);
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: 16px;
+  background: rgba(26, 26, 46, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.15);
   z-index: 90;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .savebar.show {
@@ -1323,6 +1344,7 @@ h4 {
 .welcome-tabs button.active {
   color: var(--ink);
   background: var(--surface-2);
+  box-shadow: inset 0 -2px 0 var(--primary);
 }
 
 .dynamic-head {
