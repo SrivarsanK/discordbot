@@ -89,8 +89,8 @@ async function updateGuildStats(client, guildId) {
     const guild = client.guilds.cache.get(guildId) || await client.guilds.fetch(guildId).catch(() => null);
     if (!guild) return;
 
-    // Fetch members to ensure caching is as accurate as possible
-    const members = await guild.members.fetch().catch(() => guild.members.cache);
+    // Fetch members to ensure caching and presences are as accurate as possible
+    const members = await guild.members.fetch({ withPresences: true }).catch(() => guild.members.cache);
 
     const channelsToKeep = [];
     let modified = false;
