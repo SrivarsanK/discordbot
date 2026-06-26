@@ -241,6 +241,20 @@
       color: var(--accent-purple);
     }
 
+    /* Status dot for nav items (e.g. Roles) */
+    .nav-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .nav-status-dot.on {
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+    }
+
     /* Collapsible utility menu */
     .submenu-container {
       display: flex;
@@ -1359,97 +1373,54 @@
         <i data-lucide="chevron-down" class="selector-arrow"></i>
       </div>
 
-      <!-- Navigation links (Group 1) -->
+      <!-- Navigation links (Group 1 — MAIN) -->
       <nav class="nav-group">
+        <div class="nav-title">Main</div>
         <button class="nav-item active" data-nav="overview">
-          <span class="nav-item-left"><i data-lucide="layout-dashboard"></i> Dashboard</span>
+          <span class="nav-item-left"><i data-lucide="home"></i> Home</span>
         </button>
-        <button class="nav-item" data-nav="servers">
-          <span class="nav-item-left"><i data-lucide="server"></i> Servers</span>
+        <button class="nav-item" data-nav="general">
+          <span class="nav-item-left"><i data-lucide="settings-2"></i> General Settings</span>
         </button>
-        <button class="nav-item" onclick="window.open('https://discord.gg/5uyYvpKSJH', '_blank')">
-          <span class="nav-item-left"><i data-lucide="message-square"></i> Support</span>
-        </button>
-        <button class="nav-item" data-nav="premium">
-          <span class="nav-item-left"><i data-lucide="star"></i> Premium</span>
+        <button class="nav-item" data-nav="prefix">
+          <span class="nav-item-left"><i data-lucide="key"></i> Prefix Setup</span>
         </button>
       </nav>
 
       <div class="divider"></div>
 
-      <!-- Navigation links (Group 2) -->
+      <!-- Navigation links (Group 2 — MODULES) -->
       <nav class="nav-group">
         <div class="nav-title">Modules</div>
-        
-        <div class="nav-item" data-nav="general">
-          <span class="nav-item-left"><i data-lucide="settings-2"></i> Bot Settings</span>
-        </div>
-        
-        <div class="nav-item" data-nav="welcome">
-          <span class="nav-item-left"><i data-lucide="tag"></i> Button Roles</span>
+
+        <div class="nav-item" data-nav="music">
+          <span class="nav-item-left"><i data-lucide="music"></i> Music</span>
           <label class="toggle-switch">
-            <input type="checkbox" data-sidebar-toggle="welcome.enabled" checked data-indicator="teal">
+            <input type="checkbox" data-sidebar-toggle="music247.enabled">
             <span class="slider"></span>
           </label>
         </div>
 
-        <div class="nav-item" data-nav="roles">
-          <span class="nav-item-left"><i data-lucide="user-plus"></i> Verification/Greetings</span>
+        <div class="nav-item" data-nav="leveling">
+          <span class="nav-item-left"><i data-lucide="award"></i> Leveling</span>
           <label class="toggle-switch">
-            <input type="checkbox" data-sidebar-toggle="roles.any">
+            <input type="checkbox" data-sidebar-toggle="premium.leveling.enabled">
             <span class="slider"></span>
           </label>
         </div>
 
-        <!-- Collapsible submenu: Utilities -->
-        <div>
-          <button class="nav-item" id="utilities-trigger">
-            <span class="nav-item-left"><i data-lucide="tool"></i> Utilities</span>
-            <i data-lucide="chevron-down" class="selector-arrow" id="utilities-chevron" style="transform: rotate(0deg); transition: transform 0.2s;"></i>
-          </button>
-          <div class="submenu-container" id="utilities-submenu" style="display: none;">
-            <div class="submenu-item" data-nav="music">
-              <span>Music 24/7</span>
-              <label class="toggle-switch">
-                <input type="checkbox" data-sidebar-toggle="music247.enabled">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="submenu-item" data-nav="leveling">
-              <span>Leveling XP</span>
-              <label class="toggle-switch">
-                <input type="checkbox" data-sidebar-toggle="premium.leveling.enabled">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="submenu-item" data-nav="vcguard">
-              <span>VC Guard</span>
-              <label class="toggle-switch">
-                <input type="checkbox" data-sidebar-toggle="premium.vcGuard.enabled">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="submenu-item" data-nav="sticky">
-              <span>Sticky Messages</span>
-              <label class="toggle-switch">
-                <input type="checkbox" data-sidebar-toggle="premium.sticky.enabled">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="submenu-item" data-nav="leetcode">
-              <span>LeetCode Daily</span>
-              <label class="toggle-switch">
-                <input type="checkbox" data-sidebar-toggle="leetcode.autoPostEnabled">
-                <span class="slider"></span>
-              </label>
-            </div>
-          </div>
+        <div class="nav-item" data-nav="vcguard">
+          <span class="nav-item-left"><i data-lucide="shield"></i> VC Guard</span>
+          <label class="toggle-switch">
+            <input type="checkbox" data-sidebar-toggle="premium.vcGuard.enabled">
+            <span class="slider"></span>
+          </label>
         </div>
 
-        <div class="nav-item" data-nav="antinuke">
-          <span class="nav-item-left"><i data-lucide="shield"></i> Command Moderation</span>
+        <div class="nav-item" data-nav="sticky">
+          <span class="nav-item-left"><i data-lucide="pin"></i> Sticky Messages</span>
           <label class="toggle-switch">
-            <input type="checkbox" data-sidebar-toggle="antinuke.isEnabled">
+            <input type="checkbox" data-sidebar-toggle="premium.sticky.enabled">
             <span class="slider"></span>
           </label>
         </div>
@@ -1462,8 +1433,33 @@
           </label>
         </div>
 
+        <div class="nav-item" data-nav="antinuke">
+          <span class="nav-item-left"><i data-lucide="bomb"></i> Anti Nuke</span>
+          <label class="toggle-switch">
+            <input type="checkbox" data-sidebar-toggle="antinuke.isEnabled">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="nav-item" data-nav="welcome">
+          <span class="nav-item-left"><i data-lucide="user-plus"></i> Welcome Messages</span>
+          <label class="toggle-switch">
+            <input type="checkbox" data-sidebar-toggle="welcome.enabled">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="nav-item" data-nav="leetcode">
+          <span class="nav-item-left"><i data-lucide="code"></i> LeetCode Tracking</span>
+        </div>
+
+        <div class="nav-item" data-nav="roles">
+          <span class="nav-item-left"><i data-lucide="users"></i> Roles</span>
+          <span class="nav-status-dot" data-status-dot="roles.any"></span>
+        </div>
+
         <div class="nav-item" data-nav="logging">
-          <span class="nav-item-left"><i data-lucide="file-text"></i> Audit Logging</span>
+          <span class="nav-item-left"><i data-lucide="file-text"></i> Logging</span>
           <label class="toggle-switch">
             <input type="checkbox" data-sidebar-toggle="logging.isEnabled">
             <span class="slider"></span>
@@ -2344,6 +2340,11 @@
         }
         checkbox.checked = checked;
       });
+      // Update status dots
+      document.querySelectorAll("[data-status-dot]").forEach(dot => {
+        const path = dot.dataset.statusDot;
+        dot.classList.toggle("on", statusFor(path));
+      });
     }
 
     // ----------------------------------------------------
@@ -2382,9 +2383,14 @@
           subtitleEl.textContent = "Manage command access and ignored channels.";
           container.innerHTML = renderGeneral();
           break;
+        case "prefix":
+          titleEl.textContent = "Prefix Setup";
+          subtitleEl.textContent = "Set a custom command prefix for this server.";
+          container.innerHTML = renderPrefix();
+          break;
         case "welcome":
-          titleEl.textContent = "Button Roles";
-          subtitleEl.textContent = "Distribute roles within your server using welcome message buttons.";
+          titleEl.textContent = "Welcome Messages";
+          subtitleEl.textContent = "Send a greeting to new members with optional embeds and images.";
           container.innerHTML = renderWelcome();
           setupWelcomePageListeners();
           break;
@@ -2399,7 +2405,7 @@
           container.innerHTML = renderLeveling();
           break;
         case "vcguard":
-          titleEl.textContent = "VC Guard Security";
+          titleEl.textContent = "VC Guard";
           subtitleEl.textContent = "Protect your voice channels with role whitelists.";
           container.innerHTML = renderVcGuard();
           break;
@@ -2414,36 +2420,26 @@
           container.innerHTML = renderAutomod();
           break;
         case "antinuke":
-          titleEl.textContent = "Anti Nuke Security";
+          titleEl.textContent = "Anti Nuke";
           subtitleEl.textContent = "System protection whitelists and command moderation.";
           container.innerHTML = renderAntinuke();
           break;
         case "logging":
-          titleEl.textContent = "Audit Logging";
+          titleEl.textContent = "Logging";
           subtitleEl.textContent = "Track all staff actions and server events in specified channels.";
           container.innerHTML = renderLogging();
           setupLoggingPageListeners();
           break;
         case "leetcode":
-          titleEl.textContent = "LeetCode Daily Tracking";
+          titleEl.textContent = "LeetCode Tracking";
           subtitleEl.textContent = "Track solved questions, Daily Challenges, and award points.";
           container.innerHTML = renderLeetcode();
           setupLeetcodePageListeners();
           break;
         case "roles":
-          titleEl.textContent = "Roles Config";
+          titleEl.textContent = "Roles";
           subtitleEl.textContent = "Configure Autoroles and Voice Join Roles.";
           container.innerHTML = renderRoles();
-          break;
-        case "premium":
-          titleEl.textContent = "Phantom Premium";
-          subtitleEl.textContent = "Explore exclusive features and upgrades.";
-          container.innerHTML = renderPremium();
-          break;
-        case "servers":
-          titleEl.textContent = "Select Server";
-          subtitleEl.textContent = "Choose a server to configure or invite Phantom.";
-          container.innerHTML = renderServers();
           break;
         default: // overview
           titleEl.textContent = "Dashboard Overview";
@@ -2613,6 +2609,36 @@
           renderPage();
         });
       });
+    }
+
+    function renderPrefix() {
+      return `
+        <div class="cards-grid-2">
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Command Prefix</h2>
+            </div>
+            <p class="text-gray" style="font-size:0.85rem;margin-bottom:16px;">Set a custom prefix for all commands in this server. Slash commands always work regardless of prefix.</p>
+            ${inputField("Server Prefix", "prefix", "text", "!", 'maxlength="5"')}
+            <div style="margin-top:8px;padding:10px 14px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:8px;font-size:0.8rem;color:var(--text-gray);">
+              <strong style="color:var(--text-white);">Tip:</strong> Keep it short (1–2 characters). Recommended: <code style="color:#a855f7;">!</code> or <code style="color:#a855f7;">.</code> or <code style="color:#a855f7;">-</code>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-section-title">
+              <h2>Live Preview</h2>
+            </div>
+            <p class="text-gray" style="font-size:0.85rem;margin-bottom:12px;">Commands will look like this in Discord:</p>
+            <div style="background:rgba(0,0,0,0.25);padding:16px;border-radius:8px;border:1px solid var(--card-border);font-family:monospace;font-size:0.85rem;line-height:1.9;">
+              <div><span style="color:#a855f7;font-weight:bold;">${escapeHtml(state.draft.prefix || "!")}</span>play <span style="color:var(--text-muted);">song name</span></div>
+              <div><span style="color:#a855f7;font-weight:bold;">${escapeHtml(state.draft.prefix || "!")}</span>help</div>
+              <div><span style="color:#a855f7;font-weight:bold;">${escapeHtml(state.draft.prefix || "!")}</span>skip</div>
+              <div><span style="color:#a855f7;font-weight:bold;">${escapeHtml(state.draft.prefix || "!")}</span>queue</div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function renderGeneral() {
