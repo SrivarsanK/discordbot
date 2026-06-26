@@ -327,6 +327,7 @@ const serverStats = pgTable("server_stats", {
   categoryChannelId: text("category_channel_id"),
   channels: jsonb("channels").default([]), // Array of { channelId: string, template: string }
   lastUpdated: timestamp("last_updated"),
+  includeBots: boolean("include_bots").default(false),
 });
 
 module.exports = {

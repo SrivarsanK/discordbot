@@ -10,10 +10,14 @@ async function migrate() {
       is_enabled boolean DEFAULT true,
       category_channel_id text,
       channels jsonb DEFAULT '[]'::jsonb,
-      last_updated timestamp
+      last_updated timestamp,
+      include_bots boolean DEFAULT false
     )
   `);
-  console.log("Migration done: server_stats table created in Neon Postgres");
+  await db.execute(sql`
+    ALTER TABLE server_stats ADD COLUMN IF NOT EXISTS include_bots boolean DEFAULT false;
+  `);
+  console.log("Migration done: server_stats table created and migrated in Neon Postgres");
   process.exit(0);
 }
 
