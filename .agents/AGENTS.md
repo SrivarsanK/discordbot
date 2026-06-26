@@ -93,6 +93,7 @@ When working interactively, use hunks, not files:
 - `git diff --staged` to verify staged content before committing
 - `git stash` to isolate unrelated in-progress work
 - `git commit --amend` or `git rebase -i` to correct mistakes before pushing
+- **Auto-Sync**: Pull remote changes (`git pull --rebase`) before starting work or committing to prevent merge conflicts and keep local history clean.
 
 ### Self-Check Before Every Commit
 
