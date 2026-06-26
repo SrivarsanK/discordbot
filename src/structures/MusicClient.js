@@ -1,6 +1,6 @@
 /** @format */
 
-const { Client, GatewayIntentBits, Collection, Events } = require("discord.js");
+const { Client, GatewayIntentBits, Collection, Events, Options } = require("discord.js");
 const { ClusterClient, getInfo } = require("discord-hybrid-sharding");
 const loadPlayerManager = require("../loaders/loadPlayerManager");
 const initializePremiumChecks = require("../utils/premiumChecks");
@@ -19,6 +19,27 @@ class MusicBot extends Client {
         browser: config.app?.browser,
       },
       allowedMentions: config.allowedMentions,
+      makeCache: Options.cacheWithLimits({
+        MessageManager: { maxSize: 50 },
+        GuildMemberManager: { maxSize: 200, keepOverLimit: (m) => m.id === m.client.user?.id },
+        PresenceManager: 0,
+        ReactionManager: 0,
+        ReactionUserManager: 0,
+        GuildEmojiManager: 0,
+        GuildStickerManager: 0,
+        StageInstanceManager: 0,
+        ThreadManager: 0,
+        ThreadMemberManager: 0,
+        GuildScheduledEventManager: 0,
+        VoiceStateManager: { maxSize: 1000 },
+      }),
+      sweepers: {
+        ...Options.defaultSweepers,
+        messages: {
+          interval: 300,
+          lifetime: 600,
+        },
+      },
       ...(clusterInfo ? {
         shards: clusterInfo.SHARD_LIST,
         shardCount: clusterInfo.TOTAL_SHARDS,
@@ -60,6 +81,17 @@ class MusicBot extends Client {
       startDashboard(this).catch((err) => {
         this.logger.log(`[Dashboard] Startup failed: ${err.stack || err}`, "error");
       });
+
+      // Start 5-minute memory monitoring logging loop
+      setInterval(() => {
+        const used = process.memoryUsage();
+        this.logger.log(
+          `Memory: RSS ${Math.round(used.rss / 1024 / 1024)}MB | Heap ${Math.round(
+            used.heapUsed / 1024 / 1024
+          )}MB | External ${Math.round(used.external / 1024 / 1024)}MB`,
+          "log"
+        );
+      }, 300_000);
     });
 
     [
