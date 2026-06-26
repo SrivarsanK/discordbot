@@ -35,16 +35,13 @@
 
 <div align="center">
   <p align="center">
-    <b>Landing Page Interface</b><br>
-    <img src="./assets/landing_page.png" width="800" alt="Landing Page Preview" style="border-radius: 8px; border: 1px solid #333;"><br><br>
+    <b>Server Selection Page</b><br>
+    <img src="./assets/select_server.png" width="800" alt="Server Selection Page View" style="border-radius: 8px; border: 1px solid #333;"><br><br>
     <b>Interactive Configuration Dashboard</b><br>
-    <img src="./assets/dashboard_initial.png" width="800" alt="Main Dashboard View" style="border-radius: 8px; border: 1px solid #333;"><br><br>
-    <b>Server Prefix Configuration</b><br>
-    <img src="./assets/prefix_setup.png" width="800" alt="Settings Configuration Setup" style="border-radius: 8px; border: 1px solid #333;"><br><br>
-    <b>Advanced Module Panel</b><br>
-    <img src="./assets/dashboard_v2.png" width="800" alt="Advanced Module Dashboard View" style="border-radius: 8px; border: 1px solid #333;">
+    <img src="./assets/dashboard.png" width="800" alt="Configuration Dashboard View" style="border-radius: 8px; border: 1px solid #333;">
   </p>
 </div>
+
 
 ---
 
