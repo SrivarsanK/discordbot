@@ -1,144 +1,198 @@
-# DSC SRM RMP Discord Bot
+# Arrkii Discord Bot
 
-A feature-rich, all-in-one Discord bot with music, moderation, anti-nuke, automation, and much more! Built with discord.js v14, Neon Postgres (Drizzle ORM) for data persistence, and hybrid sharding for scalability.
+<div align="center">
+    <a href="https://bot.developerstudents.club/">
+        <svg viewBox="0 0 100 100" width="120" height="120" style="color: #7c4dff; filter: drop-shadow(0px 4px 10px rgba(124, 77, 255, 0.4));">
+            <path d="M50,10 L80,25 L80,55 L50,90 L20,55 L20,25 Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M50,22 L72,34 L72,52 L50,78 L28,52 L28,34 Z" fill="currentColor"/>
+            <polygon points="50,30 38,48 48,48 44,70 62,45 52,45" fill="#ffffff"/>
+        </svg>
+    </a>
+</div>
 
-## Description
-DSC SRM RMP is a complete Discord bot solution that offers:
-- Advanced music system with Kazagumo & Shoukaku
-- Comprehensive anti-nuke protection
-- Powerful moderation tools
-- Advanced logging system with thread/forum verification
-- Automation features (auto-responder, auto-react, auto-role, welcome messages, leveling, etc.)
-- Built-in web dashboard for easy management
-- Emoji Manager for managing Discord application emojis
+<br />
 
-## Features
+<div align="center">
 
-### 🎵 Music System
-- Powered by Kazagumo & Shoukaku
-- Supports YouTube, Spotify, SoundCloud, and more via Lavalink
-- Playlists, audio filters (8D, bassboost, nightcore, etc.), lyrics, and voice commands
-- 24/7 mode, autoplay, loop, shuffle, seek, and more
-- Both prefix commands and slash commands available
+[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://javascript.info/)
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://github.com/dsc-srmrmp/newdiscordbot)
+<br />
+[![Discord Support](https://img.shields.io/discord/5uyYvpKSJH?color=5865F2&label=Support%20Server&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/5uyYvpKSJH)
+[![Dashboard Website](https://img.shields.io/website-up-down-green-red/https/bot.developerstudents.club.svg?style=flat-square&label=Dashboard)](https://bot.developerstudents.club/)
+[![NodeJS Version](https://img.shields.io/badge/node-%3E%3D18.0.0-blue.svg?style=flat-square&logo=node.js)](https://nodejs.org)
+[![Database Neon](https://img.shields.io/badge/database-Neon_Postgres-00e599?style=flat-square&logo=postgresql&logoColor=white)](https://neon.tech)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-### 🛡️ Anti-Nuke & Security
-- Comprehensive anti-nuke protection
-- Detects and blocks mass bans, kicks, role deletes, channel deletes, etc.
-- Whitelist system for trusted users
-- Anti-bot add protection
-- Anti-everyone/here mention protection
-- Webhook, emoji, and sticker change protection
+</div>
 
-### 🔧 Moderation
-- Ban, kick, mute, unban, unbanall commands
-- Purge messages and bots
-- Hide/unhide channels
-- Lock/unlock channels
-- Role management and role menus
-- Steal emojis and stickers
-- Server info and user info commands
+> **Arrkii** (also known as the **DSC SRM RMP Bot**) is a feature-rich, ultra-premium, all-in-one Discord bot featuring advanced music playback, active anti-nuke server security, robust auto-moderation, a modern leveling system, and detailed log verification.
+> 
+> Everything is configurable through a highly responsive glassmorphic web dashboard hosted at `https://bot.developerstudents.club`, powered by Drizzle ORM and Neon Serverless Postgres.
+
+---
+
+## 🖥️ Responsive Web Dashboard
+
+Configure every module dynamically with our high-fidelity, purple-themed glassmorphism interface.
+
+| Dashboard Welcome | Server Configuration | Event Log Verification |
+| :---: | :---: | :---: |
+| **Discord OAuth2 Login** <br> Simple, secure authentication using your Discord developer credentials. | **Interactive Panels** <br> Adjust settings, leveling rates, VC guards, and prefixes on the fly. | **Log Token Verification** <br> Securely register log channels using verification tokens. |
+
+---
+
+## 🛠️ Technology Stack
+
+- **Engine:** [Discord.js v14](https://discord.js.org/) — Powerful node library interacting with the Discord Gateway API.
+- **Database:** [Neon Postgres](https://neon.tech/) — Serverless postgres database managed with [Drizzle ORM](https://orm.drizzle.team/).
+- **Sharding:** [discord-hybrid-sharding](https://github.com/mfontanini/discord-hybrid-sharding) — Process-based hybrid sharding for massive scale.
+- **Audio Engine:** [Kazagumo](https://github.com/Takiyo56/Kazagumo) & [Shoukaku](https://github.com/Deivu/Shoukaku) — Lavalink client wrapper for robust playback.
+- **Graphics Engine:** [Canvacard](https://github.com/LachlanDev/Canvacard) & [Canvafy](https://github.com/Canvafy/canvafy) — Premium banner and rank card graphics generator.
+- **Web App:** Express.js — Serves the landing page and settings panel dashboard.
+
+---
+
+## ✨ Features & Module Overview
+
+### 🎵 High-Fidelity Music System
+- **Lavalink Backed:** Powered by Shoukaku and Kazagumo for buffer-free playback.
+- **Multi-Source Support:** Play tracks from YouTube, Spotify, SoundCloud, and custom URLs.
+- **Audio Filters:** Apply real-time filters including 8D, Bassboost, Nightcore, Vaporwave, and Pitch.
+- **Advanced Controls:** Autoplay, loop (track/queue), 24/7 persistence, shuffle, seek, and custom playlist support.
+- **Command Interfaces:** Fully functional Prefix commands and Slash commands.
+
+### 🛡️ Security & Anti-Nuke Guard
+- **Mass Action Detection:** Automatically detects and blocks mass bans, kicks, role deletes, and channel deletes.
+- **Asset Protection:** Anti-everyone/here mention protection, webhook alteration guards, and emoji/sticker change security.
+- **Access Control:** Custom Whitelist system allowing trusted users to bypass security measures.
+- **Anti-Bot Add:** Blocks unauthorized bots from joining and auto-kicks them.
+
+### ⚙️ Automation & Engagement
+- **Auto-Responder & React:** Trigger custom text replies or emoji reactions based on keywords.
+- **Auto-Role:** Failsafe role assignment for humans and bots upon server join with API backup.
+- **Voice Roles:** Assign designated roles based on active voice channel presence.
+- **Welcome System:** High-impact welcome banners generated dynamically on canvas.
+- **VC Guard & Sticky Messages:** Protect specific voice channels with bypass roles; keep critical announcements pinned at the bottom of active channels.
+- **Leveling System:** Track voice and text XP with level-up banner notifications.
 
 ### 📝 Advanced Logging System
-- Per-event logging configuration with distinct, visual channel type indicators (Text, Announcement, Forum, Thread, Voice, Stage).
-- Support for normal text channels, threads, or forum parent channel destinations (automatically creates separate log threads).
-- Interactive thread/forum validation token system (`!verify-log <token>`) to securely hook channels from Discord.
-- Event ignore lists for channels, roles, and users.
-- Custom filters for ignoring embeds, poll deletions, and sticky messages.
-- Dedicated categories including:
-  - **Messages** (Edit, Delete)
-  - **Channels** (Create, Delete, Update)
-  - **Roles** (Create, Delete, Update)
-  - **Members** (Join, Leave, Profile Updates)
-  - **Voice** (Join, Leave, Move)
-  - **Threads** (Create, Delete, Update, Member Join)
-  - **Invites & Webhooks** (Create, Delete, Webhook updates)
-  - **Server** (Server profile updates)
-  - **Moderation** (Ban, Unban, Kick, Timeout, Message Purges)
-
-### ⚙️ Automation
-- Auto-responder: Custom message triggers and replies
-- Auto-react: Automatic reactions to messages
-- Auto-role: Assign human/bot roles on member join (failsafe with API backup)
-- Voice roles: Assign roles based on voice channel activity
-- Welcome system: Custom welcome messages and banners
-- AFK system
-- Leveling system: Chat and voice XP with level-up messages
-- VC Guard: Protect selected voice channels with bypass roles
-- Sticky messages: Keep important messages pinned to the bottom of channels
-
-### 📊 Dashboard
-- Built-in web dashboard for easy bot management
-- Discord OAuth2 login
-- Server management
-- Settings configuration (Welcome, Automod, Logging, Leveling, VC Guard, Sticky, Roles)
-- Default local URL: http://localhost:3000
+- **Forum & Thread Support:** Direct logs to normal text channels, thread channels, or parent forum channels.
+- **Channel Verification:** Secure verification token system (`!verify-log <token>`) to hook target log channels.
+- **Custom Filters:** Event ignore lists for specific channels, roles, or users, with ignore options for embeds.
+- **Event Categories:** Message (Edits/Deletes), Channels, Roles, Members (Profile/Activity), Voice States, Thread states, Invites, and Moderation events.
 
 ### 😊 Emoji Manager
-- Standalone emoji management server
-- Sync emojis from your bot's config to Discord application emojis
-- Web UI for managing and syncing emojis
-- Default local URL: http://localhost:3077
+- **Standalone Dashboard:** Connects to `https://arrki-emoji-manager.vercel.app/` or local port `3077`.
+- **Sync System:** Synchronize your bot config application emojis directly to Discord application emojis.
 
-## Tech Stack
-- **discord.js v14** - Discord API library
-- **discord-hybrid-sharding** - Hybrid sharding for scalability
-- **drizzle-orm** & **@neondatabase/serverless** - Neon Serverless Postgres database ODM
-- **kazagumo & shoukaku** - Music player system
-- **canvacard, canvafy, musicard** - Image/graphics libraries
-- **express (dashboard/emoji-manager)** - Web server
-- **topgg-sdk** - Top.gg integration
-- **dokdo** - Debug/eval command
+---
 
-## Installation
+## 📂 Repository Structure
 
-1. **Clone or download the repository**
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-3. **Configure environment variables** - Create a `.env` file in the root directory (see Configuration section)
-4. **Set up Neon Postgres** - Create a project on Neon.tech and get your database connection string
-5. **Run Migrations**
-   ```bash
-   npx drizzle-kit push
-   ```
-6. **Set up Lavalink** - Have a Lavalink server running for music features
-7. **Start the bot**
-   ```bash
-   npm start
-   ```
-
-## Configuration
-Create a `.env` file in the root directory with the following variables (at minimum):
-
-```env
-# Discord Bot
-DISCORD_TOKEN=your-bot-token
-DISCORD_CLIENT_ID=your-bot-client-id
-DISCORD_CLIENT_SECRET=your-bot-client-secret
-OWNER_ID=your-discord-user-id
-PREFIX=!
-
-# Database
-DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
-
-# Lavalink
-NODE_URL=localhost:2333
-NODE_NAME=main
-NODE_AUTH=youshallnotpass
-
-# Spotify (optional)
-SPOTIFY_ID=your-spotify-client-id
-SPOTIFY_SECRET=your-spotify-client-secret
-
-# Dashboard (optional)
-DASHBOARD_ENABLED=true
-DASHBOARD_PORT=3000
+```
+├── .env.example               # Environment variables template
+├── Shard.js                   # Bot cluster sharding manager
+├── index.js                   # Core bot client initialization
+├── migrate-leetcode.js        # Script to migrate LeetCode db schema
+├── migrate-server-stats.js    # Script to migrate Server Stats db schema
+├── update-and-start.sh        # Oracle Linux PM2 deployment script
+├── docs/                      # Developer guides and system documentation
+├── src/
+│   ├── config.js              # Environment parser and static config
+│   ├── commands/              # Bot Prefix Commands
+│   │   ├── Antinuke/          # Security rules & whitelists
+│   │   ├── Config/            # Prefix, auto-responder, logging, stats configuration
+│   │   ├── LeetCode/          # Solve tracking and coding leaderboards
+│   │   ├── Music/             # Lavalink audio playback commands
+│   │   └── Welcome/           # Custom canvas join-banner setup
+│   ├── slashCommands/         # Bot Slash Commands mapping prefix actions
+│   ├── events/                # Gateway client event handlers
+│   ├── db/                    # Drizzle connection and neon client setup
+│   ├── schema/                # Drizzle ORM Database Schema tables
+│   ├── loaders/               # Commands, buttons, and slash handlers loader
+│   ├── structures/            # Custom client extensions (MusicClient.js)
+│   └── dashboard/             # Express Web Application
+│       ├── public/            # Static files (HTML, CSS, JS)
+│       └── server.js          # OAuth2 login & API routes
 ```
 
-See `src/config.js` for all available configuration options.
+---
 
-## Requirements
-- Node.js 18+
-- Neon Serverless Postgres database
-- Lavalink server (for music features)
+## 🚀 Installation & Setup
+
+### Prerequisites
+*   [Node.js](https://nodejs.org/) v18.0.0 or higher
+*   [PostgreSQL Database](https://neon.tech/) (or a Neon Serverless instance)
+*   [Lavalink Server](https://github.com/lavalink-devs/Lavalink) (to power the music system)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/dsc-srmrmp/newdiscordbot.git
+cd newdiscordbot
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Configure Environment
+Create a `.env` file in the root directory (refer to `.env.example` for details):
+```env
+# Bot Credentials
+DISCORD_TOKEN=your_bot_token
+DISCORD_CLIENT_ID=your_client_id
+DISCORD_CLIENT_SECRET=your_client_secret
+OWNER_ID=your_owner_id
+PREFIX=>
+
+# Database Connection
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+
+# Lavalink configuration
+NODE_URL=your_lavalink_host:port
+NODE_NAME=MainNode
+NODE_AUTH=youshallnotpass
+NODE_SECURE=true
+
+# Dashboard setup
+DASHBOARD_ENABLED=true
+DASHBOARD_PORT=3000
+DASHBOARD_PUBLIC_URL=https://bot.developerstudents.club
+```
+
+### 4. Push Database Schemas
+Sync the Drizzle schemas with your PostgreSQL/Neon instance:
+```bash
+npx drizzle-kit push
+```
+
+### 5. Launch the Application
+Run the sharded client in development mode or start it in production:
+```bash
+# Development (with nodemon auto-restart)
+npm run dev
+
+# Production
+npm start
+```
+
+---
+
+## 🔄 Deployment & Automation
+
+The bot features a deployment script (`update-and-start.sh`) designed for Oracle Linux/Ubuntu VPS environments under PM2:
+*   Automatically fetches and pulls updates from `main` branch.
+*   Installs dependencies and runs necessary migrations.
+*   Starts/reloads the bot process using PM2.
+
+```bash
+chmod +x update-and-start.sh
+./update-and-start.sh
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
