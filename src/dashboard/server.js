@@ -101,6 +101,10 @@ async function handleRequest(client, req, res) {
     return handleApi(client, req, res, url);
   }
 
+  if (req.method === "GET" && url.pathname === "/" && url.search === "") {
+    return serveStatic(res, path.join(PUBLIC_DIR, "landing.html"));
+  }
+
   if (req.method === "GET" && url.pathname.startsWith("/assets/")) {
     return serveStatic(res, path.join(PUBLIC_DIR, url.pathname.replace(/^\/assets\//, "")));
   }
