@@ -35,8 +35,6 @@ module.exports = {
       information: client.emoji.about || "ℹ️",
       leetcode: client.emoji.about || "🧠",
       moderation: client.emoji.warn || "🔧",
-      music: client.emoji.music || "🎵",
-      playlist: client.emoji.playlist || "📻",
       profile: client.emoji.about || "👤",
       role: client.emoji.addsong || "👥",
       utility: client.emoji.about || "🛠️",
@@ -47,8 +45,8 @@ module.exports = {
     const embed = new client.embed()
       .d(
         `Hey ${interaction.member}, I'm ${client.user}!
-- **A complete Music Bot for your server**
-- **Providing you the best quality music**`,
+- **A feature-rich utility and security bot for your server**
+- **Providing you advanced administration, automated logging, and verification**`,
       )
       .addFields({
         name: `${client.emoji.search || "🔍"} **__My Categories:__**`,
@@ -62,8 +60,6 @@ module.exports = {
 > ${emojiMap.information} \`:\` **Information**
 > ${emojiMap.leetcode} \`:\` **LeetCode**
 > ${emojiMap.moderation} \`:\` **Moderation**
-> ${emojiMap.music} \`:\` **Music**
-> ${emojiMap.playlist} \`:\` **Playlists**
 > ${emojiMap.profile} \`:\` **Profile**
 > ${emojiMap.role} \`:\` **Role**
 > ${emojiMap.utility} \`:\` **Utility**
@@ -135,18 +131,6 @@ module.exports = {
         value: "moderation",
         description: "Ban, mute, purge, role tools",
         emoji: emojiMap.moderation,
-      },
-      {
-        label: "Music",
-        value: "music",
-        description: "Play, queue, filters, and controls",
-        emoji: emojiMap.music,
-      },
-      {
-        label: "Playlist",
-        value: "playlist",
-        description: "Saved playlists and queue sharing",
-        emoji: emojiMap.playlist,
       },
       {
         label: "Profile",

@@ -23,8 +23,6 @@ const CATEGORY_ORDER = [
   "Config",
   "Moderation",
   "Welcome",
-  "Music",
-  "Playlist",
   "Profile",
   "LeetCode",
   "Image",
@@ -43,8 +41,6 @@ const CATEGORY_META = {
   config: ["config", "Server and bot setup"],
   moderation: ["moderation", "Ban, mute, purge, role tools"],
   welcome: ["welcome", "Join messages and welcome setup"],
-  music: ["music", "Play, queue, filters, controls"],
-  playlist: ["playlist", "Saved playlists and sharing"],
   profile: ["profile", "Bio and profile cards"],
   leetcode: ["leetcode", "LeetCode tracking leaderboard"],
   image: ["image", "Image and avatar actions"],
@@ -63,12 +59,8 @@ const HOME_SECTIONS = [
     categories: ["antinuke", "automod", "config", "moderation", "welcome"],
   },
   {
-    title: "Music & Identity",
-    categories: ["music", "playlist", "profile", "image"],
-  },
-  {
-    title: "Community Tools",
-    categories: ["fun", "extra", "role", "voice", "utility", "information", "leetcode"],
+    title: "Identity & Community",
+    categories: ["profile", "image", "fun", "extra", "role", "voice", "utility", "information", "leetcode"],
   },
   {
     title: "Bot Control",
@@ -76,7 +68,7 @@ const HOME_SECTIONS = [
   },
 ];
 
-const QUICK_CATEGORIES = ["music", "config", "profile"];
+const QUICK_CATEGORIES = ["config", "profile"];
 const MAX_TEXT_LENGTH = 3400;
 
 module.exports = {
@@ -221,7 +213,7 @@ function buildHomeContainer(context) {
   const { client, commands, categories, prefix } = context;
   const container = new ContainerBuilder();
   const avatarUrl = client.user.displayAvatarURL({ extension: "png", size: 256 });
-  const quickPicks = ["play", "queue", "profile", "playlist", "config", "help"]
+  const quickPicks = ["profile", "config", "help"]
     .map((name) => commands.get(name))
     .filter(Boolean)
     .map((command) => `\`${prefix}${command.name}\``)
@@ -245,7 +237,7 @@ function buildHomeContainer(context) {
       `**Start Here**\n` +
       `> Use the category menu for browsing.\n` +
       `> Use \`${prefix}help <command>\` for details.\n` +
-      `> Quick picks: ${quickPicks || `\`${prefix}play\`  \`${prefix}help\``}`,
+      `> Quick picks: ${quickPicks || `\`${prefix}help\``}`,
     ),
   );
 
