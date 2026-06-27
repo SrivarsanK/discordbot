@@ -45,10 +45,8 @@ module.exports = {
     if (linkRegex.test(message.content)) {
       try {
         await message.delete();
-        const muteDuration = 5 * 60 * 1000;
-        await message.member.timeout(muteDuration, "Posted a prohibited link.");
         const notification = await message.channel.send(
-          v2(`🚫 \`${message.author.username}\` has been muted for 5 minutes for posting prohibited links.`),
+          v2(`🚫 ${message.author}, you are not allowed to post links here!`),
         );
         setTimeout(() => notification.delete().catch(() => {}), 5000); // Auto-delete notification
       } catch (error) {
