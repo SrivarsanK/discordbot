@@ -2,7 +2,6 @@
 
 const { Client, GatewayIntentBits, Collection, Events, Options } = require("discord.js");
 const { ClusterClient, getInfo } = require("discord-hybrid-sharding");
-const loadPlayerManager = require("../loaders/loadPlayerManager");
 const initializePremiumChecks = require("../utils/premiumChecks");
 const { loadEmojiLibrary } = require("../utils/emojiLibrary");
 const { syncClientOwnerIds } = require("../utils/owners");
@@ -107,28 +106,13 @@ class MusicBot extends Client {
   }
 
   async connect() {
-    // 1. Resolve and verify best Lavalink v4 nodes dynamically by connection latency
-    const { fetchBestNodes } = require("../utils/fetchNodes");
-    try {
-      const bestNodes = await fetchBestNodes(this);
-      if (bestNodes && bestNodes.length > 0) {
-        this.config.nodes = bestNodes;
-      }
-    } catch (err) {
-      this.logger.log(`[Music] Dynamic node resolution failed: ${err.stack || err}`, "error");
-    }
-
-    // 2. Initialize Player Manager and run loaders
-    loadPlayerManager(this);
-
+    // Run loaders
     [
       "loadAntinukes",
       "loadAutoMods",
       "loadClients",
       "loadCommands",
-      "loadNodes",
       "loadSlashCommands",
-      "loadPlayers",
     ].forEach((handler) => {
       require(`../loaders/${handler}`)(this);
     });

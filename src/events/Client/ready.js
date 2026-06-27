@@ -22,7 +22,7 @@ module.exports = {
     // Attempt to set application description (About Me bio) programmatically
     try {
       await client.application.edit({
-        description: "Premium Discord bot featuring high-fidelity music, active anti-nuke security, and automated LeetCode OCR solve verification.\n\nwebsite: bot.developerstudents.club\ncontact: @theiqsweat"
+        description: "Premium Discord bot featuring active anti-nuke security, and automated LeetCode OCR solve verification.\n\nwebsite: bot.developerstudents.club\ncontact: @theiqsweat"
       });
       client.logger.log("Successfully updated Discord application description/bio.", "ready");
     } catch (err) {
@@ -88,12 +88,5 @@ module.exports = {
       index = (index + 1) % statuses.length;
       client.updatePresence();
     }, 15000);
-
-    // Trigger 24/7 voice restore if at least one Lavalink node is already connected
-    const { restore247 } = require("../../utils/restore247");
-    const hasReadyNode = [...client.manager.shoukaku.nodes.values()].some(node => node.state === 1);
-    if (hasReadyNode) {
-      await restore247(client);
-    }
   },
 };
