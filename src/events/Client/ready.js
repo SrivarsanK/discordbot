@@ -58,15 +58,45 @@ module.exports = {
       "theiqsweat | Discord"
     ];
 
+    let serverCount = client.guilds.cache.size || 0;
+    let totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+
+    const updateCounts = async () => {
+      try {
+        if (client.cluster) {
+          const guildSizes = await client.cluster.fetchClientValues("guilds.cache.size");
+          serverCount = guildSizes.reduce((prev, val) => prev + val, 0);
+        } else {
+          serverCount = client.guilds.cache.size || 0;
+        }
+        totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+      } catch (err) {
+        serverCount = client.guilds.cache.size || 0;
+        totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+      }
+    };
+
     let index = 0;
-    setInterval(function () {
-      const serverCount = client.guilds.cache.size || 0;
+    const setStatus = () => {
       const statusText = statuses[index]
         .replace("{servers}", serverCount)
-        .replace("{users}", client.numb(user));
+        .replace("{users}", client.numb(totalUsers));
 
       client.user.setActivity(statusText, { type: ActivityType.Listening });
       index = (index + 1) % statuses.length;
-    }, 5000);
+    };
+
+    // Update counts and set the status immediately
+    updateCounts().then(() => {
+      setStatus();
+    }).catch(() => {
+      setStatus();
+    });
+
+    // Update cluster-wide server counts in the background every 30 seconds
+    setInterval(updateCounts, 30000);
+
+    // Rotate status messages every 5 seconds
+    setInterval(setStatus, 5000);
   },
 };
