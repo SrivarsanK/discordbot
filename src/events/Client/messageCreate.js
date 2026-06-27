@@ -325,7 +325,7 @@ module.exports = {
       }
     }
 
-    const player = client.manager.players.get(message.guild.id);
+    const player = client.manager ? client.manager.players.get(message.guild.id) : null;
     if (command.player && !player) {
       return message.channel.send(v2(`i'm not in any vc!`)).catch(() => null);;
     }

@@ -63,9 +63,9 @@ module.exports = {
         }
       }
 
-      const player = interaction.client.manager.players.get(
-        interaction.guildId,
-      );
+      const player = interaction.client.manager
+        ? interaction.client.manager.players.get(interaction.guildId)
+        : null;
       if (command.player && !player) {
         if (interaction.replied) {
           return await interaction
