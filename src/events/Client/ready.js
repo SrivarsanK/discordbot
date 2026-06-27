@@ -88,5 +88,12 @@ module.exports = {
       index = (index + 1) % statuses.length;
       client.updatePresence();
     }, 15000);
+
+    // Trigger 24/7 voice restore if at least one Lavalink node is already connected
+    const { restore247 } = require("../../utils/restore247");
+    const hasReadyNode = [...client.manager.shoukaku.nodes.values()].some(node => node.state === 1);
+    if (hasReadyNode) {
+      await restore247(client);
+    }
   },
 };
