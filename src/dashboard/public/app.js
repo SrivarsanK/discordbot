@@ -6,7 +6,6 @@ const pages = [
   { id: "overview", label: "Home", icon: "home", group: "Main" },
   { id: "general", label: "General Settings", icon: "settings", group: "Main" },
   { id: "prefix", label: "Prefix Setup", icon: "key", group: "Main" },
-  { id: "music", label: "Music", icon: "music", group: "Modules", status: "music247.enabled" },
   { id: "leveling", label: "Leveling", icon: "award", group: "Modules", status: "premium.leveling.enabled" },
   { id: "vcguard", label: "VC Guard", icon: "shield", group: "Modules", status: "premium.vcGuard.enabled" },
   { id: "sticky", label: "Sticky Messages", icon: "pin", group: "Modules", status: "premium.sticky.enabled" },
@@ -346,8 +345,6 @@ function renderPage() {
       return renderVcGuard();
     case "sticky":
       return renderSticky();
-    case "music":
-      return renderMusic();
     case "automod":
       return renderAutomod();
     case "antinuke":
@@ -383,7 +380,6 @@ function renderOverview() {
         ${shortcutCard("Auto moderation", "Auto Moderation", "Anti link and anti spam controls for this server.", "automod", "Configure")}
         ${shortcutCard("Welcome messages", "Welcome Messages", "Channel, content, embed fields, and preview.", "welcome", "Edit message")}
         ${shortcutCard("LeetCode tracking", "LeetCode", "Link accounts, track solves, and award points.", "leetcode", "Configure LeetCode")}
-        ${shortcutCard("Music 24/7", "Music", "Keep the player connected to a voice channel.", "music", "Manage music")}
         ${shortcutCard("Leveling", "XP", "Free chat and voice XP for active members.", "leveling", "Configure XP")}
         ${shortcutCard("VC guard", "VC", "Protect selected voice channels with bypass roles.", "vcguard", "Configure guard")}
         ${shortcutCard("Sticky messages", "Sticky", "Keep an important message at the bottom of a channel.", "sticky", "Configure sticky")}
@@ -442,7 +438,6 @@ function renderPrefixSetup() {
           <p class="muted" style="margin-bottom: 12px; font-size: 0.85rem;">This is how command invocations will look in your server:</p>
           <div class="preview-box" style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); font-family: monospace; font-size: 0.9rem; line-height: 1.6;">
             <div><span class="accent" style="color: #a855f7; font-weight: bold;">${escapeHtml(currentPrefix)}</span>help &mdash; <span class="muted" style="color: #9ca3af;">Open help menu</span></div>
-            <div><span class="accent" style="color: #a855f7; font-weight: bold;">${escapeHtml(currentPrefix)}</span>play <span class="muted" style="color: #9ca3af;">https://...</span> &mdash; <span class="muted" style="color: #9ca3af;">Play music</span></div>
             <div><span class="accent" style="color: #a855f7; font-weight: bold;">${escapeHtml(currentPrefix)}</span>ping &mdash; <span class="muted" style="color: #9ca3af;">Check bot latency</span></div>
           </div>
         </div>
