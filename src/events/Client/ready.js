@@ -58,49 +58,35 @@ module.exports = {
       "theiqsweat | Discord"
     ];
 
-    let serverCount = client.guilds.cache.size || 0;
-    let totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
-
-    const updateCounts = async () => {
+    let index = 0;
+    client.updatePresence = () => {
       try {
-        if (client.cluster) {
-          // Use Promise.race to prevent hanging if other shards/clusters are starting up
-          const guildSizes = await Promise.race([
-            client.cluster.fetchClientValues("guilds.cache.size"),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
-          ]);
-          serverCount = guildSizes.reduce((prev, val) => prev + val, 0);
-        } else {
-          serverCount = client.guilds.cache.size || 0;
+        const serverCount = client.guilds.cache.size || 0;
+        const totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+
+        let statusText = statuses[index];
+        if (statusText.includes("{servers}")) {
+          if (statusText.includes("{servers} servers")) {
+            statusText = statusText.replace("{servers}", serverCount);
+          } else {
+            statusText = statusText.replace("{servers}", `${serverCount} servers!`);
+          }
         }
-        totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+        statusText = statusText.replace("{users}", client.numb(totalUsers));
+
+        client.user.setActivity(statusText, { type: ActivityType.Listening });
       } catch (err) {
-        serverCount = client.guilds.cache.size || 0;
-        totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+        client.logger.log(`[Presence Update] Failed to update presence: ${err.message}`, "error");
       }
     };
 
-    let index = 0;
-    const setStatus = () => {
-      const statusText = statuses[index]
-        .replace("{servers}", serverCount)
-        .replace("{users}", client.numb(totalUsers));
-
-      client.user.setActivity(statusText, { type: ActivityType.Listening });
-      index = (index + 1) % statuses.length;
-    };
-
-    // Update counts and set the status immediately
-    updateCounts().then(() => {
-      setStatus();
-    }).catch(() => {
-      setStatus();
-    });
-
-    // Update cluster-wide server counts in the background every 30 seconds
-    setInterval(updateCounts, 30000);
+    // Set initial status immediately on ready
+    client.updatePresence();
 
     // Rotate status messages every 15 seconds (respects Discord's 5 updates per minute limit)
-    setInterval(setStatus, 15000);
+    setInterval(() => {
+      index = (index + 1) % statuses.length;
+      client.updatePresence();
+    }, 15000);
   },
 };
