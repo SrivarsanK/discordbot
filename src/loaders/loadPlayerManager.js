@@ -34,7 +34,20 @@ module.exports = function loadPlayerManager(client) {
 
   const defaultSource = normalizeSource(client.config.node_source);
 
-  const nodes = (client.config.nodes || []).filter(node => node && node.url && node.url.trim() !== "");
+  const seenUrls = new Set();
+  const seenNames = new Set();
+  const nodes = (client.config.nodes || [])
+    .filter(node => node && node.url && node.url.trim() !== "")
+    .filter(node => {
+      const url = node.url.trim().toLowerCase();
+      const name = (node.name || "").trim().toLowerCase();
+      if (seenUrls.has(url) || (name && seenNames.has(name))) {
+        return false;
+      }
+      seenUrls.add(url);
+      if (name) seenNames.add(name);
+      return true;
+    });
 
   const manager = new Kazagumo(
     {
