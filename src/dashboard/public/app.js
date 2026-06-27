@@ -3221,7 +3221,7 @@ function resetDraft() {
 
 async function logout() {
   await fetch("/logout", { method: "POST" }).catch(() => null);
-  location.reload();
+  window.location.href = "/";
 }
 
 function markDirty() {
