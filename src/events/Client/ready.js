@@ -64,7 +64,11 @@ module.exports = {
     const updateCounts = async () => {
       try {
         if (client.cluster) {
-          const guildSizes = await client.cluster.fetchClientValues("guilds.cache.size");
+          // Use Promise.race to prevent hanging if other shards/clusters are starting up
+          const guildSizes = await Promise.race([
+            client.cluster.fetchClientValues("guilds.cache.size"),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
+          ]);
           serverCount = guildSizes.reduce((prev, val) => prev + val, 0);
         } else {
           serverCount = client.guilds.cache.size || 0;
@@ -96,7 +100,7 @@ module.exports = {
     // Update cluster-wide server counts in the background every 30 seconds
     setInterval(updateCounts, 30000);
 
-    // Rotate status messages every 5 seconds
-    setInterval(setStatus, 5000);
+    // Rotate status messages every 15 seconds (respects Discord's 5 updates per minute limit)
+    setInterval(setStatus, 15000);
   },
 };
