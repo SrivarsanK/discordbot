@@ -13,9 +13,10 @@ module.exports = {
   botPerms: ["ModerateMembers"],
   owner: false,
   execute: async (message, args, client, prefix) => {
-    const member =
-      message.mentions.members.first() ||
-      message.guild.members.cache.get(args[0]);
+    let member = message.mentions.members.first();
+    if (!member && args[0]) {
+      member = await message.guild.members.fetch(args[0]).catch(() => null);
+    }
 
     if (!member) {
       return message.reply(v2({

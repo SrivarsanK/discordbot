@@ -40,9 +40,10 @@ module.exports = {
     }
 
     // Get the target member
-    const member =
-      message.mentions.members.first() ||
-      message.guild.members.cache.get(args[0]);
+    let member = message.mentions.members.first();
+    if (!member && args[0]) {
+      member = await message.guild.members.fetch(args[0]).catch(() => null);
+    }
 
     if (!member) {
       return message.reply(v2({
@@ -81,7 +82,7 @@ module.exports = {
     }
 
     // Check if the member is currently muted
-    if (member.communicationDisabledUntilTimestamp === null) {
+    if (!member.isCommunicationDisabled()) {
       return message.reply(v2({
         embeds: [
           new EmbedBuilder()
