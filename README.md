@@ -25,7 +25,7 @@
 
 </div>
 
-> **DSC SRM RMP Discord Bot** is a premium, feature-rich, all-in-one Discord bot featuring advanced music playback, active anti-nuke server security, robust auto-moderation, a modern leveling system, custom profiles, and automated log verification.
+> **DSC SRM RMP Discord Bot** is a premium, feature-rich, all-in-one Discord bot featuring active anti-nuke server security, robust auto-moderation, a modern leveling system, custom profiles, and automated log verification.
 > 
 > All features are configurable through a highly responsive glassmorphic web dashboard hosted at `https://bot.developerstudents.club`, powered by Drizzle ORM and Neon Serverless Postgres.
 
@@ -65,13 +65,6 @@ A highly unique, automated coding challenge tracker featuring dual-gate validati
 ---
 
 ## ✨ Features & Bot Capabilities
-
-### 🎵 High-Fidelity Music System & Playlist Manager
-- **Lavalink Backed:** Powered by Shoukaku and Kazagumo for buffer-free playback.
-- **Multi-Source Support:** Play tracks from YouTube, Spotify, SoundCloud, and custom URLs.
-- **Audio Filters:** Apply real-time filters including 8D, Bassboost, Nightcore, Vaporwave, and Pitch.
-- **Custom Playlists:** Save current queues into private playlists, list, rename, delete, and load them using `!playlist`.
-- **Playlist Sharing:** Share your created playlist directly with other guild members using `!plshare`.
 
 ### 🛡️ Security & Anti-Nuke Guard
 - **Mass Action Prevention:** Automatically detects and blocks mass bans, kicks, role deletes, and channel deletes.
@@ -117,7 +110,6 @@ A highly unique, automated coding challenge tracker featuring dual-gate validati
 - **Database:** [Neon Postgres](https://neon.tech/) — Serverless postgres database managed with [Drizzle ORM](https://orm.drizzle.team/).
 - **Sharding:** [discord-hybrid-sharding](https://github.com/mfontanini/discord-hybrid-sharding) — Process-based hybrid sharding for massive scale.
 - **OCR Reader:** [Tesseract.js](https://tesseract.projectnaptha.com/) — Reads solution nonces from screenshot uploads.
-- **Audio Engine:** [Kazagumo](https://github.com/Takiyo56/Kazagumo) & [Shoukaku](https://github.com/Deivu/Shoukaku) — Lavalink client wrapper for robust playback.
 - **Graphics Engine:** [Canvacard](https://github.com/LachlanDev/Canvacard) & [Canvafy](https://github.com/Canvafy/canvafy) — Premium banner and rank card graphics generator.
 - **Web App:** Express.js — Serves the landing page and settings panel dashboard.
 
@@ -143,8 +135,6 @@ A highly unique, automated coding challenge tracker featuring dual-gate validati
 │   │   ├── Fun/               # Fun and games commands (8ball, RPS, rate, coinflip)
 │   │   ├── Image/             # Image manipulation (achievement, instagram, meeting, ship)
 │   │   ├── LeetCode/          # Solve tracking, question posting, leaderboards
-│   │   ├── Music/             # Lavalink audio playback and filters
-│   │   ├── Playlist/          # Private playlist saving and loading
 │   │   ├── Profile/           # User bios and customized socials
 │   │   ├── Role/              # Auto-roles, custom roles, and voice roles
 │   │   ├── Utility/           # Snipe, avatar button displays, server & user information
@@ -168,7 +158,6 @@ A highly unique, automated coding challenge tracker featuring dual-gate validati
 ### Prerequisites
 *   [Node.js](https://nodejs.org/) v18.0.0 or higher
 *   [PostgreSQL Database](https://neon.tech/) (or a Neon Serverless instance)
-*   [Lavalink Server](https://github.com/lavalink-devs/Lavalink) (to power the music system)
 
 ### 1. Clone the Repository
 ```bash
@@ -193,12 +182,6 @@ PREFIX=>
 
 # Database Connection
 DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
-
-# Lavalink configuration
-NODE_URL=your_lavalink_host:port
-NODE_NAME=MainNode
-NODE_AUTH=youshallnotpass
-NODE_SECURE=true
 
 # Dashboard setup
 DASHBOARD_ENABLED=true
