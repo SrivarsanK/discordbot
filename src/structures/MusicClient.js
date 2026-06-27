@@ -76,7 +76,6 @@ class MusicBot extends Client {
     });
 
     initializePremiumChecks(this);
-    loadPlayerManager(this);
     this.once(Events.ClientReady, () => {
       startDashboard(this).catch((err) => {
         this.logger.log(`[Dashboard] Startup failed: ${err.stack || err}`, "error");
@@ -93,6 +92,34 @@ class MusicBot extends Client {
         );
       }, 300_000);
     });
+  }
+  async _connectPostgres() {
+    // Just try to get the DB client instance which validates DATABASE_URL and initiates a handshake
+    const db = getDb();
+    this.logger.log("[DB] Database connected", "ready");
+  }
+
+  async login(token) {
+    if (!this.manager) {
+      return this.connect();
+    }
+    return super.login(token || this.token);
+  }
+
+  async connect() {
+    // 1. Resolve and verify best Lavalink v4 nodes dynamically by connection latency
+    const { fetchBestNodes } = require("../utils/fetchNodes");
+    try {
+      const bestNodes = await fetchBestNodes(this);
+      if (bestNodes && bestNodes.length > 0) {
+        this.config.nodes = bestNodes;
+      }
+    } catch (err) {
+      this.logger.log(`[Music] Dynamic node resolution failed: ${err.stack || err}`, "error");
+    }
+
+    // 2. Initialize Player Manager and run loaders
+    loadPlayerManager(this);
 
     [
       "loadAntinukes",
@@ -105,15 +132,11 @@ class MusicBot extends Client {
     ].forEach((handler) => {
       require(`../loaders/${handler}`)(this);
     });
-  }
-  async _connectPostgres() {
-    // Just try to get the DB client instance which validates DATABASE_URL and initiates a handshake
-    const db = getDb();
-    this.logger.log("[DB] Database connected", "ready");
-  }
 
-  async connect() {
+    // 3. Load the emoji library
     this.emoji = await loadEmojiLibrary(this);
+
+    // 4. Log in to Discord
     return super.login(this.token);
   }
 }
