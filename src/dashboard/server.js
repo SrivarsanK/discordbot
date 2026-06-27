@@ -137,6 +137,12 @@ async function handleCallback(client, req, res, url) {
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
 
+  // If user is already authenticated (e.g. redirecting back after a bot invite), bypass state check
+  const session = await getSession(client, req);
+  if (session) {
+    return redirect(res, "/dashboard?choose=server");
+  }
+
   if (!code || !state || !oauthStates.has(state)) {
     return redirect(res, "/dashboard?auth=failed");
   }
@@ -1236,10 +1242,17 @@ function getBotInviteUrl(client) {
   const clientId = client.config?.clientId || client.user?.id;
   if (!clientId) return "";
 
+  const config = client.config.dashboard || {};
   const url = new URL("https://discord.com/oauth2/authorize");
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("permissions", client.config?.invitePermissions || "824671333721");
   url.searchParams.set("scope", "bot applications.commands");
+
+  if (config.publicUrl) {
+    url.searchParams.set("redirect_uri", `${config.publicUrl}/auth/callback`);
+    url.searchParams.set("response_type", "code");
+  }
+
   return url.toString();
 }
 
