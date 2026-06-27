@@ -4,7 +4,6 @@ module.exports = {
   name: "playerException",
   run: async (client, player, reason) => {
     const errorMsg = reason?.exception?.message || reason?.message || (typeof reason === 'string' ? reason : JSON.stringify(reason));
-    const severity = reason?.exception?.severity || "COMMON";
     client.logger.log(`Player exception: ${errorMsg}`, "error");
 
     // If the exception is from Deezer (missing metadata / identifier), retry the current track via YouTube
@@ -26,15 +25,20 @@ module.exports = {
         if (result?.tracks?.length) {
           const ytTrack = result.tracks[0];
 
-          // Replace the current track's encoded data and URI with the YouTube version
+          // Use Shoukaku's lower-level playTrack to bypass Kazagumo's resolve loop
+          // which would re-resolve via the same broken Deezer path
+          await player.shoukaku.playTrack({
+            track: { encoded: ytTrack.track },
+          });
+
+          // Update the current track metadata so the now-playing display is correct
           currentTrack.track = ytTrack.track;
           currentTrack.realUri = ytTrack.realUri || ytTrack.uri;
           currentTrack.uri = ytTrack.uri;
           currentTrack.sourceName = ytTrack.sourceName || "youtube";
           currentTrack.identifier = ytTrack.identifier;
+          player.playing = true;
 
-          // Replay with the corrected track
-          await player.play();
           client.logger.log(`[Music] Successfully retried "${currentTrack.title}" via YouTube.`, "ready");
           return; // Don't send the error message to the channel
         }
