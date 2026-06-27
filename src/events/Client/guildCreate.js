@@ -35,5 +35,6 @@ module.exports = {
       })
       .setTimestamp();
     sendWebhook(client, guild_join, { embeds: [embed] }, "guild join");
+    client.updatePresence?.();
   },
 };

@@ -51,6 +51,7 @@ module.exports = {
           .setTimestamp();
 
       sendWebhook(client, guild_leave, { embeds: [embed] }, "guild leave");
+      client.updatePresence?.();
     } catch (error) {
       console.error("Error in guildDelete event:", error);
     }
