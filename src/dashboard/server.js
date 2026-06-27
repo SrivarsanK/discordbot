@@ -1443,7 +1443,8 @@ function buildCookie(client, sessionId, req) {
   const config = client.config.dashboard || {};
   const isSecure = (req && (req.headers["x-forwarded-proto"] === "https" || req.socket.encrypted)) || config.publicUrl?.startsWith("https://");
   const secure = isSecure ? "; Secure" : "";
-  return `${config.cookieName}=${encodeURIComponent(sessionId)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${Math.floor((config.sessionTtlMs || 604800000) / 1000)}${secure}`;
+  const cookieName = config.cookieName || "dsc_dashboard";
+  return `${cookieName}=${encodeURIComponent(sessionId)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${Math.floor((config.sessionTtlMs || 604800000) / 1000)}${secure}`;
 }
 
 function clearCookie(client) {
