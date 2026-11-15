@@ -15,7 +15,7 @@
 <div align="center">
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://javascript.info/)
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://github.com/dsc-srmrmp/newdiscordbot)
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://github.com/dsc-srmrmp/discordbot)
 <br />
 [![Discord Support](https://img.shields.io/badge/Support_Server-valid-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/5uyYvpKSJH)
 [![Dashboard Website](https://img.shields.io/badge/Dashboard-up-brightgreen?style=flat-square)](https://bot.developerstudents.club/)
@@ -161,7 +161,7 @@ A highly unique, automated coding challenge tracker featuring dual-gate validati
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/dsc-srmrmp/newdiscordbot.git
+git clone https://github.com/dsc-srmrmp/discordbot.git
 cd newdiscordbot
 ```
 
