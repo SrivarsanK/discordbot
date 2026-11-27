@@ -9,13 +9,13 @@
     "@flytri/lyrics-finder": "^1.0.7",
     "@napi-rs/canvas": "^1.0.0",
     "@neondatabase/serverless": "^1.1.0",
-    "@top-gg/sdk": "^3.1.6",
+    "@top-gg/sdk": "^4.0.0",
     "archiver": "^7.0.1",
-    "axios": "^1.8.1",
+    "axios": "^1.21.1",
     "canvacard": "^6.0.4",
     "canvafy": "^7.2.0",
     "discord-hybrid-sharding": "^2.2.5",
-    "discord.js": "^14.26.4",
+    "discord.js": "^14.28.1",
     "dokdo": "^1.0.1",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
@@ -30,7 +30,7 @@
     "musicard-quartz": "^1.0.0",
     "shoukaku": "^4.3.0",
     "tesseract.js": "^7.0.0",
-    "undici": "^6.27.0"
+    "undici": "^6.29.1"
   },
   "overrides": {
     "undici": "$undici"
